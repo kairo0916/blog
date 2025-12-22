@@ -1,9 +1,20 @@
-# About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+---
+title: 關於我
+---
 
-::github{repo="saicaca/fuwari"}
+# 關於我
 
-> ### Sources of images used in this site
-> - [Unsplash](https://unsplash.com/)
-> - [星と少女](https://www.pixiv.net/artworks/108916539) by [Stella](https://www.pixiv.net/users/93273965)
-> - [Rabbit - v1.4 Showcase](https://civitai.com/posts/586908) by [Rabbit_YourMajesty](https://civitai.com/user/Rabbit_YourMajesty)
+嗨～我是 **Kairo** 😎  
+喜歡搞電腦、寫程式，也愛折騰各種小玩意兒。  
+
+## 我的日常
+- 玩手機、電腦，偶爾抓抓 bug
+- 寫博客，記錄一些奇奇怪怪的東西
+- 嘗試各種新科技和小工具  
+
+## 我的個性
+- 愛好自由，討厭規矩太多 😏
+- 好奇心滿滿，什麼都想試試看
+- 喜歡幽默和小搞笑  
+
+就是這樣，一個喜歡折騰又隨性的~~廢物~~
