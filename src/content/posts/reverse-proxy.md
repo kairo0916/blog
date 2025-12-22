@@ -1,7 +1,16 @@
+---
+title: Nginx 反向代理的優缺點
+published: 2025-11-23
+description: "帶你一起挖掘 Nginx 反向代理的優缺點。"
+image: ""
+tags: ["Reverse", "Porxy", "Nginx", "Engine X"]
+category: Nginx
+draft: false
+---
 
 # Nginx 反向代理的優缺點
  
-Nginx（Engine X）長久以來被廣泛用作反向代理（reverse proxy）與負載平衡器。本文從原理、優點、缺點、實務考量與最佳實踐等面向做深入說明，並提供實用的設定範例與監控、調校建議，讓你在設計系統時能有清晰的判斷與可操作步驟。
+**Nginx（Engine X）**長久以來被廣泛用作反向代理（reverse proxy）與負載平衡器。本文從原理、優點、缺點、實務考量與最佳實踐等面向做深入說明，並提供實用的設定範例與監控、調校建議，讓你在設計系統時能有清晰的判斷與可操作步驟。
   
 ## 一、什麼是反向代理（簡要原理）
  
