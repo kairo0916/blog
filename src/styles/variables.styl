@@ -11,7 +11,7 @@ rainbow-dark = linear-gradient(to right, oklch(0.70 0.10 0), oklch(0.70 0.10 30)
 :root  
   --radius-large 1rem  
   --content-delay 150ms  
-  --page-padding 1rem /* 全站內縮 */  
+  --card-padding 1rem  /* 卡片內縮 */  
   
 define(vars)  
   :root  
@@ -25,7 +25,7 @@ define(vars)
 define({  
   --primary: oklch(0.70 0.14 var(--hue)) oklch(0.75 0.14 var(--hue))  
   --page-bg: rgba(255,255,255,0.72) rgba(20,20,20,0.65)  
-  --card-bg: rgba(255,255,255,0.72) rgba(20,20,0,0.65)  
+  --card-bg: rgba(255,255,255,0.72) rgba(20,20,20,0.65)  
   --btn-content: oklch(0.55 0.12 var(--hue)) oklch(0.75 0.1 var(--hue))  
   --btn-regular-bg: rgba(255,255,255,0.72) rgba(20,20,20,0.65)  
   --btn-regular-bg-hover: rgba(245,245,245,0.75) rgba(30,30,30,0.7)  
@@ -77,22 +77,28 @@ define({
   --toc-item-active: oklch(0.70 0.13 var(--hue)) oklch(0.35 0.07 var(--hue))  
 })
 
-/* 全站內縮，手機不貼邊 */  
+/* 卡片內容內縮 */  
+.card-base {  
+  padding: var(--card-padding);  
+  box-sizing: border-box;  
+  background-clip: padding-box;  
+  margin-bottom: 1.5rem;  
+  border-radius: var(--radius-large);  
+}  
+
+.float-panel {  
+  padding: var(--card-padding);  
+  border-radius: var(--radius-large);  
+  box-sizing: border-box;  
+}  
+
+.custom-md, #post-cover {  
+  padding: var(--card-padding);  
+}  
+
+/* 背景圖片覆蓋全屏 */  
 body {  
-  padding-left: var(--page-padding);  
-  padding-right: var(--page-padding);  
-  background-size: cover;       /* 背景圖片覆蓋整個背景 */  
+  background-size: cover;  
   background-repeat: no-repeat;  
   background-position: center;  
-}  
-
-.card-base, .float-panel, .custom-md, #post-cover, .btn-card, .btn-regular, .btn-plain {  
-  margin-left: auto;  
-  margin-right: auto;  
-  max-width: calc(100% - 2 * var(--page-padding));  
-}  
-
-.custom-md {  
-  padding-left: 0.5rem;  
-  padding-right: 0.5rem;  
 }
