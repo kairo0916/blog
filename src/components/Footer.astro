@@ -11,9 +11,48 @@ const currentYear = new Date().getFullYear();
 <!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">-->
 <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6">
     <div class="transition text-50 text-sm text-center">
-        &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. 保留所有權利，採用 CC BY-NC-SA 4.0 許可 /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('rss.xml')}>RSS</a> /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('sitemap-index.xml')}>網站地圖</a><br>
+        <div class="transition text-50 text-sm text-center leading-relaxed">
+  &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. 保留所有權利。<br />
+
+  <span>
+    採用
+    <a
+      class="transition link text-[var(--primary)] font-medium"
+      target="_blank"
+      href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant"
+    >
+      CC BY-NC-SA 4.0
+    </a>
+    許可
+  </span>
+  <br />
+
+  <span class="flex justify-center gap-3 mt-1">
+    <a
+      class="transition link text-[var(--primary)] font-medium"
+      target="_blank"
+      href={url("rss.xml")}
+    >
+      RSS
+    </a>
+    <span class="opacity-40">/</span>
+    <a
+      class="transition link text-[var(--primary)] font-medium"
+      target="_blank"
+      href={url("sitemap-index.xml")}
+    >
+      網站地圖
+    </a>
+  </span>
+
+  <div class="mt-1">
+    由
+    <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a>
+    和
+    <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a>
+    強力驅動
+  </div>
+</div>
         由
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> 和
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a>
