@@ -1,4 +1,12 @@
-
+---
+title: 什麼是 CDN？原理與應用場景
+published: 2025-11-28
+description: "這篇文章將帶大家理解什麼是 CDN 以及有什麼功效！"
+image: ""
+tags: ["CDN", "Web", "Server", "HTTP(s)"]
+category: CDN
+draft: false
+---
 
 # 什麼是 CDN？原理與應用場景（詳盡技術指南）
  
