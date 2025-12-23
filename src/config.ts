@@ -12,7 +12,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: ":3",
 	lang: "zh_TW", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
-		hue: 150, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
+		hue: 345, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
 		fixed: true, // Hide the theme color picker for visitors
 	},
 	banner: {
@@ -31,11 +31,11 @@ export const siteConfig: SiteConfig = {
 	},
 	favicon: [
 		// Leave this array empty to use the default favicon
-		// {
-		//   src: '/favicon/icon.png',    // Path of the favicon, relative to the /public directory
-		//   theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
-		//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
-		// }
+		{
+		  src: '/favicon/icon.png',    // Path of the favicon, relative to the /public directory
+		  theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
+		  sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
+		}
 	],
 };
 
@@ -48,6 +48,11 @@ export const navBarConfig: NavBarConfig = {
 			name: "GitHub",
 			url: "https://github.com/kairo0916", // Internal links should not include the base path, as it is automatically added
 			external: true, // Show an external link icon and will open in a new tab
+		},
+		{
+			name: "統計",
+			url: "https://cloud.umami.is/share/a1g8yIo7d1beMXkf",
+			external: true,
 		},
 	],
 };
