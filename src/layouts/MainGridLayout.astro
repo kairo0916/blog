@@ -87,6 +87,86 @@ const mainPanelTop = siteConfig.banner.enable
                     <!-- the overflow-hidden here prevent long text break the layout-->
                     <!-- make id different from windows.swup global property -->
                     <slot></slot>
+
+                    <!-- 已讀完提示 -->
+<div id="read-done" class="read-done">
+  <span id="read-done-text"></span>
+</div>
+
+<script>
+(function () {
+  const messages = [
+    "你能看到這裡，真的很酷。",
+    "如果這篇對你有一點幫助，那就值得了。",
+    "看完了，記得喝點水。",
+    "你比昨天多懂了一點點。",
+    "謝謝你把時間留在這裡。",
+    "這不是結束，只是剛好看到這。",
+    "如果你願意，歡迎再回來。",
+    "這篇文章，已經屬於你了。",
+    "願這段文字，沒有白走一趟。",
+    "讀到這裡的你，很認真。"
+  ];
+
+  const box = document.getElementById("read-done");
+  const text = document.getElementById("read-done-text");
+
+  if (!box || !text) return;
+
+  // 隨機抽一句
+  const pick = messages[Math.floor(Math.random() * messages.length)];
+  text.textContent = pick;
+
+  let shown = false;
+
+  function checkBottom() {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+
+    if (!shown && scrollTop + windowHeight >= docHeight - 20) {
+      box.classList.add("show");
+      shown = true;
+    }
+  }
+
+  window.addEventListener("scroll", checkBottom);
+})();
+</script>
+
+<style>
+.read-done {
+  margin: 4rem auto 2rem;
+  padding: 1.25rem 1.5rem;
+  max-width: 42rem;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  color: var(--deep-text);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.6s ease;
+}
+
+.dark .read-done {
+  background: rgba(20, 20, 20, 0.55);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.read-done.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+
                     <div class="footer col-span-2 onload-animation hidden lg:block">
                         <Footer></Footer>
                     </div>
