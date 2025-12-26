@@ -3,59 +3,119 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="404 | 找不到頁面">
-  <main class="not-found">
-    <h1>404</h1>
-    <p class="subtitle">你走得有點遠了。</p>
+  <main class="wrap">
+    <section class="card">
+      <h1 class="code">404</h1>
+      <p class="subtitle">你走得有點遠了。</p>
 
-    <p class="desc">
-      這個頁面不存在，<br />
-      可能被刪掉、改名，或只是從來沒存在過。
-    </p>
+      <p class="desc">
+        這個頁面不存在，<br />
+        可能被刪掉、改名，或只是從來沒存在過。
+      </p>
 
-    <a href="/" class="back-home">← 回首頁</a>
+      <a href="/" class="back-home">← 回首頁</a>
+    </section>
   </main>
 </Layout>
 
 <style>
-.not-found {
-  min-height: 60vh;
+/* 外層置中 */
+.wrap {
+  min-height: 70vh;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* 立體卡片 */
+.card {
+  max-width: 420px;
+  width: 100%;
+  padding: 2.5rem 2rem;
+  border-radius: 1.25rem;
+
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+
+  border: 1px solid var(--line-color);
+
   text-align: center;
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.not-found h1 {
+/* 微浮起感 */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 404 字樣 */
+.code {
   font-size: 6rem;
-  font-weight: 800;
+  font-weight: 900;
   margin: 0;
-  opacity: 0.9;
+  line-height: 1;
+  letter-spacing: -0.05em;
+
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    oklch(0.85 0.12 var(--hue))
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
+/* 副標 */
 .subtitle {
-  font-size: 1.25rem;
-  margin-top: 0.5rem;
-  opacity: 0.8;
+  margin-top: 0.75rem;
+  font-size: 1.2rem;
+  opacity: 0.85;
 }
 
+/* 說明 */
 .desc {
   margin-top: 1.5rem;
-  line-height: 1.6;
+  line-height: 1.7;
   opacity: 0.7;
 }
 
+/* 回首頁按鈕 */
 .back-home {
-  margin-top: 2rem;
-  padding: 0.6rem 1.2rem;
+  display: inline-block;
+  margin-top: 2.2rem;
+  padding: 0.6rem 1.4rem;
+
   border-radius: 999px;
   background: var(--btn-regular-bg);
   color: inherit;
   text-decoration: none;
-  transition: background 0.2s ease;
+  font-weight: 500;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.12);
+
+  transition: all 0.2s ease;
 }
 
 .back-home:hover {
   background: var(--btn-regular-bg-hover);
+  transform: translateY(-1px);
+}
+
+.back-home:active {
+  transform: translateY(0);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 </style>
