@@ -4,7 +4,6 @@ published: 2025-11-26
 description: "這篇文將分析 Nginx 與 Apache 的差異。"
 image: ""
 tags: ["Nginx", "Apache", "Web", "Server"]
-category: NginxApache
 draft: false
 ---
 
