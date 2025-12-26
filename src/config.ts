@@ -37,6 +37,8 @@ export const siteConfig: SiteConfig = {
 		  sizes: '720x720',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		}
 	],
+	officialSites: [
+		{ url: "https://kairo.qzz.io", alias: "Home" },
 };
 
 export const navBarConfig: NavBarConfig = {
@@ -45,14 +47,14 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		LinkPreset.About,
 		{
-			name: "GitHub",
-			url: "https://github.com/kairo0916", // Internal links should not include the base path, as it is automatically added
-			external: true, // Show an external link icon and will open in a new tab
-		},
-		{
 			name: "統計",
 			url: "https://cloud.umami.is/share/a1g8yIo7d1beMXkf",
 			external: true,
+		},
+		{
+			name: "GitHub",
+			url: "https://github.com/kairo0916", // Internal links should not include the base path, as it is automatically added
+			external: true, // Show an external link icon and will open in a new tab
 		},
 	],
 };
