@@ -4,7 +4,6 @@ published: 2025-11-27
 description: "這篇文章主要是帶大家理解 API 以及用途並如何設計。"
 image: ""
 tags: ["API", "API Gateway", "Server"]
-category: API
 draft: false
 ---
 
