@@ -160,14 +160,7 @@ const bannerOffset =
 					const currentDomain = window.location.hostname;
 					
 		
-					const officialDomains = officialSites.map(site => {
-						try {
-                            const url = typeof site === 'string' ? site : site.url;
-							return new URL(url).hostname;
-						} catch (e) {
-							return null;
-						}
-					}).filter(domain => domain !== null);
+					const officialDomains = "https://www.kairo.qzz.io", "https://kairo.qzz.io", "https://blog.kairo.qzz.io"
 					
 		
 					const isOfficialDomain = officialDomains.some(officialDomain => 
