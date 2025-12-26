@@ -4,7 +4,6 @@ published: 2025-11-24
 description: "這篇將介紹資料庫索引是什麼以及有什麼用處！"
 image: ""
 tags: ["Database", "Index", "Server"]
-category: Database
 draft: false
 ---
 
