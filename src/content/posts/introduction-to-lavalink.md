@@ -4,7 +4,6 @@ published: 2025-11-23
 description: "讓大家了解 Lavalink 是什麼以及教大家如何簡單部署"
 image: ""
 tags: ["Lavalink", "Server", "Discord", "Bot", "Music", "SoundCloud", "Youtube"]
-category: Lavalink
 draft: false
 ---
 
