@@ -4,7 +4,6 @@ published: 2025-11-22
 description: "這裡是我的新博客！"
 image: ""
 tags: ["Welcome", "To", "My", "Blog"]
-category: WELCOME
 draft: false
 ---
 
