@@ -39,6 +39,7 @@ export const siteConfig: SiteConfig = {
 	],
 	officialSites: [
 		{ url: "https://kairo.qzz.io", alias: "Home" },
+	]
 };
 
 export const navBarConfig: NavBarConfig = {
