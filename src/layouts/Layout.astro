@@ -170,7 +170,6 @@ const bannerOffset =
 		<style define:vars={{
 			configHue,
 			'page-width': `${PAGE_WIDTH}rem`,
-			'bg-url': siteConfig.background.src ? `url(${siteConfig.background.src})` : 'none',
 			'bg-enable': siteConfig.background.enable ? '1' : '0',
 			'bg-position': siteConfig.background.position || 'center',
 			'bg-repeat': siteConfig.background.repeat || 'no-repeat',
@@ -178,9 +177,9 @@ const bannerOffset =
 			'bg-opacity': (siteConfig.background.opacity || 0.3).toString()
 		}}>
 			:root {
-				--bg-url: var(--bg-url);
 				--bg-enable: var(--bg-enable);
 				--bg-position: var(--bg-position);
+                --bg-size: var(--bg-size);
 				--bg-repeat: var(--bg-repeat);
 				--bg-attachment: var(--bg-attachment);
 				--bg-opacity: var(--bg-opacity);
