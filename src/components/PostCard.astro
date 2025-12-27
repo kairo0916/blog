@@ -73,15 +73,17 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 			/>
 		</a>
 
-		<!-- meta row：完全沿用時間樣式 -->
+		<!-- meta row：使用與「時間」相同的 DOM 與樣式 -->
 		<div class="flex flex-wrap items-center gap-4 text-sm text-black/30 dark:text-white/30 mb-4">
+			<!-- 發佈日期（原有時間樣式） -->
 			<div class="flex items-center gap-1.5">
-				<Icon name="material-symbols:calendar-today-outline" />
+				<Icon name="material-symbols:calendar-today-outline" class="text-base" />
 				<span>{formatDate(published)}</span>
 			</div>
 
+			<!-- 字數：套用與時間相同的樣式（icon + 文字，同一行） -->
 			<div class="flex items-center gap-1.5">
-				<Icon name="material-symbols:description-outline" />
+				<Icon name="material-symbols:description-outline" class="text-base" />
 				<span>
 					{remarkPluginFrontmatter.words}
 					{" " +
@@ -93,8 +95,9 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 				</span>
 			</div>
 
+			<!-- 閱讀時間：套用與時間相同的樣式（icon + 文字，同一行） -->
 			<div class="flex items-center gap-1.5">
-				<Icon name="material-symbols:schedule-outline" />
+				<Icon name="material-symbols:schedule-outline" class="text-base" />
 				<span>
 					{remarkPluginFrontmatter.minutes}
 					{" " +
