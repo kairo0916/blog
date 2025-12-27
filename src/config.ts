@@ -67,11 +67,11 @@ export const profileConfig: ProfileConfig = {
 	name: "Kairo",
 	bio: "I'm Kairo",
 	links: [
-  {
-   name: "Discord",
-   icon: "fa6-brands:discord",
-   url: "https://discord.com/users/1433736270311587910",
-  },
+        {
+            name: "Discord",
+            icon: "fa6-brands:discord",
+            url: "https://discord.com/users/1433736270311587910",
+        },
 		{
 			name: "GitHub",
 			icon: "fa6-brands:github",
