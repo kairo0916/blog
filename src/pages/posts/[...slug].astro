@@ -128,7 +128,32 @@ const jsonLd = {
                     </div>
                 </div>
 
+                {gitHubEditConfig.enable && (
+                    <>
+
                     <div class="border-t border-[var(--line-divider)] my-3"></div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="h-5 w-5 rounded bg-[var(--primary)] flex items-center justify-center">
+                                <Icon name="material-symbols:edit-outline" class="text-[0.875rem] text-white dark:text-black/70"></Icon>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-black/80 dark:text-white/80 text-sm mb-1">發現錯誤或想改進此文章？</p>
+                                <a 
+                                    href={`${gitHubEditConfig.baseUrl}/${entry.slug}.md`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-1 text-[var(--primary)] hover:text-[oklch(0.65_0.16_var(--hue))] text-sm font-medium transition-colors"
+                                >
+                                    <Icon name="fa6-brands:github" class="text-[0.875rem]"></Icon>
+                                    在 GitHub 上編輯此頁
+                                    <Icon name="material-symbols:open-in-new" class="text-[0.75rem]"></Icon>
+                                </a>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
 
             {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
             
