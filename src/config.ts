@@ -1,9 +1,11 @@
 import type {
 	ExpressiveCodeConfig,
+	GitHubEditConfig,
 	LicenseConfig,
 	NavBarConfig,
 	ProfileConfig,
 	SiteConfig,
+	umamiConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
 
@@ -77,6 +79,13 @@ export const licenseConfig: LicenseConfig = {
 	enable: true,
 	name: "CC BY-NC-SA 4.0",
 	url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+};
+
+export const umamiConfig: UmamiConfig = {
+	enable: true,
+	baseUrl: "https://",
+	shareId: "CdkXbGgZr6ECKOyK",
+	timezone: "Asia/Shanghai",
 };
 
 export const expressiveCodeConfig: ExpressiveCodeConfig = {
