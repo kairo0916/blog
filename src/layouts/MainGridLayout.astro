@@ -2,17 +2,21 @@
 import BackToTop from "@components/control/BackToTop.astro";
 import Footer from "@components/Footer.astro";
 import Navbar from "@components/Navbar.astro";
+import NavMenuPanel from "@components/widget/NavMenuPanel.astro";
 import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import TOC from "../components/widget/TOC.astro";
-import { siteConfig } from "../config";
+import { navBarConfig, siteConfig } from "../config";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
+import { LinkPresets } from "../constants/link-presets";
+
+import { LinkPreset, type NavBarLink } from "../types/config";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -27,7 +31,6 @@ interface Props {
 const {
 	title,
 	banner,
-	description,
 	lang,
 	setOGTypeArticle,
 	headings = [],
@@ -39,13 +42,40 @@ const hasBannerLink = !!siteConfig.banner.credit.url;
 const mainPanelTop = siteConfig.banner.enable
 	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
 	: "5.5rem";
+
+let links: NavBarLink[] = navBarConfig.links.map(
+	(item: NavBarLink | LinkPreset): NavBarLink => {
+		if (typeof item === "number") {
+			return LinkPresets[item];
+		}
+		return item;
+	},
+);
 ---
 
-<Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
+<Layout title={title} banner={banner} keywords={siteConfig.keywords} description={siteConfig.description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
+
+<div id="loading-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-gray-900 transition-opacity duration-500">
+    <div class="flex flex-col items-center space-y-4">
+     
+        <div class="relative">
+            <div class="w-16 h-16 border-4 border-gray-200 dark:border-gray-700 rounded-full"></div>
+            <div class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+       
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium">
+            正在載入...
+        </div>
+      
+        <div class="w-32 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div id="loading-progress" class="h-full bg-blue-500 rounded-full transition-all duration-300" style="width: 0%;"></div>
+        </div>
+    </div>
+</div>
 
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
+<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 px-0 mx-auto" class:list={[""]}>
     <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
         <Navbar></Navbar>
     </div>
@@ -63,8 +93,8 @@ const mainPanelTop = siteConfig.banner.enable
 <div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
-    mx-auto gap-4 px-0 md:px-4"
+        <div id="main-grid" class="transition duration-700 w-full grid grid-cols-[2.5fr_1fr] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
+    mx-auto gap-4 px-4"
         >
             <!-- Banner image credit -->
             {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
@@ -80,25 +110,22 @@ const mainPanelTop = siteConfig.banner.enable
             </a>}
 
 
-            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
-
-            <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
+            <main class="col-span-2 lg:col-span-1 lg:col-span-1 lg:col-start-1 overflow-hidden" style="min-height: 53vh;">
                 <div id="content-wrapper" class="onload-animation">
-                    <!-- the overflow-hidden here prevent long text break the layout-->
-                    <!-- make id different from windows.swup global property -->
                     <slot></slot>
-
                     <div class="footer col-span-2 onload-animation hidden lg:block">
                         <Footer></Footer>
                     </div>
                 </div>
             </main>
 
-            <div class="footer col-span-2 onload-animation block lg:hidden">
-                <Footer></Footer>
-            </div>
-        </div>
+            <SideBar class="mb-4 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
 
+            
+        </div>
+        <div class="footer col-span-2 onload-animation block lg:hidden">
+            <Footer></Footer>
+        </div>
         <BackToTop></BackToTop>
     </div>
 </div>
@@ -111,7 +138,7 @@ const mainPanelTop = siteConfig.banner.enable
             {"toc-hide": siteConfig.banner.enable}]}
         >
             <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                <div id="toc" class="w-full h-full transition-swup-fade ">
+                <div id="toc" class="w-full h-full">
                     <div class="h-8 w-full"></div>
                     <TOC headings={headings}></TOC>
                     <div class="h-8 w-full"></div>
@@ -119,8 +146,51 @@ const mainPanelTop = siteConfig.banner.enable
             </div>
         </div>}
 
-        <!-- #toc needs to exist for Swup to work normally -->
         {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
 </div>
+
+<NavMenuPanel links={links}></NavMenuPanel>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingProgress = document.getElementById('loading-progress');
+    
+    if (!loadingOverlay || !loadingProgress) return;
+    
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 90) progress = 90;
+        loadingProgress.style.width = progress + '%';
+    }, 100);
+    
+   
+    window.addEventListener('load', function() {
+        clearInterval(progressInterval);
+        loadingProgress.style.width = '100%';
+        
+        setTimeout(() => {
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 500);
+        }, 200);
+    });
+    
+   
+    if (document.readyState === 'complete') {
+        clearInterval(progressInterval);
+        loadingProgress.style.width = '100%';
+        loadingOverlay.style.opacity = '0';
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+        }, 500);
+    }
+});
+
+
+</script>
+
 </Layout>
