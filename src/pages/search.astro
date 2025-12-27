@@ -1,0 +1,420 @@
+---
+import { getCollection } from "astro:content";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+
+const posts = await getCollection("posts");
+const POSTS_PER_PAGE = 10;
+---
+
+<MainGridLayout title="搜尋文章" description="搜尋博客文章">
+	<div id="search-container" class="card-base px-9 py-7">
+		<div class="relative mb-4">
+			<h1 id="search-title" class="text-2xl font-bold text-75 mb-4">搜尋文章</h1>
+			
+			<div class="mb-6">
+				<div class="relative">
+					<input
+						type="text"
+						id="search-input"
+						placeholder="輸入關鍵詞搜尋..."
+						class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        />
+					<button
+                        id="search-button"
+						type="submit"
+						class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors"
+					>
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+						</svg>
+					</button>
+				</div>
+			</div>
+
+			<div id="search-count" class="text-sm text-gray-600 dark:text-gray-400 mb-4" style="display: none;"></div>
+		</div>
+
+		<div id="search-prompt" class="text-center py-12 text-gray-500 dark:text-gray-400">
+			<svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+			</svg>
+			<p class="text-lg">輸入關鍵詞進行搜尋</p>
+		</div>
+
+		<div id="no-results" class="text-center py-12 text-gray-500 dark:text-gray-400" style="display: none;">
+			<svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.674-2.326M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+			</svg>
+			<p class="text-lg mb-2">沒有找到相關結果</p>
+			<p class="text-sm">嘗試使用其他關鍵詞搜尋</p>
+		</div>
+
+		<div id="search-results"></div>
+	</div>
+
+    <script define:vars={{ posts, POSTS_PER_PAGE }}>
+        let allPosts = posts || [];
+        let currentResults = [];
+        let currentPage = 1;
+        let currentQuery = '';
+        
+        function initializeSearch() {
+            if (!allPosts || allPosts.length === 0) {
+                window.location.reload();
+                return;
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q') || '';
+            const page = parseInt(urlParams.get('page')) || 1;
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+            
+            if (query.trim()) {
+                performSearch(query.trim(), page);
+            } else {
+                showInitialState();
+            }
+        }
+
+     
+        function performSearch(query, page = 1) {
+            currentQuery = query;
+            currentPage = page;
+
+            if(!query.trim()){
+                showInitialState();
+                query = document.getElementById('search-input').value;
+            }
+
+            const searchTerm = query.toLowerCase();
+            currentResults = allPosts.filter(post => {
+                const postData = post.data || post;
+                const title = postData.title?.toLowerCase() || '';
+                const description = postData.description?.toLowerCase() || '';
+                
+                const tags = Array.isArray(postData.tags) 
+                    ? postData.tags.map(tag => tag.toLowerCase()).join(' ') 
+                    : (postData.tags?.toLowerCase() || '');
+                
+                const category = Array.isArray(postData.category) 
+                    ? postData.category.map(cat => cat.toLowerCase()).join(' ') 
+                    : (postData.category?.toLowerCase() || '');
+                
+                return title.includes(searchTerm) || 
+                    description.includes(searchTerm) || 
+                    tags.includes(searchTerm) || 
+                    category.includes(searchTerm);
+            });
+
+            updateSearchResults();
+        }
+
+      
+        function updateSearchResults() {
+            const searchTitle = document.getElementById('search-title');
+            const searchCount = document.getElementById('search-count');
+            const searchResults = document.getElementById('search-results');
+            const noResults = document.getElementById('no-results');
+            const searchPrompt = document.getElementById('search-prompt');
+            
+            if (searchTitle) searchTitle.textContent = `搜尋結果: ${currentQuery}`;
+            if (searchPrompt) searchPrompt.style.display = 'none';
+            
+            if (currentResults.length === 0) {
+                if (searchCount) searchCount.style.display = 'none';
+                if (searchResults) searchResults.innerHTML = '';
+                if (noResults) noResults.style.display = 'block';
+                return;
+            }
+
+            const totalPages = Math.ceil(currentResults.length / POSTS_PER_PAGE);
+            const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+            const endIndex = startIndex + POSTS_PER_PAGE;
+            const pageResults = currentResults.slice(startIndex, endIndex);
+
+            if (searchCount) {
+                searchCount.textContent = `找到 ${currentResults.length} 篇文章`;
+                searchCount.style.display = 'block';
+            }
+            if (noResults) noResults.style.display = 'none';
+
+            const resultsHtml = pageResults.map(post => renderPostCard(post)).join('');
+            const paginationHtml = totalPages > 1 ? renderPagination(totalPages) : '';
+            
+            if (searchResults) {
+                searchResults.innerHTML = resultsHtml + paginationHtml;
+            }
+        }
+
+    
+        function renderPostCard(post) {
+            const postData = post.data || post;
+            const hasCover = postData.image && postData.image !== "";
+            const postUrl = `/${post.slug}/`;
+            const publishedDate = new Date(postData.published).toLocaleDateString('zh-CN');
+            const excerpt = postData.excerpt || postData.description || '';
+            
+            return `
+                <article class="group relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm hover:shadow-lg dark:shadow-gray-900/20 transition-all duration-300 overflow-hidden mb-6">
+                    <div class="p-6 ${hasCover ? 'grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 items-start' : ''}">
+                        ${hasCover ? `
+                            <div class="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700" style="aspect-ratio: 16/10;">
+                                <a href="${postUrl}" aria-label="${postData.title}" class="block h-full w-full group/image">
+                                 
+                                    <div class="image-loading absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                                        <div class="loading-spinner w-8 h-8 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin"></div>
+                                    </div>
+                                    
+                                    <img 
+                                        src="${postData.image}" 
+                                        alt="Cover image of ${postData.title}"
+                                        class="search-card-image w-full h-full object-cover transition-all duration-300 group-hover/image:scale-105 opacity-0"
+                                        loading="lazy"
+                                        onload="this.style.opacity='1'; this.parentElement.querySelector('.image-loading').style.display='none';"
+                                        onerror="this.parentElement.querySelector('.image-loading').innerHTML='<svg class=\\"w-8 h-8 text-gray-400 dark:text-gray-500\\" fill=\\"currentColor\\" viewBox=\\"0 0 24 24\\"><path d=\\"M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z\\"/></svg>'; this.style.display='none';"
+                                    />
+                                    
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-300"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
+                                        <div class="bg-white/90 dark:bg-gray-800/90 rounded-full p-2 backdrop-blur-sm">
+                                            <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex flex-col justify-start min-w-0">
+                            <h2 class="mb-3">
+                                <a 
+                                    href="${postUrl}"
+                                    class="group/title block font-bold text-xl text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 line-clamp-2"
+                                >
+                                    ${postData.title}
+                                    <svg class="inline-block w-5 h-5 ml-1 opacity-0 group-hover/title:opacity-100 transform translate-x-0 group-hover/title:translate-x-1 transition-all duration-200 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                                    </svg>
+                                </a>
+                            </h2>
+
+                            ${excerpt ? `
+                                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-sm leading-relaxed hidden min-[700px]:block">
+                                    ${excerpt}
+                                </p>
+                            ` : ''}
+                            
+                            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                                <time class="flex items-center gap-1.5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                    </svg>
+                                    <span>${publishedDate}</span>
+                                </time>
+                                
+                                ${postData.category ? `
+                                    <span class="flex items-center gap-1.5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">
+                                        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M10 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2z"/>
+                                        </svg>
+                                        <span>${postData.category}</span>
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            ${postData.tags && postData.tags.length > 0 ? `
+                                <div class="flex flex-wrap gap-2 max-[700px]:hidden">
+                                    ${postData.tags.slice(0, 4).map(tag => `
+                                        <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full transition-colors duration-200 cursor-default">
+                                            ${tag}
+                                        </span>
+                                    `).join('')}
+                                    ${postData.tags.length > 4 ? `
+                                        <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 cursor-default">
+                                            +${postData.tags.length - 4} 更多
+                                        </span>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+    
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) return '';
+            
+            let paginationHtml = '<div class="flex justify-center items-center gap-2 mt-8 flex-wrap">';
+            
+      
+            if (currentPage > 1) {
+                paginationHtml += `
+                    <button onclick="goToPage(${currentPage - 1})" class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        上一頁
+                    </button>
+                `;
+            }
+            
+        
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                paginationHtml += `<button onclick="goToPage(1)" class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">1</button>`;
+                if (startPage > 2) {
+                    paginationHtml += '<span class="px-2 text-gray-500">...</span>';
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = i === currentPage;
+                paginationHtml += `
+                    <button onclick="goToPage(${i})" class="px-3 py-2 rounded-lg transition-colors ${
+                        isActive 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHtml += '<span class="px-2 text-gray-500">...</span>';
+                }
+                paginationHtml += `<button onclick="goToPage(${totalPages})" class="px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">${totalPages}</button>`;
+            }
+            
+        
+            if (currentPage < totalPages) {
+                paginationHtml += `
+                    <button onclick="goToPage(${currentPage + 1})" class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        下一頁
+                    </button>
+                `;
+            }
+            
+            paginationHtml += '</div>';
+            return paginationHtml;
+        }
+
+     
+        function goToPage(page) {
+            const url = new URL(window.location);
+            url.searchParams.set('page', page.toString());
+            if (currentQuery) {
+                url.searchParams.set('q', currentQuery);
+            }
+            
+         
+            window.location.href = url.toString();
+        }
+
+     
+        function showInitialState() {
+            const searchTitle = document.getElementById('search-title');
+            const searchCount = document.getElementById('search-count');
+            const searchResults = document.getElementById('search-results');
+            const noResults = document.getElementById('no-results');
+            const searchPrompt = document.getElementById('search-prompt');
+            
+            if (searchTitle) searchTitle.textContent = '搜尋文章';
+            if (searchCount) searchCount.style.display = 'none';
+            if (searchResults) searchResults.innerHTML = '';
+            if (noResults) noResults.style.display = 'none';
+            if (searchPrompt) searchPrompt.style.display = 'block';
+        }
+
+      
+        function handleSearch() {
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) return;
+            
+            const query = searchInput.value.trim();
+            window.location.href = query ? `/search/?q=${encodeURIComponent(query)}` : `/search/`;
+        }
+
+     
+        function setupEventListeners() {
+            const searchButton = document.getElementById('search-button');
+            const searchInput = document.getElementById('search-input');
+
+           
+            if (searchButton) {
+                searchButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleSearch();
+                });
+            }
+            
+         
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSearch();
+                    }
+                });
+            }
+        }
+
+       
+        window.goToPage = goToPage;
+        setupEventListeners();
+        initializeSearch();
+    </script>
+
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+      
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        .search-card-image {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        
+        .image-loading {
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+    
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+        
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .dark .loading-shimmer {
+            background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+            background-size: 200px 100%;
+        }
+    </style>
+</MainGridLayout>
