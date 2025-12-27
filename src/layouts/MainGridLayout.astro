@@ -43,6 +43,25 @@ const mainPanelTop = siteConfig.banner.enable
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
 
+<!-- 加載動畫 -->
+<div id="loading-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-gray-900 transition-opacity duration-500">
+    <div class="flex flex-col items-center space-y-4">
+        <!-- 旋轉圓圈 -->
+        <div class="relative">
+            <div class="w-16 h-16 border-4 border-gray-200 dark:border-gray-700 rounded-full"></div>
+            <div class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <!-- 加載文字 -->
+        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium">
+            正在載入...
+        </div>
+        <!-- 進度條 -->
+        <div class="w-32 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div id="loading-progress" class="h-full bg-blue-500 rounded-full transition-all duration-300" style="width: 0%;"></div>
+        </div>
+    </div>
+</div>
+
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
 <div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
