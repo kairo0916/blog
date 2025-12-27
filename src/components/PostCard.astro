@@ -25,21 +25,18 @@ const {
 	title,
 	url,
 	published,
-	updated,
 	image,
 	description,
 	style,
 } = Astro.props;
 
 const className = Astro.props.class;
-
 const hasCover = image !== undefined && image !== null && image !== "";
 const coverWidth = "28%";
 
 const { remarkPluginFrontmatter } = await entry.render();
 
-const formatDate = (date: Date) =>
-	date.toISOString().slice(0, 10);
+const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 ---
 <div
 	class:list={[
@@ -76,34 +73,36 @@ const formatDate = (date: Date) =>
 			/>
 		</a>
 
-		<!-- meta row (date + words + minutes) -->
-		<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-black/30 dark:text-white/30 mb-4">
+		<!-- meta row：完全沿用時間樣式 -->
+		<div class="flex flex-wrap items-center gap-4 text-sm text-black/30 dark:text-white/30 mb-4">
 			<div class="flex items-center gap-1.5">
-				<Icon name="material-symbols:calendar-today-outline" class="text-base" />
+				<Icon name="material-symbols:calendar-today-outline" />
 				<span>{formatDate(published)}</span>
 			</div>
 
 			<div class="flex items-center gap-1.5">
-				<Icon name="material-symbols:description-outline" class="text-base" />
+				<Icon name="material-symbols:description-outline" />
 				<span>
 					{remarkPluginFrontmatter.words}
-					{" " + i18n(
-						remarkPluginFrontmatter.words === 1
-							? I18nKey.wordCount
-							: I18nKey.wordsCount
-					)}
+					{" " +
+						i18n(
+							remarkPluginFrontmatter.words === 1
+								? I18nKey.wordCount
+								: I18nKey.wordsCount
+						)}
 				</span>
 			</div>
 
 			<div class="flex items-center gap-1.5">
-				<Icon name="material-symbols:schedule-outline" class="text-base" />
+				<Icon name="material-symbols:schedule-outline" />
 				<span>
 					{remarkPluginFrontmatter.minutes}
-					{" " + i18n(
-						remarkPluginFrontmatter.minutes === 1
-							? I18nKey.minuteCount
-							: I18nKey.minutesCount
-					)}
+					{" " +
+						i18n(
+							remarkPluginFrontmatter.minutes === 1
+								? I18nKey.minuteCount
+								: I18nKey.minutesCount
+						)}
 				</span>
 			</div>
 		</div>
