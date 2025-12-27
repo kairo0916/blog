@@ -1,99 +1,167 @@
-# 🍥Fuwari  
-![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen) 
-![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue) 
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-saicaca%2Ffuwari-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==)](https://deepwiki.com/saicaca/fuwari)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari?ref=badge_shield&issueType=license)
+# Fuwari For Kairo
 
-A static blog template built with [Astro](https://astro.build).
+> [!CAUTION]
+> 這是 **Kairo 的客製化分支（Fuwari For Kairo）**，基於原專案做出實用調整與說明。若以此作為模板二次開發，請具備基本的 Astro / 前端操作能力。
 
-[**🖥️ Live Demo (Vercel)**](https://fuwari.vercel.app)
+![preview](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+一個以 **Astro** 為核心的現代化靜態部落格主題，側重技術分享、長期維護與實際部署流程。  
+本分支追求穩定與易維護，不刻意大幅改造 UI 架構，而是把文件與實務教學做得更清楚，方便你拿來當作日常寫作與部署的基底。
 
-🌏 README in
-[**中文**](https://github.com/saicaca/fuwari/blob/main/docs/README.zh-CN.md) /
-[**日本語**](https://github.com/saicaca/fuwari/blob/main/docs/README.ja.md) /
-[**한국어**](https://github.com/saicaca/fuwari/blob/main/docs/README.ko.md) /
-[**Español**](https://github.com/saicaca/fuwari/blob/main/docs/README.es.md) /
-[**ไทย**](https://github.com/saicaca/fuwari/blob/main/docs/README.th.md) /
-[**Tiếng Việt**](https://github.com/saicaca/fuwari/blob/main/docs/README.vi.md) /
-[**Bahasa Indonesia**](https://github.com/saicaca/fuwari/blob/main/docs/README.id.md) (Provided by the community and may not always be up-to-date)
-
-## ✨ Features
-
-- [x] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
-- [x] Smooth animations and page transitions
-- [x] Light / dark mode
-- [x] Customizable theme colors & banner
-- [x] Responsive design
-- [x] Search functionality with [Pagefind](https://pagefind.app/)
-- [x] [Markdown extended features](https://github.com/saicaca/fuwari?tab=readme-ov-file#-markdown-extended-syntax)
-- [x] Table of contents
-- [x] RSS feed
-
-## 🚀 Getting Started
-
-1. Create your blog repository:
-    - [Generate a new repository](https://github.com/saicaca/fuwari/generate) from this template or fork this repository.
-    - Or run one of the following commands:
-       ```sh
-       npm create fuwari@latest
-       yarn create fuwari
-       pnpm create fuwari@latest
-       bun create fuwari@latest
-       deno run -A npm:create-fuwari@latest
-       ```
-2. To edit your blog locally, clone your repository, run `pnpm install` to install dependencies.
-    - Install [pnpm](https://pnpm.io) `npm install -g pnpm` if you haven't.
-3. Edit the config file `src/config.ts` to customize your blog.
-4. Run `pnpm new-post <filename>` to create a new post and edit it in `src/content/posts/`.
-5. Deploy your blog to Vercel, Netlify, GitHub Pages, etc. following [the guides](https://docs.astro.build/en/guides/deploy/). You need to edit the site configuration in `astro.config.mjs` before deployment.
-
-## 📝 Frontmatter of Posts
-
-```yaml
 ---
-title: My First Blog Post
-published: 2023-09-09
-description: This is the first post of my new Astro blog.
+
+## ✨ 主要特色
+
+- 基於 **Astro**，輸出靜態站點，速度與 SEO 表現良好  
+- 響應式設計（桌機 / 平板 / 手機）  
+- 深色 / 淺色主題切換  
+- 支援 Markdown（含擴充語法）與 Pagefind 全文搜尋  
+- 自動文章目錄（TOC）、閱讀時間估算  
+- 標籤與分類系統、RSS 支援  
+- 可調整主題色與簡單配置，方便個人化
+
+---
+
+## 🧰 技術棧（簡要）
+
+- 框架：Astro  
+- 樣式：Tailwind CSS  
+- 打包：Vite（由 Astro 管理）  
+- 套件管理：pnpm  
+- 檢查 / 格式：Biome（可選）
+
+---
+
+## 🚀 快速開始
+
+### 系統需求
+- Node.js ≥ 20  
+- pnpm ≥ 9
+
+### 安裝
+
+```bash
+pnpm install
+```
+
+### 開發（本地）
+
+```bash
+pnpm dev
+# 打開 http://localhost:4321
+```
+
+### 建構（生產）
+
+```bash
+pnpm build
+```
+
+### 預覽建構結果
+
+```bash
+pnpm preview
+```
+
+---
+
+## 📝 常用腳本
+
+- `pnpm dev`：本地開發  
+- `pnpm build`：建立靜態檔案  
+- `pnpm preview`：本地預覽 build 結果  
+- `pnpm new-post <slug>`：建立新文章（範例腳本）  
+- `pnpm clean`：移除未使用資源（視專案內腳本而定）
+
+---
+
+## 📄 內容格式（文章範例）
+
+請在 `src/content/posts/` 放置 Markdown 檔案，範例 frontmatter 如下：
+
+```markdown
+---
+title: "第一篇文章"
+published: 2025-01-01
+description: "簡短描述（SEO）"
 image: ./cover.jpg
-tags: [Foo, Bar]
-category: Front-end
+tags: [教學, Astro]
+category: 技術
 draft: false
-lang: jp      # Set only if the post's language differs from the site's language in `config.ts`
+lang: zh-TW
 ---
 ```
 
-## 🧩 Markdown Extended Syntax
+文章內可以使用擴充語法（例如提示框、程式碼區塊等）。
 
-In addition to Astro's default support for [GitHub Flavored Markdown](https://github.github.com/gfm/), several extra Markdown features are included:
+---
 
-- Admonitions ([Preview and Usage](https://fuwari.vercel.app/posts/markdown-extended/#admonitions))
-- GitHub repository cards ([Preview and Usage](https://fuwari.vercel.app/posts/markdown-extended/#github-repository-cards))
-- Enhanced code blocks with Expressive Code ([Preview](https://fuwari.vercel.app/posts/expressive-code/) / [Docs](https://expressive-code.com/))
+## ⚙️ 站台配置（要改的地方）
 
-## ⚡ Commands
+主要設定集中在 `src/config.ts`，典型範例：
 
-All commands are run from the root of the project, from a terminal:
+```ts
+export const siteConfig = {
+  title: "Fuwari For Kairo",
+  subtitle: "技術筆記與實作",
+  lang: "zh-TW",
+  themeColor: { hue: 240, fixed: false },
+  banner: { enable: false, src: "/assets/banner.png", position: "center" }
+}
+```
 
-| Command                    | Action                                              |
-|:---------------------------|:----------------------------------------------------|
-| `pnpm install`             | Installs dependencies                               |
-| `pnpm dev`                 | Starts local dev server at `localhost:4321`         |
-| `pnpm build`               | Build your production site to `./dist/`             |
-| `pnpm preview`             | Preview your build locally, before deploying        |
-| `pnpm check`               | Run checks for errors in your code                  |
-| `pnpm format`              | Format your code using Biome                        |
-| `pnpm new-post <filename>` | Create a new post                                   |
-| `pnpm astro ...`           | Run CLI commands like `astro add`, `astro check`    |
-| `pnpm astro --help`        | Get help using the Astro CLI                        |
+> 建議先把 `title`、`lang`、`site`（在 `astro.config.mjs`）改成你的設定，這會影響 SEO 與部署連結。
 
-## ✏️ Contributing
+---
 
-Check out the [Contributing Guide](https://github.com/saicaca/fuwari/blob/main/CONTRIBUTING.md) for details on how to contribute to this project.
+## 📁 專案結構（概要）
 
-## 📄 License
+```
+├── public/                 # 靜態資源（favicon、圖片）
+├── src/
+│   ├── components/         # UI 元件
+│   ├── content/
+│   │   ├── posts/          # 文章（Markdown）
+│   │   └── assets/         # 文章資源
+│   ├── layouts/            # 佈局
+│   ├── pages/              # 路由頁面
+│   ├── styles/             # 全域與 Markdown 樣式
+│   └── config.ts           # 站台設定
+├── scripts/                # 小工具腳本（new-post、clean）
+└── package.json
+```
 
-This project is licensed under the MIT License.
+---
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari?ref=badge_large&issueType=license)
+## 🔧 客製化小技巧（實用）
+
+- **主題色**：改 `config.ts` 的 `themeColor.hue`（0–360）。  
+- **顯示語言**：若網站主要為繁中，請把 `lang` 設為 `zh-TW`。  
+- **SEO**：在 `astro.config.mjs` 設定 `site` 為你的正式網址（很重要）。  
+- **圖片最佳化**：部署時配合 CDN（如 Cloudflare）可加快載入速度。  
+
+---
+
+## 📦 部署建議
+
+建構後的 `dist/` 可部署到任一靜態站台（Vercel / Netlify / GitHub Pages / CDN）。  
+若使用 Vercel：把專案連到 GitHub，預設 build 指令 `pnpm build`、輸出資料夾由 astro 自動處理。
+
+---
+
+## 📜 授權
+
+採用 **MIT License**，請保留原始授權聲明。
+
+---
+
+## 🙏 致謝與來源
+
+此分支基於原始專案 **Fuwari**（saicaca）改良與文件補充：  
+https://github.com/saicaca/fuwari
+
+感謝原作者提供可擴充、好用的模板。
+
+---
+
+如果你想要更保守（更像「輕度 Fork」）或更進一步（例如：新增 EdgeOne 部署示例、CI/CD 指令、或替你寫第一篇站內介紹），直接告訴我你想要的項目，我幫你把那一小節補好。
