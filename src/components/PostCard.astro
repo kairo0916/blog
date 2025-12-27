@@ -19,6 +19,7 @@ interface Props {
 	description: string;
 	draft: boolean;
 	style: string;
+ pinned?: boolean;
 }
 const {
 	entry,
@@ -29,6 +30,7 @@ const {
 	image,
 	description,
 	style,
+ pinned
 } = Astro.props;
 const className = Astro.props.class;
 
