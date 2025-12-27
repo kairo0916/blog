@@ -1,0 +1,39 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+import ImageWrapper from "../components/misc/ImageWrapper.astro";
+import { friends } from "@/config";
+---
+
+<MainGridLayout title="友情聯結">
+    <div class="card-base p-6 md:p-8">
+        <div class="flex items-center gap-2 mb-6">
+            <div class="h-8 w-8 rounded-lg bg-[var(--primary)] flex items-center justify-center text-white dark:text-black/70">
+                <Icon name="material-symbols:diversity-3" class="text-[1.5rem]">
+            </div>
+            <h1 class="text-2xl font-bold text-black dark:text-white">友情連結</h1>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {friends.map((item) => (
+                <div class="friend-card">
+                    <a href={item.url} target="_blank" class="flex gap-2 w-full">
+                        <div class="w-[60px] h-[60px] rounded overflow-hidden bg-[#fff]">
+                            <ImageWrapper src={item.avatar} class="w-full h-full"></ImageWrapper>
+                        </div>
+                        <div class="max-w-[calc(100%-5rem)]">
+                            <div class="font-bold text-black dark:text-white">{item.name}</div>
+                            <div class="text-sm text-black/50 dark:text-white/50 line-clamp-2">{item.description}</div>
+                        </div>
+                    </a>
+                </div>
+            ))}
+        </div>
+    </div>
+
+</MainGridLayout>
+
+<style>
+.friend-card {
+    @apply flex flex-initial gap-1 p-4 rounded-lg bg-[var(--card-bg)] hover:bg-black/5 dark:hover:bg-white/5 transition;
+}
+</style>
