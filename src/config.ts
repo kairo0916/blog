@@ -12,7 +12,7 @@ import { LinkPreset } from "./types/config";
 export const siteConfig: SiteConfig = {
 	title: "Kairo's Blog",
 	subtitle: ":3",
-	lang: "zh_TW", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
+	lang: "zh_TW",
 	themeColor: {
 		hue: 361,
 		fixed: true,
