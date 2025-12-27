@@ -68,25 +68,6 @@ const className = Astro.props.class;
     )}
 </div>
 
-<!-- page views & visitors -->
-    {slug && (
-        <>
-            <div class="flex items-center">
-                <div class="meta-icon">
-                    <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
-                </div>
-                <span class="text-50 text-sm font-medium" id={`page-views-${slug}`}>-</span>
-            </div>
-            <div class="flex items-center">
-                <div class="meta-icon">
-                    <Icon name="material-symbols:person" class="text-xl"></Icon>
-                </div>
-                <span class="text-50 text-sm font-medium" id={`page-visitors-${slug}`}>-</span>
-            </div>
-        </>
-    )}
-</div>
-
 {slug && (
     <script define:vars={{ slug, umamiConfig }}>
         
