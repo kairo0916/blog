@@ -1,4 +1,4 @@
-# Fuwari For Kairo
+# 🍥Fuwari For Kairo
 
 > [!CAUTION]
 > 這是 **Kairo 的客製化分支（Fuwari For Kairo）**，基於原專案做出實用調整與說明。若以此作為模板二次開發，請具備基本的 Astro / 前端操作能力。
@@ -26,9 +26,7 @@
 
 - 框架：Astro  
 - 樣式：Tailwind CSS  
-- 打包：Vite（由 Astro 管理）  
 - 套件管理：pnpm  
-- 檢查 / 格式：Biome（可選）
 
 ---
 
@@ -161,7 +159,3 @@ export const siteConfig = {
 https://github.com/saicaca/fuwari
 
 感謝原作者提供可擴充、好用的模板。
-
----
-
-如果你想要更保守（更像「輕度 Fork」）或更進一步（例如：新增 EdgeOne 部署示例、CI/CD 指令、或替你寫第一篇站內介紹），直接告訴我你想要的項目，我幫你把那一小節補好。
