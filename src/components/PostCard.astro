@@ -6,7 +6,7 @@ import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getDir } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
-import PostMetadata from "./PostMeta.astro"; // 注意路徑依你專案結構可調整
+import PostMetadata from "./PostMeta.astro";
 
 interface Props {
 	class?: string;
@@ -34,7 +34,7 @@ const className = Astro.props.class;
 
 const hasCover = image !== undefined && image !== null && image !== "";
 
-const coverWidth = "28%";
+const coverWidth = "32%";
 
 const { remarkPluginFrontmatter } = await entry.render();
 ---
