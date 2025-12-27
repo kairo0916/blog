@@ -14,7 +14,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: ":3",
 	lang: "zh_TW", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
-		hue: 345, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
+		hue: 361, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
 		fixed: true, // Hide the theme color picker for visitors
 	},
 	banner: {
@@ -35,8 +35,8 @@ export const siteConfig: SiteConfig = {
 		// Leave this array empty to use the default favicon
 		{
 		  src: '/assets/images/icon.jpg',    // Path of the favicon, relative to the /public directory
-		  theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
-		  sizes: '720x720',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
+		//  theme: 'light',              // (Optional) Either 'light' or 'dark', set only if you have different favicons for light and dark mode
+		//  sizes: '720x720',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		}
 	],
 	officialSites: [
@@ -48,7 +48,6 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
-		LinkPreset.About,
 		{
 			name: "統計",
 			url: "https://cloud.umami.is/share/a1g8yIo7d1beMXkf",
