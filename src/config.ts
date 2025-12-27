@@ -84,3 +84,8 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Please select a dark theme, as this blog theme currently only supports dark background color
 	theme: "github-dark",
 };
+
+export const gitHubEditConfig: GitHubEditConfig = {
+	enable: true,
+	baseUrl: "https://github.com/kairo0916/blog/main/src/content/posts",
+};
