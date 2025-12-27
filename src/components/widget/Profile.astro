@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { profileConfig, umamiConfig, siteConfig } from "../../config";
+import { profileConfig, siteConfig } from "../../config";
 
 const config = profileConfig;
 ---
@@ -28,19 +28,18 @@ const config = profileConfig;
             </a>}
         </div>
         
-        <!-- 全站访问量统计 -->
         <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
             <div class="text-center">
                 <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
                     <Icon name="material-symbols:visibility-outline" class="text-base"></Icon>
-                    <span class="text-xs">访问量</span>
+                    <span class="text-xs">訪問數</span>
                 </div>
                 <div id="site-views" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
             </div>
             <div class="text-center border-l border-neutral-200 dark:border-neutral-700">
                 <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
                     <Icon name="material-symbols:person" class="text-base"></Icon>
-                    <span class="text-xs">访客数</span>
+                    <span class="text-xs">訪客數</span>
                 </div>
                 <div id="site-visitors" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
             </div>
@@ -68,7 +67,6 @@ const config = profileConfig;
 </style>
 
 <script define:vars={{ umamiConfig}}>
-    // 获取全站访问量统计
     async function loadSiteStats() {
         if (!umamiConfig.enable) return;
         try {
@@ -84,10 +82,9 @@ const config = profileConfig;
             if (viewsElement) viewsElement.textContent = pageviews;
             if (visitorsElement) visitorsElement.textContent = visitors;
         } catch (error) {
-            console.error('获取全站统计失败:', error);
+            console.error('獲取統計資料失敗:', error);
         }
     }
 
-    // 页面加载完成后获取统计数据
     document.addEventListener('DOMContentLoaded', loadSiteStats);
 </script>
