@@ -1,0 +1,241 @@
+/* 文章卡片组件样式 - 基于用户模板的简化设计 */
+
+.post-card {
+  width: 100%;
+  max-width: 430px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+}
+
+.dark .post-card {
+  background: #1f2937;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* 悬停效果 */
+.post-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .post-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* 图片容器 */
+.post-card .img {
+  position: relative;
+  overflow: hidden;
+}
+
+.post-card .img img {
+  cursor: pointer !important;
+  width: 100%;
+  display: block;
+  transition: transform 0.5s ease;
+  object-fit: cover;
+  aspect-ratio: 16/9;
+}
+
+.post-card:hover .img img {
+  transform: scale(1.05);
+}
+
+/* 分类标签 */
+.post-card .category {
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #61a9ff;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 10px;
+  padding: 5px 10px;
+  padding-bottom: 2px;
+  border-radius: 20px;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.post-card:hover .category {
+  background-color: #4f8fff;
+  transform: scale(1.05);
+}
+
+/* 底部信息区域 */
+.post-card .button {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  background-color: rgba(248, 248, 248, 0.5);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.dark .post-card .button {
+  background-color: rgba(31, 41, 55, 0.8);
+}
+
+.post-card:hover .button {
+  background-color: rgba(248, 248, 248, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.dark .post-card:hover .button {
+  background-color: rgba(31, 41, 55, 0.95);
+}
+
+/* 标题样式 */
+.post-card .title {
+  color: #0501ec;
+  padding: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.4;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.dark .post-card .title {
+  color: #60a5fa;
+}
+
+.post-card:hover .title {
+  color: #0400d1;
+}
+
+.dark .post-card:hover .title {
+  color: #93c5fd;
+}
+
+/* 文章信息区域 */
+.post-card .article-info {
+  padding: 0 20px 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.dark .post-card .article-info {
+  color: #9ca3af;
+}
+
+.post-card .article-info .date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.post-card .article-info .reading-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.post-card .article-info svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .post-card {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  
+  .post-card .title {
+    padding: 15px;
+    font-size: 13px;
+  }
+  
+  .post-card .article-info {
+    padding: 0 15px 12px 15px;
+    font-size: 11px;
+  }
+  
+  .post-card .category {
+    margin: 8px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .post-card {
+    max-width: 380px;
+  }
+}
+
+/* 网格布局 */
+.post-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+@media (max-width: 640px) {
+  .post-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .post-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+  }
+}
+
+/* 加载状态 */
+.post-card.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.dark .post-card.loading {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 图片加载失败占位符 */
+.post-card .img-placeholder {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+}
+
+.dark .post-card .img-placeholder {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  color: #6b7280;
+}
+
+.post-card .img-placeholder svg {
+  width: 48px;
+  height: 48px;
+}
