@@ -66,7 +66,12 @@ export const navBarConfig: NavBarConfig = {
 		},
 		{
 			name: "統計",
-			url: "https://cloud.umami.is/share/a1g8yIo7d1beMXkf",
+			url: "https://umami.kairo.qzz.io/share/QEfgg7EJvn4DXMXk",
+			external: true,
+		},
+		{
+			name: "流量统计（EdgeOne）",
+			url: "https://eo.kairo.qzz.io",
 			external: true,
 		},
 		{
@@ -103,7 +108,7 @@ export const licenseConfig: LicenseConfig = {
 
 export const umamiConfig: UmamiConfig = {
 	enable: true,
-	baseUrl: "https://umami.kairo.qzz.io/share/",
+	baseUrl: "https://umami.kairo.qzz.io",
 	shareId: "QEfgg7EJvn4DXMXk",
 	timezone: "Asia/Taipei",
 };
