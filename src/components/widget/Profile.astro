@@ -6,6 +6,7 @@ import ImageWrapper from "../misc/ImageWrapper.astro";
 
 const config = profileConfig;
 ---
+
 <div class="card-base p-3">
     <a aria-label="Avatar - Kairo" href={url('#')}
        class="group block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
@@ -73,26 +74,66 @@ const config = profileConfig;
 </style>
 
 <script define:vars={{ umamiConfig}}>
-  
-    async function loadSiteStats() {
-        if (!umamiConfig.enable) return;
+    async function fetchUmamiStats(baseUrl, shareId, options = {}) {
+        const { timezone = 'UTC' } = options;
+        const params = new URLSearchParams({
+            site_id: shareId,
+            start: '30daysAgo',
+            end: 'now',
+            timezone
+        });
+
         try {
-            const statsData = await fetchUmamiStats(umamiConfig.baseUrl, umamiConfig.shareId, {
-                timezone: umamiConfig.timezone
+            const response = await fetch(`${baseUrl}/api/stat?${params}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*' // 临时解决CORS问题
+                }
             });
-            
-            const pageviews = statsData.pageviews || 0;
-            const visitors = statsData.visitors || 0;
-            
-            const viewsElement = document.getElementById('site-views');
-            const visitorsElement = document.getElementById('site-visitors');
-            if (viewsElement) viewsElement.textContent = pageviews;
-            if (visitorsElement) visitorsElement.textContent = visitors;
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
         } catch (error) {
-            console.error('獲取全站統計失敗:', error);
+            console.error('Umami API request failed:', error);
+            throw error;
         }
     }
 
-   
-    document.addEventListener('DOMContentLoaded', loadSiteStats);
+    async function loadSiteStats() {
+        if (!umamiConfig.enable) return;
+
+        try {
+            const statsData = await fetchUmamiStats(
+                umamiConfig.baseUrl,
+                umamiConfig.shareId,
+                { timezone: umamiConfig.timezone }
+            );
+
+            const pageviews = statsData?.data?.pageviews?.total || 0;
+            const visitors = statsData?.data?.visitors?.total || 0;
+
+            const viewsElement = document.getElementById('site-views');
+            const visitorsElement = document.getElementById('site-visitors');
+            
+            if (viewsElement) viewsElement.textContent = pageviews.toLocaleString();
+            if (visitorsElement) visitorsElement.textContent = visitors.toLocaleString();
+        } catch (error) {
+            console.error('獲取全站統計失敗:', error);
+            showError('統計數據加載失敗，請檢查網絡連接');
+        }
+    }
+
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'text-center text-red-500 mt-2 text-sm';
+        errorDiv.textContent = message;
+        document.querySelector('.card-base').appendChild(errorDiv);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSiteStats();
+    });
 </script>
