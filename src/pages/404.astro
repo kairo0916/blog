@@ -3,282 +3,174 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="404 | 找不到頁面">
-  <main class="wrap" id="page-404">
-    <!-- 動態星空背景 -->
-    <div class="sky" aria-hidden="true">
-      <div class="stars"></div>
-      <div class="nebula"></div>
-    </div>
-
-    <!-- 中央卡片 -->
+  <main id="page-404" class="wrap">
+    <!-- 全頁背景在 CSS 處理，這裡只放內容 -->
     <section class="card" role="article" aria-labelledby="err-title">
-      <div class="header">
-        <div class="orbit" aria-hidden="true">
-          <svg class="orbit-svg" viewBox="0 0 120 120" width="80" height="80" aria-hidden="true" focusable="false">
+      <div class="card-inner">
+        <div class="left">
+          <!-- 精簡後的裝飾：保留簡單 ring 作為視覺焦點（非動畫）-->
+          <svg class="decor-ring" viewBox="0 0 120 120" width="84" height="84" aria-hidden="true">
             <defs>
               <linearGradient id="gA" x1="0%" x2="100%"><stop offset="0%" stop-color="#7dd3fc"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
-              <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.12"/>
-              </filter>
             </defs>
-
-            <!-- 背圈 -->
-            <circle cx="60" cy="60" r="40" stroke="rgba(255,255,255,0.06)" stroke-width="6" fill="none"/>
-
-            <!-- 動畫圈 -->
-            <g transform="rotate(-90 60 60)">
-              <circle
-                class="ring-anim"
-                cx="60"
-                cy="60"
-                r="40"
-                fill="none"
-                stroke="url(#gA)"
-                stroke-width="6"
-                stroke-linecap="round"
-                stroke-dasharray="0 251.2"
-              />
-            </g>
-
-            <!-- small rocket -->
-            <g class="rocket" transform="translate(60 20)">
-              <path d="M-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0" fill="#fff" opacity="0.95" filter="url(#shadow)"/>
-              <rect x="-3" y="4" width="6" height="10" rx="2" fill="#60a5fa"/>
-              <polygon points="-3,14 3,14 0,20" fill="#fb923c" />
-            </g>
+            <circle cx="60" cy="60" r="40" stroke="#e6eefb12" stroke-width="8" fill="none"/>
+            <circle cx="60" cy="60" r="32" stroke="url(#gA)" stroke-width="6" fill="none" stroke-linecap="round" />
           </svg>
         </div>
 
-        <h1 id="err-title" class="code">404</h1>
-
-        <div class="subtitle-wrap">
+        <div class="right">
+          <h1 id="err-title" class="code">404</h1>
           <p class="subtitle">你走得有點遠了。</p>
           <p class="desc">
             這個頁面不存在，可能被刪掉、改名，或只是從來沒存在過。
           </p>
+
+          <div class="actions">
+            <a href="/" class="btn back-home" aria-label="回首頁">← 回首頁</a>
+          </div>
+
+          <p class="hint">提示：檢查網址是否正確，或回到首頁瀏覽其他內容。</p>
         </div>
       </div>
-
-      <!-- 操作區：回首頁 + 回上一頁（純按鈕） -->
-      <div class="actions">
-        <a href="/" class="btn back-home" id="backHome" data-label="回首頁">← 回首頁</a>
-        <button class="btn ghost" id="goBack" title="回上一頁">↩ 回上一頁</button>
-      </div>
-
-      <div class="hint">或試試檢查網址是否輸入錯誤。</div>
     </section>
-
-    <!-- 裝飾：太空人 -->
-    <div class="float-deco" aria-hidden="true">
-      <svg viewBox="0 0 200 200" class="astronaut" width="160" height="160" aria-hidden="true">
-        <g transform="translate(0,0)">
-          <g class="astro-body" transform="translate(50 60)">
-            <rect x="20" y="10" rx="12" ry="12" width="60" height="70" fill="#f8fafc" stroke="rgba(2,6,23,0.06)" />
-            <circle cx="50" cy="36" r="18" fill="#111827" opacity="0.9"/>
-            <circle cx="50" cy="36" r="12" fill="#e6f6ff"/>
-            <rect x="32" y="66" width="36" height="8" rx="4" fill="#dbeafe"/>
-          </g>
-        </g>
-      </svg>
-    </div>
   </main>
 </Layout>
 
 <style is:inline>
+/* ---------- 變數 & 基本 reset ---------- */
 :root{
-  --page-bg: linear-gradient(180deg, #0f172a 0%, #071029 60%);
-  --card-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  --glass-border: rgba(255,255,255,0.06);
+  --bg-top: #071023;
+  --bg-bottom: #071726;
+  --card-bg: rgba(255,255,255,0.02);
+  --card-border: rgba(255,255,255,0.04);
+  --glass-shadow: rgba(2,6,23,0.45);
+  --primary-1: #60a5fa;
+  --primary-2: #2563eb;
   --text: #e6eefb;
-  --muted: rgba(230,238,251,0.65);
-  --primary: #3b82f6;
+  --muted: rgba(230,238,251,0.66);
+  --max-width: 920px;
+  --gap: 1rem;
+  --radius: 14px;
 }
 
-/* 基本版面 */
+/* make background cover entire viewport (html/body) */
+html,body { height: 100%; margin: 0; padding: 0; }
+
+/* wrap covers full viewport so background always填滿 */
 .wrap {
-  min-height: 80vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2.2rem);
   position: relative;
-  overflow: hidden;
-  background: var(--page-bg);
+  box-sizing: border-box;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* sky */
-.sky { position: absolute; inset:0; z-index:0; pointer-events:none; }
-.stars {
-  position:absolute; inset:0;
-  background-image:
-    radial-gradient(#ffffff15 1px, transparent 1px),
-    radial-gradient(#ffffff0e 1px, transparent 1px);
-  background-size: 1200px 1200px, 600px 600px;
-  opacity:0.6;
-  animation: drift 60s linear infinite;
-}
-@keyframes drift { from { background-position: 0 0, 0 0 } to { background-position: -3000px 1000px, 2000px -1500px } }
-.nebula {
-  position:absolute; width:60%; height:60%; left:20%; top:-10%;
-  background: radial-gradient(closest-side, rgba(59,130,246,0.12), transparent 40%), radial-gradient(closest-side, rgba(124,58,237,0.08), transparent 50%);
-  filter: blur(40px); opacity:0.7; transform:rotate(12deg);
+/* subtle full-page vignette to add depth without animations */
+.wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,0.06), transparent 10%),
+              radial-gradient(900px 400px at 90% 80%, rgba(124,58,237,0.04), transparent 10%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* 卡片 */
+/* ---------- Card ---------- */
 .card {
-  z-index: 3; position: relative; max-width: 720px; width:100%;
-  padding: 2.2rem; border-radius:1rem;
-  background: var(--card-bg); backdrop-filter: blur(10px) saturate(1.1); -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(2,6,23,0.5); border: 1px solid var(--glass-border);
-  text-align:left; overflow:visible;
+  position: relative;
+  z-index: 5;
+  width: min(96%, var(--max-width));
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 12px 36px var(--glass-shadow);
+  padding: clamp(1.25rem, 2.5vw, 2.2rem);
+  overflow: visible;
 }
 
-/* header & orbit */
-.header { display:flex; gap:1.15rem; align-items:center; }
-.orbit { width:88px; height:88px; flex:0 0 88px; display:flex; align-items:center; justify-content:center; }
-.orbit-svg { display:block; }
+/* inner layout: left decor + right content */
+.card-inner {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: clamp(0.8rem, 2vw, 1.2rem);
+  align-items: center;
+}
 
-/* 404 大字 */
+/* left decorative column */
+.left { display:flex; align-items:center; justify-content:center; padding-left: 4px; }
+.decor-ring { display:block; }
+
+/* right content column */
+.right { padding: 0; }
+
+/* 404 字樣 */
 .code {
-  font-size: clamp(3.25rem, 6vw, 5.25rem);
-  margin: 0; font-weight:900; line-height:1; letter-spacing:-0.03em;
-  background: linear-gradient(135deg,#a5b4fc,#60a5fa 60%,#2563eb);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-left:0.5rem;
+  font-size: clamp(2.8rem, 7.5vw, 4.6rem);
+  margin: 0 0 6px 0;
+  line-height: 1;
+  font-weight: 900;
+  background: linear-gradient(135deg, #a5b4fc, #60a5fa 60%, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-.subtitle { margin:0; font-size:1.05rem; color:var(--text); opacity:0.95; font-weight:600; }
-.desc { margin-top:.55rem; color:var(--muted); font-size:.955rem; line-height:1.6; }
 
-/* 操作按鈕 */
-.actions { margin-top:1.35rem; display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; }
+/* subtitle & desc */
+.subtitle {
+  margin: 0 0 6px 0;
+  font-size: 1.02rem;
+  color: var(--text);
+  font-weight: 600;
+}
+.desc {
+  margin: 0 0 12px 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+/* actions: only one main CTA */
+.actions { margin-top: 8px; display:flex; gap: .6rem; align-items:center; }
 .btn {
   display:inline-flex; align-items:center; gap:.5rem; justify-content:center;
-  padding:.6rem 1.05rem; border-radius:999px; font-weight:600; cursor:pointer;
-  text-decoration:none; color:white; box-shadow:0 8px 20px rgba(2,6,23,0.45);
-  transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+  padding:.56rem 1rem; border-radius:999px; font-weight:700; cursor:pointer;
+  text-decoration:none; color: white; border: none;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
 }
-.btn:active { transform: translateY(1px) scale(.998); }
-
-/* 主 CTA */
-.back-home { background: linear-gradient(90deg,#60a5fa,#2563eb); border:1px solid rgba(255,255,255,0.06); box-shadow:0 6px 18px rgba(59,130,246,0.14); }
-.back-home:hover { transform: translateY(-3px); box-shadow:0 18px 40px rgba(37,99,235,0.12); }
-
-/* 次要按鈕（回上一頁） */
-.btn.ghost { background: rgba(255,255,255,0.04); color:var(--text); padding:.48rem .7rem; border:1px solid rgba(255,255,255,0.02); }
+.back-home {
+  background: linear-gradient(90deg,var(--primary-1), var(--primary-2));
+  box-shadow: 0 8px 22px rgba(37,99,235,0.12);
+}
+.back-home:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(37,99,235,0.14); }
 
 /* hint */
-.hint { margin-top:1rem; color:var(--muted); font-size:.92rem; }
-
-/* 太空人裝飾 */
-.float-deco { position:absolute; right: clamp(8px, 6vw, 48px); bottom: clamp(8px, 6vh, 40px); z-index:2; transform: translateZ(0); pointer-events:none; opacity:.95; }
-.astronaut { width: clamp(100px, 18vw, 160px); height:auto; display:block; transform-origin:center; animation: float 6s ease-in-out infinite; }
-@keyframes float { 0% { transform: translateY(0) } 50% { transform: translateY(-12px) rotate(-2deg) } 100% { transform: translateY(0) } }
-
-/* ring animation */
-.ring-anim { stroke-dasharray: 0 251.2; animation: ringGrow 1.6s ease-in-out infinite; transform-origin: 60px 60px; }
-@keyframes ringGrow {
-  0% { stroke-dasharray: 0 251.2; transform: rotate(0deg); }
-  50% { stroke-dasharray: 125.6 125.6; transform: rotate(90deg); }
-  100% { stroke-dasharray: 0 251.2; transform: rotate(360deg); }
+.hint {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
-/* rocket orbit */
-.rocket { transform-origin: 0 22px; animation: rocketSpin 3.2s linear infinite; }
-@keyframes rocketSpin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
-
-/* responsive */
+/* responsive: stack on narrow screens */
 @media (max-width: 640px) {
-  .header { flex-direction:column; align-items:flex-start; gap:.6rem; }
-  .orbit { width:66px; height:66px; flex:0 0 66px; }
+  .card-inner { grid-template-columns: 72px 1fr; gap: .7rem; }
+  .decor-ring { width: 64px; height: 64px; }
+  .code { font-size: clamp(2.4rem, 12vw, 3.6rem); }
+  .card { padding: 1.2rem; border-radius: 12px; }
 }
 
-/* prefers-reduced-motion */
+/* accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .stars, .nebula, .astronaut, .rocket, .ring-anim, .orbit-svg, .orbit { animation: none !important; transition: none !important; }
+  * { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; }
 }
 
-/* small focus polish */
-.back-home:focus, #goBack:focus { outline: 3px solid rgba(96,165,250,0.15); outline-offset: 3px; border-color: rgba(96,165,250,0.3); }
+/* misc small polish */
+.back-home:focus { outline: 3px solid rgba(96,165,250,0.14); outline-offset: 3px; }
 </style>
-
-<!-- Inline JS: 粒子爆發 + 回上一頁處理（移除搜尋相關邏輯） -->
-<script is:inline>
-(function(){
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function burst(x,y, container){
-    if(reduced) return;
-    const count = 18;
-    for(let i=0;i<count;i++){
-      const p = document.createElement('span');
-      p.className = 'p';
-      const angle = Math.random()*Math.PI*2;
-      const dist = 24 + Math.random()*36;
-      const size = 6 + Math.random()*8;
-      p.style.position='absolute';
-      p.style.left=(x - size/2)+'px';
-      p.style.top=(y - size/2)+'px';
-      p.style.width=size+'px';
-      p.style.height=size+'px';
-      p.style.borderRadius='50%';
-      const hue = 200 + Math.round(Math.random()*80);
-      p.style.background = 'hsl('+hue+' 90% 60% / 0.98)';
-      p.style.transform = 'translate(0,0) scale(1)';
-      p.style.pointerEvents = 'none';
-      p.style.opacity = '1';
-      p.style.zIndex = 9999;
-      container.appendChild(p);
-      (function animateParticle(el, angle, dist){
-        const duration = 700 + Math.random()*300;
-        const start = performance.now();
-        function frame(now){
-          const t = Math.min(1, (now-start)/duration);
-          const ease = 1 - Math.pow(1-t,3);
-          const dx = Math.cos(angle) * dist * ease;
-          const dy = Math.sin(angle) * dist * ease - (t*8);
-          el.style.transform = 'translate('+dx+'px,'+dy+'px) scale('+(1 - 0.5*t)+')';
-          el.style.opacity = String(1-t);
-          if(t < 1) requestAnimationFrame(frame);
-          else el.remove();
-        }
-        requestAnimationFrame(frame);
-      })(p, angle, dist);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    const cta = document.getElementById('backHome');
-    const backBtn = document.getElementById('goBack');
-    const container = document.getElementById('page-404') || document.body;
-
-    if(cta){
-      cta.addEventListener('click', function(e){
-        const rect = container.getBoundingClientRect();
-        const x = (e.clientX - rect.left);
-        const y = (e.clientY - rect.top);
-        burst(x,y, container);
-        // allow navigation to proceed (no preventDefault)
-      });
-    }
-
-    if(backBtn){
-      backBtn.addEventListener('click', function(e){
-        const rect = container.getBoundingClientRect();
-        const x = (rect.width/2);
-        const y = (rect.height/2);
-        burst(x,y, container);
-        // go back in history
-        setTimeout(() => {
-          if(window.history.length > 1){
-            window.history.back();
-          } else {
-            // fallback to homepage if no history
-            window.location.href = '/';
-          }
-        }, 220);
-      });
-    }
-  });
-})();
-</script>
