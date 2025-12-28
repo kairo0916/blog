@@ -9,59 +9,30 @@ const BLOG_NAME = "Kairo Blog";
 ---
 
 <div class="card-base p-3">
-  <a
-    aria-label={ "Avatar - " + BLOG_NAME }
-    href={url("#")}
-    class="group block relative mx-auto mt-1 mb-3 max-w-[12rem] overflow-hidden rounded-xl active:scale-95"
-  >
-    <div
-      class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50 w-full h-full z-50 flex items-center justify-center"
-    >
-      <Icon
-        name="fa6-regular:address-card"
-        class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl"
-      />
+  <a aria-label={ "Avatar - " + BLOG_NAME } href={url("#")}
+     class="group block relative mx-auto mt-1 mb-3 max-w-[12rem] overflow-hidden rounded-xl active:scale-95">
+    <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50 w-full h-full z-50 flex items-center justify-center">
+      <Icon name="fa6-regular:address-card" class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl" />
     </div>
 
-    <ImageWrapper
-      src={config.avatar || ""}
-      alt="Profile Image"
-      class="mx-auto w-full h-full"
-    />
+    <ImageWrapper src={config.avatar || ""} alt="Profile Image" class="mx-auto w-full h-full" />
   </a>
 
   <div class="px-2">
-    <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50">
-      {config.name}
-    </div>
-
+    <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50">{config.name}</div>
     <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2"></div>
-
-    <div class="text-center text-neutral-400 mb-2.5">
-      {config.bio}
-    </div>
+    <div class="text-center text-neutral-400 mb-2.5">{config.bio}</div>
 
     <div class="flex flex-wrap gap-2 justify-center mb-1">
       {config.links && config.links.length > 1 && config.links.map(item => (
-        <a
-          rel="me"
-          aria-label={item.name}
-          href={item.url}
-          target="_blank"
-          class="btn-regular rounded-lg h-10 w-10 active:scale-90"
-        >
+        <a rel="me" aria-label={item.name} href={item.url} target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90">
           <Icon name={item.icon} class="text-[1.5rem]" />
         </a>
       ))}
 
       {config.links && config.links.length === 1 && (
-        <a
-          rel="me"
-          aria-label={config.links[0].name}
-          href={config.links[0].url}
-          target="_blank"
-          class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95"
-        >
+        <a rel="me" aria-label={config.links[0].name} href={config.links[0].url} target="_blank"
+           class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
           <Icon name={config.links[0].icon} class="text-[1.5rem]" />
           {config.links[0].name}
         </a>
@@ -89,126 +60,121 @@ const BLOG_NAME = "Kairo Blog";
 </div>
 
 <script define:vars={{ umamiConfig }} type="module">
-  // 安全、保守的 Umami 抓取逻辑（不会产生未闭合字符串）
-  function toNumberCandidate(value) {
-    // 尝试把常见位置的数字格式统一取出
+  // Helper: safe parse numeric candidates
+  function toNumber(value) {
     if (value == null) return null;
     if (typeof value === "number") return value;
     if (typeof value === "string") {
       const n = Number(value.replace(/[, ]+/g, ""));
       return Number.isFinite(n) ? n : null;
     }
-    if (typeof value === "object") {
-      // 常见： { value: 123 }
-      if ("value" in value && (typeof value.value === "number" || typeof value.value === "string")) {
-        return toNumberCandidate(value.value);
-      }
+    if (typeof value === "object" && "value" in value) {
+      return toNumber(value.value);
     }
     return null;
   }
 
-  function extractStatsFromResponse(data) {
-    // 支持多种返回结构
+  // Try to read a few expected shapes
+  function parseUmamiResponse(data) {
     if (!data || typeof data !== "object") return { pageviews: 0, visitors: 0 };
 
-    const candidates = {
-      pageviews: 0,
-      visitors: 0
-    };
+    // common shapes: { pageviews: { value: 123 }, visitors: { value: 45 } }
+    const pageviews = toNumber(data?.pageviews?.value ?? data?.pageviews ?? data?.views ?? data?.page_views) ?? 0;
+    const visitors = toNumber(data?.visitors?.value ?? data?.visitors ?? data?.uniqueVisitors ?? data?.unique_visitors) ?? 0;
 
-    // 直接形态： data.pageviews.value 或 data.pageviews
-    const pvCandidates = [
-      data.pageviews,
-      data.views,
-      data.page_views,
-      (data.metrics && data.metrics.pageviews) || null
-    ];
-    const vCandidates = [
-      data.visitors,
-      data.uniqueVisitors,
-      data.unique_visitors,
-      (data.metrics && data.metrics.visitors) || null
-    ];
-
-    for (const c of pvCandidates) {
-      const v = toNumberCandidate(c);
-      if (v != null) { candidates.pageviews = v; break; }
-    }
-    for (const c of vCandidates) {
-      const v = toNumberCandidate(c);
-      if (v != null) { candidates.visitors = v; break; }
-    }
-
-    // 如果还没读到，尝试深一层：data.results 或数组汇总
-    if (!candidates.pageviews || !candidates.visitors) {
-      if (Array.isArray(data)) {
-        let pvSum = 0, vSum = 0, foundPv = false, foundV = false;
-        for (const item of data) {
-          const pv = toNumberCandidate(item?.pageviews ?? item?.views);
-          const vv = toNumberCandidate(item?.visitors);
-          if (pv != null) { pvSum += pv; foundPv = true; }
-          if (vv != null) { vSum += vv; foundV = true; }
-        }
-        if (foundPv) candidates.pageviews = pvSum;
-        if (foundV) candidates.visitors = vSum;
-      } else if (data.results && Array.isArray(data.results)) {
-        let pvSum = 0, vSum = 0, foundPv = false, foundV = false;
-        for (const item of data.results) {
-          const pv = toNumberCandidate(item?.pageviews ?? item?.views);
-          const vv = toNumberCandidate(item?.visitors);
-          if (pv != null) { pvSum += pv; foundPv = true; }
-          if (vv != null) { vSum += vv; foundV = true; }
-        }
-        if (foundPv) candidates.pageviews = pvSum;
-        if (foundV) candidates.visitors = vSum;
+    // array-style fallback: sum
+    if ((!pageviews || !visitors) && Array.isArray(data)) {
+      let pv = 0, vv = 0, hasPv = false, hasV = false;
+      for (const it of data) {
+        const p = toNumber(it?.pageviews ?? it?.views);
+        const v = toNumber(it?.visitors);
+        if (p != null) { pv += p; hasPv = true; }
+        if (v != null) { vv += v; hasV = true; }
       }
+      return { pageviews: hasPv ? pv : pageviews, visitors: hasV ? vv : visitors };
     }
 
-    // 最后兜底为 0
-    return {
-      pageviews: candidates.pageviews || 0,
-      visitors: candidates.visitors || 0
-    };
+    return { pageviews, visitors };
+  }
+
+  // Attempt 1: direct client fetch to Umami (fast if CORS allowed)
+  async function fetchDirectUmami(baseUrl, websiteId, timezone) {
+    const base = String(baseUrl || "").replace(/\/+$/, "");
+    const id = String(websiteId || "");
+    if (!base || !id) throw new Error("missing baseUrl or websiteId");
+    const url = base + "/api/website/" + encodeURIComponent(id) + "/stats" +
+                "?metrics=pageviews,visitors&period=30d" +
+                (timezone ? "&timezone=" + encodeURIComponent(String(timezone)) : "");
+    const resp = await fetch(url, { method: "GET", credentials: "omit" });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const json = await resp.json();
+    return parseUmamiResponse(json);
+  }
+
+  // Attempt 2: call our serverless proxy (no CORS)
+  async function fetchViaProxy(baseUrl, websiteId, timezone) {
+    const params = new URLSearchParams();
+    params.set("baseUrl", String(baseUrl || ""));
+    params.set("websiteId", String(websiteId || ""));
+    if (timezone) params.set("timezone", String(timezone));
+    const proxyUrl = "/api/umami-proxy?" + params.toString();
+    const resp = await fetch(proxyUrl, { method: "GET", credentials: "same-origin" });
+    if (!resp.ok) throw new Error("Proxy HTTP " + resp.status);
+    const payload = await resp.json();
+    // proxy returns original data under .data (see proxy implementation)
+    return parseUmamiResponse(payload?.data ?? payload);
   }
 
   async function loadSiteStats() {
+    const viewsEl = document.getElementById("site-views");
+    const visitorsEl = document.getElementById("site-visitors");
+    if (!viewsEl || !visitorsEl) return;
+
+    // show loading
+    viewsEl.textContent = "載入中...";
+    visitorsEl.textContent = "載入中...";
+
     try {
-      if (!umamiConfig || !umamiConfig.enable) return;
-
-      const viewsEl = document.getElementById("site-views");
-      const visitorsEl = document.getElementById("site-visitors");
-
-      if (!viewsEl || !visitorsEl) return;
-
-      const baseUrlRaw = String(umamiConfig.baseUrl || "").replace(/\/+$/, "");
-      const websiteId = String(umamiConfig.shareId || umamiConfig.websiteId || umamiConfig.siteId || "");
-      if (!baseUrlRaw || !websiteId) {
-        console.warn("[Umami] baseUrl or websiteId missing");
+      if (!umamiConfig || !umamiConfig.enable) {
+        console.info("[Umami] disabled by config");
         viewsEl.textContent = "-";
         visitorsEl.textContent = "-";
         return;
       }
 
-      const api = baseUrlRaw + "/api/website/" + encodeURIComponent(websiteId) + "/stats" +
-        "?metrics=pageviews,visitors&period=30d" +
-        (umamiConfig.timezone ? "&timezone=" + encodeURIComponent(String(umamiConfig.timezone)) : "");
+      const baseUrl = umamiConfig.baseUrl;
+      const websiteId = umamiConfig.shareId ?? umamiConfig.websiteId ?? umamiConfig.siteId;
+      const tz = umamiConfig.timezone;
 
-      const response = await fetch(api, { method: "GET", credentials: "omit" });
-      if (!response.ok) {
-        throw new Error("HTTP " + response.status);
+      // 1) try direct fetch (fast path)
+      try {
+        console.info("[Umami] trying direct fetch", baseUrl, websiteId);
+        const stats = await fetchDirectUmami(baseUrl, websiteId, tz);
+        console.info("[Umami] direct fetch success", stats);
+        viewsEl.textContent = String(stats.pageviews ?? 0);
+        visitorsEl.textContent = String(stats.visitors ?? 0);
+        return;
+      } catch (err) {
+        console.warn("[Umami] direct fetch failed — will try proxy. error:", err?.message ?? err);
       }
 
-      const json = await response.json();
-      const stats = extractStatsFromResponse(json);
-
-      viewsEl.textContent = String(stats.pageviews ?? 0);
-      visitorsEl.textContent = String(stats.visitors ?? 0);
+      // 2) fallback to proxy
+      try {
+        console.info("[Umami] trying proxy fetch");
+        const stats = await fetchViaProxy(baseUrl, websiteId, tz);
+        console.info("[Umami] proxy fetch success", stats);
+        viewsEl.textContent = String(stats.pageviews ?? 0);
+        visitorsEl.textContent = String(stats.visitors ?? 0);
+        return;
+      } catch (err) {
+        console.error("[Umami] proxy fetch failed:", err);
+        viewsEl.textContent = "-";
+        visitorsEl.textContent = "-";
+      }
     } catch (err) {
-      console.error("[Umami] Failed to load stats:", err);
-      const viewsEl = document.getElementById("site-views");
-      const visitorsEl = document.getElementById("site-visitors");
-      if (viewsEl) viewsEl.textContent = "-";
-      if (visitorsEl) visitorsEl.textContent = "-";
+      console.error("[Umami] unexpected error:", err);
+      viewsEl.textContent = "-";
+      visitorsEl.textContent = "-";
     }
   }
 
