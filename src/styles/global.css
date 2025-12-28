@@ -1,59 +1,51 @@
 @import url('./post-card.css');
 
-/* ===============================
-   Glassy UI 全站微透明方案
-   =============================== */
+/* =====================================
+   全站统一：微透明 · 不随 hover 改变
+   ===================================== */
 
-/* 亮色模式 */
+/* ---------- Light mode ---------- */
 :root {
-  --card-bg: rgba(255, 255, 255, 0.78);
+  --card-bg: rgba(255, 255, 255, 0.82);
   --card-border: rgba(0, 0, 0, 0.08);
-  --card-bg-hover: rgba(255, 255, 255, 0.88);
 }
 
-/* 深色模式 */
+/* ---------- Dark mode ---------- */
 .dark {
-  --card-bg: rgba(20, 20, 20, 0.72);
+  --card-bg: rgba(24, 24, 24, 0.78);
   --card-border: rgba(255, 255, 255, 0.10);
-  --card-bg-hover: rgba(20, 20, 20, 0.82);
 }
 
-/* ===============================
-   Card 基底统一处理
-   =============================== */
-
+/* ---------- Card 基底 ---------- */
 .card-base {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
+
+  /* 微玻璃感 */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  transition:
-    background-color 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+
+  /* 禁止 hover 变化 */
+  transition: none;
 }
 
-/* Hover 微微更实 */
+/* ---------- 明确覆盖 hover（防止主题残留） ---------- */
 .card-base:hover {
-  background-color: var(--card-bg-hover);
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
 }
 
-/* ===============================
-   Navbar / 浮层 / Panel 也统一
-   =============================== */
-
+/* ---------- Navbar / Panel / 浮层 ---------- */
 #navbar .card-base,
 .float-panel,
 .btn-card {
   background-color: var(--card-bg);
+  border-color: var(--card-border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* ===============================
-   边框再柔一点
-   =============================== */
-
+/* ---------- 边框统一再淡一点 ---------- */
 .border-black\/10 {
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
