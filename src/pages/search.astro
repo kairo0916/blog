@@ -152,7 +152,7 @@ const POSTS_PER_PAGE = 10;
         function renderPostCard(post) {
             const postData = post.data || post;
             const hasCover = postData.image && postData.image !== "";
-            const postUrl = `/${post.slug}/`;
+            const postUrl = `/posts/${post.slug}/`;
             const publishedDate = new Date(postData.published).toLocaleDateString('zh-CN');
             const excerpt = postData.excerpt || postData.description || '';
             
