@@ -51,8 +51,8 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		{
 			name: "友鏈",
-			url: "/pages/friends.astro",
-			external: true,
+			url: "/friends/",
+			external: false,
 		},
 		{
 			name: "統計",
