@@ -11,7 +11,7 @@ import type {
 import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
-	title: "Kairo's Blog",
+	title: "Kairo Blog",
 	subtitle: ":3",
 	lang: "zh_TW",
 	themeColor: {
