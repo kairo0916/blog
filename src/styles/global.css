@@ -1,5 +1,3 @@
-/* @import url('./post-card.css'); */
-
 /* =========================================
    全局微透明 Glass 风格（默认即生效）
    不依赖 hover，不会变化
@@ -7,13 +5,13 @@
 
 /* 浅色模式 */
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.78);
+  --glass-bg: rgba(255, 255, 255, 0.90);
   --glass-border: rgba(0, 0, 0, 0.08);
 }
 
 /* 深色模式 */
 .dark {
-  --glass-bg: rgba(20, 20, 20, 0.72);
+  --glass-bg: rgba(20, 20, 20, 0.88);
   --glass-border: rgba(255, 255, 255, 0.10);
 }
 
