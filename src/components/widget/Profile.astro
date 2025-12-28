@@ -45,46 +45,13 @@ const config = profileConfig;
       {config.bio}
     </div>
 
-    <div class="flex flex-wrap gap-2 justify-center mb-1">
-      {config.links.length > 1 &&
-        config.links.map((item) => (
-          <a
-            rel="me"
-            aria-label={item.name}
-            href={item.url}
-            target="_blank"
-            class="btn-regular rounded-lg h-10 w-10 active:scale-90"
-          >
-            <Icon name={item.icon} class="text-[1.5rem]" />
-          </a>
-        ))}
-
-      {config.links.length === 1 && (
-        <a
-          rel="me"
-          aria-label={config.links[0].name}
-          href={config.links[0].url}
-          target="_blank"
-          class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95"
-        >
-          <Icon name={config.links[0].icon} class="text-[1.5rem]" />
-          {config.links[0].name}
-        </a>
-      )}
-    </div>
-
     <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
       <div class="text-center">
         <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
           <Icon name="material-symbols:visibility-outline" class="text-base" />
           <span>訪問量</span>
         </div>
-        <div
-          id="site-views"
-          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
-        >
-          -
-        </div>
+        <div id="site-views" class="font-bold text-lg">-</div>
       </div>
 
       <div class="text-center border-l border-neutral-200 dark:border-neutral-700">
@@ -92,18 +59,12 @@ const config = profileConfig;
           <Icon name="material-symbols:person" class="text-base" />
           <span>訪客數</span>
         </div>
-        <div
-          id="site-visitors"
-          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
-        >
-          -
-        </div>
+        <div id="site-visitors" class="font-bold text-lg">-</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ✅ Umami 客户端逻辑（安全版，不会 SyntaxError） -->
 <script define:vars={{ umamiConfig }} type="module">
   async function loadSiteStats() {
     if (!umamiConfig?.enable) return;
@@ -128,12 +89,12 @@ const config = profileConfig;
       const pageviews = data?.pageviews?.value ?? 0;
       const visitors = data?.visitors?.value ?? 0;
 
-      if (viewsEl) viewsEl.textContent = pageviews;
-      if (visitorsEl) visitorsEl.textContent = visitors;
+      viewsEl.textContent = pageviews;
+      visitorsEl.textContent = visitors;
     } catch (err) {
-      console.error("[Umami] 获取统计失败：", err);
-      if (viewsEl) viewsEl.textContent = "-";
-      if (visitorsEl) visitorsEl.textContent = "-";
+      console.error("[Umami] stats error:", err);
+      viewsEl.textContent = "-";
+      visitorsEl.textContent = "-";
     }
   }
 
