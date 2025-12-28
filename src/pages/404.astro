@@ -1,176 +1,108 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { Icon } from "astro-icon/components";
+import { siteConfig } from "@/config";
 ---
 
-<Layout title="404 | 找不到頁面">
-  <main id="page-404" class="wrap">
-    <!-- 全頁背景在 CSS 處理，這裡只放內容 -->
-    <section class="card" role="article" aria-labelledby="err-title">
-      <div class="card-inner">
-        <div class="left">
-          <!-- 精簡後的裝飾：保留簡單 ring 作為視覺焦點（非動畫）-->
-          <svg class="decor-ring" viewBox="0 0 120 120" width="84" height="84" aria-hidden="true">
-            <defs>
-              <linearGradient id="gA" x1="0%" x2="100%"><stop offset="0%" stop-color="#7dd3fc"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
-            </defs>
-            <circle cx="60" cy="60" r="40" stroke="#e6eefb12" stroke-width="8" fill="none"/>
-            <circle cx="60" cy="60" r="32" stroke="url(#gA)" stroke-width="6" fill="none" stroke-linecap="round" />
-          </svg>
-        </div>
+<Layout title="頁面未找到">
+	<MainGridLayout>
+		<!-- 整體容器：桌面左右、行動堆疊 -->
+		<div class="min-h-[60vh] w-full flex items-center justify-center px-4 py-8">
+			<div class="w-full max-w-4xl">
+				<div class="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-8 items-center">
+					<!-- 左側：大 404 與情緒圖示（置中） -->
+					<div class="flex items-center justify-center">
+						<div class="text-center">
+							<div class="relative inline-block">
+								<!-- 背景大字 404 -->
+								<div class="select-none text-[6.5rem] md:text-[8rem] font-extrabold text-[var(--primary)] opacity-10 leading-none">
+									404
+								</div>
+								<!-- 中央 icon -->
+								<div class="absolute inset-0 flex items-center justify-center">
+									<Icon
+										name="fa6-solid:face-sad-tear"
+										class="text-6xl md:text-8xl text-[var(--primary)]"
+										aria-hidden="true"
+									/>
+								</div>
+							</div>
 
-        <div class="right">
-          <h1 id="err-title" class="code">404</h1>
-          <p class="subtitle">你走得有點遠了。</p>
-          <p class="desc">
-            這個頁面不存在，可能被刪掉、改名，或只是從來沒存在過。
-          </p>
+							<!-- 簡短提示（桌面置於下方，行動也顯示） -->
+							<p class="mt-6 text-sm text-[rgba(230,238,251,0.75)] max-w-[22rem] mx-auto">
+								頁面不見了 — 但別擔心，我們送你一張回家的船票。
+							</p>
+						</div>
+					</div>
 
-          <div class="actions">
-            <a href="/" class="btn back-home" aria-label="回首頁">← 回首頁</a>
-          </div>
+					<!-- 右側：訊息卡片（主要操作） -->
+					<div class="flex items-center">
+						<div class="w-full card-base bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)] rounded-xl p-6 md:p-8 shadow-[0_8px_30px_rgba(2,6,23,0.45)]">
+							<h1 class="text-2xl md:text-3xl font-semibold text-[var(--text)] mb-3">
+								頁面走丟了
+							</h1>
+							<p class="text-[rgba(230,238,251,0.9)] mb-6 leading-relaxed">
+								抱歉，你要訪問的頁面不存在或已被移動。
+								<br />
+								請確認網址是否正確，或返回首頁繼續瀏覽其他內容。
+							</p>
 
-          <p class="hint">提示：檢查網址是否正確，或回到首頁瀏覽其他內容。</p>
-        </div>
-      </div>
-    </section>
-  </main>
+							<!-- CTA：靠左（桌面）或置中（行動） -->
+							<div class="flex md:justify-start justify-center">
+								<a
+									href="/"
+									class="inline-flex items-center gap-3 px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-[#60A5FA] to-[#2563EB] hover:scale-[1.02] transition-transform shadow-lg focus:outline-none focus:ring-4 focus:ring-[rgba(96,165,250,0.12)]"
+									aria-label="返回首頁"
+								>
+									<Icon name="fa6-solid:house" class="text-lg" />
+									返回首頁
+								</a>
+								<!-- 可選的次要按鈕留空（已移除），保證排版不會跑位 -->
+							</div>
+
+							<!-- 次要提示（微小字） -->
+							<p class="mt-4 text-sm text-[rgba(230,238,251,0.7)]">
+								你也可以按瀏覽器的「上一頁」返回。
+							</p>
+						</div>
+					</div>
+				</div> <!-- grid end -->
+			</div> <!-- max-w end -->
+		</div> <!-- wrapper end -->
+	</MainGridLayout>
 </Layout>
 
 <style is:inline>
-/* ---------- 變數 & 基本 reset ---------- */
+/* 少量補強樣式，確保不同主題下變化穩定 */
 :root{
-  --bg-top: #071023;
-  --bg-bottom: #071726;
-  --card-bg: rgba(255,255,255,0.02);
-  --card-border: rgba(255,255,255,0.04);
-  --glass-shadow: rgba(2,6,23,0.45);
-  --primary-1: #60a5fa;
-  --primary-2: #2563eb;
+  --primary: #60A5FA;
   --text: #e6eefb;
-  --muted: rgba(230,238,251,0.66);
-  --max-width: 920px;
-  --gap: 1rem;
-  --radius: 14px;
 }
 
-/* make background cover entire viewport (html/body) */
-html,body { height: 100%; margin: 0; padding: 0; }
+/* card-base 讓版面一致（若你的 global 有定義則會沿用） */
+.card-base { box-sizing: border-box; }
 
-/* wrap covers full viewport so background always填滿 */
-.wrap {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 3vw, 2.2rem);
-  position: relative;
-  box-sizing: border-box;
-  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-  background-attachment: fixed;
-  color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* 行動/桌機間距微調 */
+@media (min-width: 768px) {
+  /* 桌面時讓左側保持較大視覺重心 */
+  .grid-cols-desktop-left { grid-template-columns: 1fr 1.2fr; }
 }
 
-/* subtle full-page vignette to add depth without animations */
-.wrap::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,0.06), transparent 10%),
-              radial-gradient(900px 400px at 90% 80%, rgba(124,58,237,0.04), transparent 10%);
-  pointer-events: none;
-  z-index: 0;
+/* 對 focus 做明顯指示，無障礙友好 */
+a[aria-label], .card-base a {
+  text-decoration: none;
+}
+a[aria-label]:focus {
+  outline: none;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.12);
+  transform: translateY(-2px);
 }
 
-/* ---------- Card ---------- */
-.card {
-  position: relative;
-  z-index: 5;
-  width: min(96%, var(--max-width));
-  border-radius: var(--radius);
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  box-shadow: 0 12px 36px var(--glass-shadow);
-  padding: clamp(1.25rem, 2.5vw, 2.2rem);
-  overflow: visible;
+/* 微調文字在窄屏的可讀性 */
+@media (max-width: 420px) {
+  .text-6xl { font-size: 3rem; }
 }
 
-/* inner layout: left decor + right content */
-.card-inner {
-  display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: clamp(0.8rem, 2vw, 1.2rem);
-  align-items: center;
-}
-
-/* left decorative column */
-.left { display:flex; align-items:center; justify-content:center; padding-left: 4px; }
-.decor-ring { display:block; }
-
-/* right content column */
-.right { padding: 0; }
-
-/* 404 字樣 */
-.code {
-  font-size: clamp(2.8rem, 7.5vw, 4.6rem);
-  margin: 0 0 6px 0;
-  line-height: 1;
-  font-weight: 900;
-  background: linear-gradient(135deg, #a5b4fc, #60a5fa 60%, #2563eb);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* subtitle & desc */
-.subtitle {
-  margin: 0 0 6px 0;
-  font-size: 1.02rem;
-  color: var(--text);
-  font-weight: 600;
-}
-.desc {
-  margin: 0 0 12px 0;
-  color: var(--muted);
-  font-size: 0.98rem;
-  line-height: 1.6;
-}
-
-/* actions: only one main CTA */
-.actions { margin-top: 8px; display:flex; gap: .6rem; align-items:center; }
-.btn {
-  display:inline-flex; align-items:center; gap:.5rem; justify-content:center;
-  padding:.56rem 1rem; border-radius:999px; font-weight:700; cursor:pointer;
-  text-decoration:none; color: white; border: none;
-  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-}
-.back-home {
-  background: linear-gradient(90deg,var(--primary-1), var(--primary-2));
-  box-shadow: 0 8px 22px rgba(37,99,235,0.12);
-}
-.back-home:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(37,99,235,0.14); }
-
-/* hint */
-.hint {
-  margin-top: 12px;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-/* responsive: stack on narrow screens */
-@media (max-width: 640px) {
-  .card-inner { grid-template-columns: 72px 1fr; gap: .7rem; }
-  .decor-ring { width: 64px; height: 64px; }
-  .code { font-size: clamp(2.4rem, 12vw, 3.6rem); }
-  .card { padding: 1.2rem; border-radius: 12px; }
-}
-
-/* accessibility: respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; }
-}
-
-/* misc small polish */
-.back-home:focus { outline: 3px solid rgba(96,165,250,0.14); outline-offset: 3px; }
+/* 如果你的 site 已有 color variables，會自動套用；這裡只是保護 fallback */
 </style>
