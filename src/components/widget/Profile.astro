@@ -1,220 +1,141 @@
 ---
 import { Icon } from "astro-icon/components";
-import { profileConfig, umamiConfig, siteConfig } from "../../config";
+import { profileConfig, umamiConfig } from "../../config";
 import { url } from "../../utils/url-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 
 const config = profileConfig;
 ---
+
 <div class="card-base p-3">
-    <a aria-label="Avatar - Kairo" href={url('#')}
-       class="group block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
-       max-w-[12rem] lg:max-w-none overflow-hidden rounded-xl active:scale-95">
-        <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
-        w-full h-full z-50 flex items-center justify-center">
-            <Icon name="fa6-regular:address-card"
-                  class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl">
-            </Icon>
-        </div>
-        <ImageWrapper src={config.avatar || ""} alt="Profile Image of the Author" class="mx-auto lg:w-full h-full lg:mt-0 "></ImageWrapper>
-    </a>
-    <div class="px-2">
-        <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">{config.name}</div>
-        <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div>
-        <div class="text-center text-neutral-400 mb-2.5 transition">{config.bio}</div>
-        <div class="flex flex-wrap gap-2 justify-center mb-1">
-            {config.links.length > 1 && config.links.map(item =>
-                    <a rel="me" aria-label={item.name} href={item.url} target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90">
-                        <Icon name={item.icon} class="text-[1.5rem]"></Icon>
-                    </a>
-            )}
-            {config.links.length == 1 && <a rel="me" aria-label={config.links[0].name} href={config.links[0].url} target="_blank"
-                                            class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
-                <Icon name={config.links[0].icon} class="text-[1.5rem]"></Icon>
-                {config.links[0].name}
-            </a>}
-        </div>
-        <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
-            <div class="text-center">
-                <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
-                    <Icon name="material-symbols:visibility-outline" class="text-base"></Icon>
-                    <span class="text-xs">訪問量</span>
-                </div>
-                <div id="site-views" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
-            </div>
-            <div class="text-center border-l border-neutral-200 dark:border-neutral-700">
-                <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
-                    <Icon name="material-symbols:person" class="text-base"></Icon>
-                    <span class="text-xs">訪客數</span>
-                </div>
-                <div id="site-visitors" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
-            </div>
-        </div>
+  <a
+    aria-label="Avatar - Kairo"
+    href={url("#")}
+    class="group block relative mx-auto mt-1 mb-3
+           max-w-[12rem] overflow-hidden rounded-xl active:scale-95"
+  >
+    <div
+      class="absolute transition pointer-events-none
+             group-hover:bg-black/30 group-active:bg-black/50
+             w-full h-full z-50 flex items-center justify-center"
+    >
+      <Icon
+        name="fa6-regular:address-card"
+        class="transition opacity-0 scale-90
+               group-hover:scale-100 group-hover:opacity-100
+               text-white text-5xl"
+      />
     </div>
+
+    <ImageWrapper
+      src={config.avatar || ""}
+      alt="Profile Image of the Author"
+      class="mx-auto w-full h-full"
+    />
+  </a>
+
+  <div class="px-2">
+    <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50">
+      {config.name}
+    </div>
+
+    <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2"></div>
+
+    <div class="text-center text-neutral-400 mb-2.5">
+      {config.bio}
+    </div>
+
+    <div class="flex flex-wrap gap-2 justify-center mb-1">
+      {config.links.length > 1 &&
+        config.links.map((item) => (
+          <a
+            rel="me"
+            aria-label={item.name}
+            href={item.url}
+            target="_blank"
+            class="btn-regular rounded-lg h-10 w-10 active:scale-90"
+          >
+            <Icon name={item.icon} class="text-[1.5rem]" />
+          </a>
+        ))}
+
+      {config.links.length === 1 && (
+        <a
+          rel="me"
+          aria-label={config.links[0].name}
+          href={config.links[0].url}
+          target="_blank"
+          class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95"
+        >
+          <Icon name={config.links[0].icon} class="text-[1.5rem]" />
+          {config.links[0].name}
+        </a>
+      )}
+    </div>
+
+    <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
+      <div class="text-center">
+        <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
+          <Icon name="material-symbols:visibility-outline" class="text-base" />
+          <span>訪問量</span>
+        </div>
+        <div
+          id="site-views"
+          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
+        >
+          -
+        </div>
+      </div>
+
+      <div class="text-center border-l border-neutral-200 dark:border-neutral-700">
+        <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
+          <Icon name="material-symbols:person" class="text-base" />
+          <span>訪客數</span>
+        </div>
+        <div
+          id="site-visitors"
+          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
+        >
+          -
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<style>
-    .loading-bar {
-        transition: opacity 0.5s ease-out;
-    }
-
-    @keyframes loading-progress {
-        0% {
-            transform: translateX(-100%);
-        }
-        100% {
-            transform: translateX(400%);
-        }
-    }
-
-    .animate-loading-progress {
-        animation: loading-progress 1.5s ease-in-out infinite;
-    }
-</style>
-
-<!--
-  说明：
-  - 我把 umamiConfig 注入到客户端：const UMAMI_CLIENT_CONFIG = {...}
-  - fetchUmamiStats 会尝试几种常见路径并用“启发式解析”找 pageviews/visitors。
-  - 如果 Umami 服务器拒绝 CORS，请在 Umami 主机上启用 CORS 或走服务器端代理（见下面的 troubleshooting）。
--->
-<script type="module">
-  // 把服务端的配置安全地注入到客户端
-  const UMAMI_CLIENT_CONFIG = ${JSON.stringify(umamiConfig ?? {})};
-
-  // ========== 实用函数：递归寻找 pageviews / visitors ==========
-  function extractStatsFromObject(obj) {
-    let pageviews = null;
-    let visitors = null;
-
-    function recurse(value) {
-      if (value == null) return;
-      if (typeof value === 'number') return;
-      if (Array.isArray(value)) {
-        // 如果数组里每项包含 pageviews/visitors（按时间序列），则合计
-        let pvSum = 0, vSum = 0, found = false;
-        for (const item of value) {
-          if (item && typeof item === 'object') {
-            if ('pageviews' in item) { pvSum += Number(item.pageviews || 0); found = true; }
-            if ('visitors' in item) { vSum += Number(item.visitors || 0); found = true; }
-          }
-        }
-        if (found) {
-          if (pageviews === null) pageviews = pvSum;
-          if (visitors === null) visitors = vSum;
-          return;
-        }
-        // 否则继续递归
-        for (const item of value) recurse(item);
-      } else if (typeof value === 'object') {
-        for (const k of Object.keys(value)) {
-          const v = value[k];
-          const lk = k.toLowerCase();
-          if ((lk === 'pageviews' || lk === 'views' || lk.includes('page') && lk.includes('view')) && typeof v === 'number') {
-            if (pageviews === null) pageviews = Number(v);
-          }
-          if ((lk === 'visitors' || lk.includes('visitor')) && typeof v === 'number') {
-            if (visitors === null) visitors = Number(v);
-          }
-          // 有些 API 把數字放到 total: { pageviews: 123 }
-          if (typeof v === 'object') recurse(v);
-        }
-      }
-    }
-
-    recurse(obj);
-    return {
-      pageviews: Number(pageviews || 0),
-      visitors: Number(visitors || 0)
-    };
-  }
-
-  // ========== 尝试多个可能的 Umami 端点并解析 ==========
-  async function fetchUmamiStats(baseUrl, shareId, opts = {}) {
-    if (!baseUrl || !shareId) throw new Error('umami baseUrl or shareId missing');
-
-    baseUrl = String(baseUrl).replace(/\/+$/, ''); // 去尾斜杠
-    const timezone = opts.timezone || '';
-
-    // 常见候选 URL（尽量覆盖几种 Umami 版本 / 部署方式）
-    const candidates = [
-      // typical: /api/website/{id}/stats?metrics=pageviews,visitors&period=30d
-      `${baseUrl}/api/website/${encodeURIComponent(shareId)}/stats?metrics=pageviews,visitors&period=30d${timezone ? '&timezone=' + encodeURIComponent(timezone) : ''}`,
-      `${baseUrl}/api/website/${encodeURIComponent(shareId)}/stats?period=30d${timezone ? '&timezone=' + encodeURIComponent(timezone) : ''}`,
-      // some installs might expose /api/share/:id or /share/:id.json
-      `${baseUrl}/api/share/${encodeURIComponent(shareId)}`,
-      `${baseUrl}/share/${encodeURIComponent(shareId)}`,
-      `${baseUrl}/share/${encodeURIComponent(shareId)}.json`,
-      // 兜底直接抓根路径（有时 ppl 自定义）
-      `${baseUrl}/api/website/${encodeURIComponent(shareId)}/stats`,
-      `${baseUrl}/api/website/${encodeURIComponent(shareId)}`
-    ];
-
-    let lastError = null;
-    for (const url of candidates) {
-      try {
-        const res = await fetch(url, { method: 'GET', credentials: 'omit' });
-        if (!res.ok) {
-          // 若 4xx/5xx 就跳过尝试下一个
-          lastError = new Error(`Request to ${url} returned status ${res.status}`);
-          continue;
-        }
-        const data = await res.json();
-        // 解析
-        const stats = extractStatsFromObject(data);
-        // 如果解析到有意义的数值就返回
-        if ((stats.pageviews && stats.pageviews > 0) || (stats.visitors && stats.visitors > 0) || (stats.pageviews === 0 && stats.visitors === 0)) {
-          return stats;
-        }
-        // 若没有解析出可用值，继续尝试其他 endpoint
-      } catch (err) {
-        // 记录最后的错误（可能是 CORS / 网络 / json parse 等）
-        lastError = err;
-        // 继续尝试下一个候选
-      }
-    }
-    // 如果全部失败，抛出最后错误以便外层处理
-    throw lastError || new Error('No usable Umami endpoint found');
-  }
-
-  // ========== 中心逻辑：读取并写入 DOM ==========
+<!-- ✅ Umami 客户端逻辑（安全版，不会 SyntaxError） -->
+<script define:vars={{ umamiConfig }} type="module">
   async function loadSiteStats() {
+    if (!umamiConfig?.enable) return;
+
+    const viewsEl = document.getElementById("site-views");
+    const visitorsEl = document.getElementById("site-visitors");
+
     try {
-      if (!UMAMI_CLIENT_CONFIG || !UMAMI_CLIENT_CONFIG.enable) {
-        // Umami 未启用，不做任何事
-        return;
-      }
+      const baseUrl = umamiConfig.baseUrl.replace(/\/$/, "");
+      const websiteId = umamiConfig.shareId;
 
-      const baseUrl = UMAMI_CLIENT_CONFIG.baseUrl;
-      const shareId = UMAMI_CLIENT_CONFIG.shareId || UMAMI_CLIENT_CONFIG.websiteId || UMAMI_CLIENT_CONFIG.siteId;
-      const timezone = UMAMI_CLIENT_CONFIG.timezone || '';
+      const api =
+        `${baseUrl}/api/website/${websiteId}/stats` +
+        `?metrics=pageviews,visitors&period=30d` +
+        (umamiConfig.timezone ? `&timezone=${umamiConfig.timezone}` : "");
 
-      const viewsElement = document.getElementById('site-views');
-      const visitorsElement = document.getElementById('site-visitors');
+      const res = await fetch(api);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      // 默认先显示 loading 状态
-      if (viewsElement) viewsElement.textContent = '載入中...';
-      if (visitorsElement) visitorsElement.textContent = '載入中...';
+      const data = await res.json();
 
-      try {
-        const stats = await fetchUmamiStats(baseUrl, shareId, { timezone });
-        if (viewsElement) viewsElement.textContent = String(stats.pageviews ?? 0);
-        if (visitorsElement) visitorsElement.textContent = String(stats.visitors ?? 0);
-      } catch (err) {
-        // 失败：显示 '-' 并写到控制台（用户可据此判断是否为 CORS / id 错误）
-        if (viewsElement) viewsElement.textContent = '-';
-        if (visitorsElement) visitorsElement.textContent = '-';
-        console.error('獲取 Umami 統計資料失敗：', err);
-      }
+      const pageviews = data?.pageviews?.value ?? 0;
+      const visitors = data?.visitors?.value ?? 0;
+
+      if (viewsEl) viewsEl.textContent = pageviews;
+      if (visitorsEl) visitorsEl.textContent = visitors;
     } catch (err) {
-      console.error('loadSiteStats 出錯：', err);
+      console.error("[Umami] 获取统计失败：", err);
+      if (viewsEl) viewsEl.textContent = "-";
+      if (visitorsEl) visitorsEl.textContent = "-";
     }
   }
 
-  // 开始抓取（页面加载后）
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadSiteStats);
-  } else {
-    loadSiteStats();
-  }
+  document.addEventListener("DOMContentLoaded", loadSiteStats);
 </script>
