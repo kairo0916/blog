@@ -62,20 +62,55 @@ let links: NavBarLink[] = navBarConfig.links.map(
 	lang={lang}
 	setOGTypeArticle={setOGTypeArticle}
 >
-	<!-- 加載動畫：Windows 11 風格點陣 spinner + 進度條 -->
+	<!-- 加載動畫：Windows 11 風格的環形 loader（inline SVG） + 進度條 -->
 	<div id="loading-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-gray-900 transition-opacity duration-500">
 		<div role="status" aria-live="polite" aria-label="載入中" class="flex flex-col items-center space-y-4">
-			<!-- Windows11-like dot spinner -->
-			<div class="win-spinner" aria-hidden="true" style="width:64px;height:64px;color:rgb(37 99 235);">
-				<!-- 8 dots (0..7) -->
-				<div class="dot" style="--i:0"></div>
-				<div class="dot" style="--i:1"></div>
-				<div class="dot" style="--i:2"></div>
-				<div class="dot" style="--i:3"></div>
-				<div class="dot" style="--i:4"></div>
-				<div class="dot" style="--i:5"></div>
-				<div class="dot" style="--i:6"></div>
-				<div class="dot" style="--i:7"></div>
+			<!-- Inline SVG spinner: 跟 Windows 11 的圓環行為相近（rotation + stroke-dasharray 動畫） -->
+			<div class="w-16 h-16" aria-hidden="true" style="width:64px;height:64px;">
+				<svg viewBox="0 0 100 100" width="64" height="64" class="w-full h-full">
+					<defs>
+						<linearGradient id="g1" x1="0%" x2="100%" y1="0%" y2="100%">
+							<stop offset="0%" stop-color="#60A5FA" />
+							<stop offset="100%" stop-color="#2563EB" />
+						</linearGradient>
+					</defs>
+
+					<!-- 背圈（淡色） -->
+					<circle cx="50" cy="50" r="40" stroke="#E5E7EB" stroke-width="10" fill="none" />
+
+					<!-- 動畫圈：用 stroke-dasharray + rotate 來模擬 Windows 11 的 loading ring -->
+					<g transform="rotate(-90 50 50)">
+						<circle
+							class="animated-ring"
+							cx="50"
+							cy="50"
+							r="40"
+							fill="none"
+							stroke="url(#g1)"
+							stroke-width="10"
+							stroke-linecap="round"
+							stroke-dasharray="0 251.2"
+						>
+							<!-- animate stroke-dasharray (expanding/shrinking arc) -->
+							<animate
+								attributeName="stroke-dasharray"
+								values="0 251.2; 125.6 125.6; 0 251.2"
+								keyTimes="0;0.5;1"
+								dur="1.8s"
+								calcMode="spline"
+								keySplines="0.5 0 0.5 1;0.5 0 0.5 1"
+								repeatCount="indefinite"
+							/>
+							<!-- animate stroke-dashoffset for motion -->
+							<animate
+								attributeName="stroke-dashoffset"
+								values="0; -251.2"
+								dur="1.8s"
+								repeatCount="indefinite"
+							/>
+						</circle>
+					</g>
+				</svg>
 			</div>
 
 			<!-- 加載文字 -->
@@ -225,53 +260,27 @@ let links: NavBarLink[] = navBarConfig.links.map(
 
 	<NavMenuPanel links={links} />
 
-	<!-- Inline CSS for spinner + fade logic -->
+	<!-- Inline CSS: 微小樣式與淡出行為（is:inline 確保瀏覽器執行） -->
 	<style is:inline>
-		/* Win11-like dot spinner */
-		.win-spinner { position: relative; display: inline-block; }
-		.win-spinner .dot {
-			--size: 8px;
-			position: absolute;
-			left: 50%;
-			top: 50%;
-			width: var(--size);
-			height: var(--size);
-			margin-left: calc(var(--size) / -2);
-			margin-top: calc(var(--size) / -2);
-			border-radius: 9999px;
-			background: currentColor;
-			opacity: 0.15;
-			transform-origin: 50% -18px; /* push outward */
-			will-change: transform, opacity, scale;
-			animation: dotPulse 1s linear infinite;
-		}
-		/* place each dot around the circle; uses CSS variable --i (0..7) */
-		.win-spinner .dot { transform: rotate(calc(var(--i) * 45deg)) translateY(-22px); }
-		.win-spinner .dot { animation-delay: calc(var(--i) * -0.08s); } /* staggered */
-		/* scale & fade pulse */
-		@keyframes dotPulse {
-			0% { opacity: 0.15; transform: rotate(var(--rot, 0)) translateY(-22px) scale(1); }
-			30% { opacity: 1; transform: rotate(var(--rot, 0)) translateY(-22px) scale(1.35); }
-			60% { opacity: 0.45; transform: rotate(var(--rot, 0)) translateY(-22px) scale(1); }
-			100% { opacity: 0.15; transform: rotate(var(--rot, 0)) translateY(-22px) scale(1); }
-		}
-		/* smooth fade out class for the overlay */
+		/* 停止 spinner 對 layout 的影響：絕對大小，no transform on container */
+		#loading-overlay { will-change: opacity; }
+		svg { display: block; }
+
+		/* 淡出遮罩的平滑過渡 */
 		#loading-overlay.loading-hidden { opacity: 0; pointer-events: none; transition: opacity 0.45s ease; }
-		/* pause animations when hidden to avoid '跑掉'行為 */
-		#loading-overlay.loading-hidden .win-spinner .dot { animation-play-state: paused; }
+		/* 隱藏時暫停動畫（防止跑掉） */
+		#loading-overlay.loading-hidden svg * { animation-play-state: paused; }
 	</style>
 
-	<!-- Inline JS: ensure script runs in browser (is:inline) -->
+	<!-- 必須是 inline，確保在瀏覽器執行 -->
 	<script is:inline>
 		(function(){
 			document.addEventListener('DOMContentLoaded', function() {
 				const loadingOverlay = document.getElementById('loading-overlay');
 				const loadingProgress = document.getElementById('loading-progress');
 
-				// defensive checks
 				if (!loadingOverlay) return;
 				if (!loadingProgress) {
-					// no progress bar — just hide overlay after load
 					window.addEventListener('load', () => {
 						loadingOverlay.classList.add('loading-hidden');
 						setTimeout(()=> loadingOverlay.style.display = 'none', 500);
@@ -279,33 +288,29 @@ let links: NavBarLink[] = navBarConfig.links.map(
 					return;
 				}
 
-				let progress = 8;
+				let progress = 6;
 				loadingProgress.style.width = progress + '%';
 
-				// gentle, pseudo-realistic progress
 				const progressInterval = setInterval(() => {
-					// advance but slow down as it approaches 90
 					const bump = Math.random() * 10;
 					progress = Math.min(88, progress + bump);
 					loadingProgress.style.width = Math.round(progress) + '%';
-				}, 110);
+				}, 120);
 
 				function finishAndHide() {
 					clearInterval(progressInterval);
 					loadingProgress.style.width = '100%';
-					// fade out overlay, pause spinner animation to avoid visual "跑掉"
-					loadingOverlay.classList.add('loading-hidden');
-					// give fade a moment, then remove from flow
+					// 加一個短延遲讓使用者能看到 100%
 					setTimeout(() => {
-						// set display none to fully remove any transforms/animations from layout
-						loadingOverlay.style.display = 'none';
-					}, 500);
+						loadingOverlay.classList.add('loading-hidden');
+						setTimeout(() => {
+							loadingOverlay.style.display = 'none';
+						}, 500);
+					}, 180);
 				}
 
-				// on full load
 				window.addEventListener('load', finishAndHide);
 
-				// if already complete (cache)
 				if (document.readyState === 'complete') {
 					finishAndHide();
 				}
