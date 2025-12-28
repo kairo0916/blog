@@ -1,6 +1,7 @@
 import type {
 	ExpressiveCodeConfig,
 	GitHubEditConfig,
+	ImageFallbackConfig,
 	LicenseConfig,
 	NavBarConfig,
 	ProfileConfig,
