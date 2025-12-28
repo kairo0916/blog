@@ -84,11 +84,19 @@ const config = profileConfig;
         });
 
         try {
-            const response = await fetch(`${baseUrl}/api/stat?${params}`, {
+            const response = await fetch(`${baseUrl}/api/stat`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*' // 临时解决CORS问题
-                }
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Access-Control-Allow-Origin': '*' // 临时解决方案
+                },
+                body: JSON.stringify({
+                    site_id: shareId,
+                    start: '30daysAgo',
+                    end: 'now',
+                    timezone
+                })
             });
 
             if (!response.ok) {
@@ -122,14 +130,14 @@ const config = profileConfig;
             if (visitorsElement) visitorsElement.textContent = visitors.toLocaleString();
         } catch (error) {
             console.error('獲取全站統計失敗:', error);
-            showError('統計數據加載失敗，請檢查網絡連接');
+            showError('統計數據加載失敗，請檢查：\n1. 網絡連接\n2. Umami配置\n3. 服務器CORS設置');
         }
     }
 
     function showError(message) {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'text-center text-red-500 mt-2 text-sm';
-        errorDiv.textContent = message;
+        errorDiv.innerHTML = message.replace('\n', '<br>');
         document.querySelector('.card-base').appendChild(errorDiv);
     }
 
