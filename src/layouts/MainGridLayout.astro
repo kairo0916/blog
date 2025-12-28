@@ -35,6 +35,7 @@ const {
 	setOGTypeArticle,
 	headings = [],
 } = Astro.props;
+
 const hasBannerCredit =
 	siteConfig.banner.enable && siteConfig.banner.credit.enable;
 const hasBannerLink = !!siteConfig.banner.credit.url;
@@ -53,144 +54,174 @@ let links: NavBarLink[] = navBarConfig.links.map(
 );
 ---
 
-<Layout title={title} banner={banner} keywords={siteConfig.keywords} description={siteConfig.description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
+<Layout
+	title={title}
+	banner={banner}
+	keywords={siteConfig.keywords}
+	description={siteConfig.description}
+	lang={lang}
+	setOGTypeArticle={setOGTypeArticle}
+>
+	<div
+		id="loading-overlay"
+		class="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-gray-900 transition-opacity duration-500"
+	>
+		<div class="flex flex-col items-center space-y-4">
+			<div class="relative">
+				<div class="w-16 h-16 border-4 border-gray-200 dark:border-gray-700 rounded-full"></div>
+				<div
+					class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+				></div>
+			</div>
 
-<div id="loading-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-gray-900 transition-opacity duration-500">
-    <div class="flex flex-col items-center space-y-4">
-     
-        <div class="relative">
-            <div class="w-16 h-16 border-4 border-gray-200 dark:border-gray-700 rounded-full"></div>
-            <div class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-       
-        <div class="text-gray-600 dark:text-gray-400 text-sm font-medium">
-            正在載入...
-        </div>
-      
-        <div class="w-32 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div id="loading-progress" class="h-full bg-blue-500 rounded-full transition-all duration-300" style="width: 0%;"></div>
-        </div>
-    </div>
-</div>
+			<div class="text-gray-600 dark:text-gray-400 text-sm font-medium">
+				正在載入...
+			</div>
 
-<!-- Navbar -->
-<slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 px-0 mx-auto" class:list={[""]}>
-    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
-        <Navbar></Navbar>
-    </div>
-</div>
+			<div
+				class="w-32 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+			>
+				<div
+					id="loading-progress"
+					class="h-full bg-blue-500 rounded-full transition-all duration-300"
+					style="width: 0%;"
+				></div>
+			</div>
+		</div>
+	</div>
 
-<!-- Banner -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
-    <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                  src={siteConfig.banner.src} position={siteConfig.banner.position}
-    >
-    </ImageWrapper>
-</div>}
+	<!-- Navbar -->
+	<slot slot="head" name="head"></slot>
+	<div
+		id="top-row"
+		class="z-50 pointer-events-none relative transition-all duration-700 px-0 mx-auto"
+	>
+		<div
+			id="navbar-wrapper"
+			class="pointer-events-auto sticky top-0 transition-all"
+		>
+			<Navbar />
+		</div>
+	</div>
 
-<!-- Main content -->
-<div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
-    <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
-    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class="transition duration-700 w-full grid grid-cols-[2.5fr_1fr] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
-    mx-auto gap-4 px-4"
-        >
-            <!-- Banner image credit -->
-            {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
-                                   class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
-                                   "px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
-            >
-                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{siteConfig.banner.credit.text}</div>
-                <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
-                    {"group-hover:opacity-100": hasBannerLink}]}
-                      name="fa6-solid:arrow-up-right-from-square">
-                </Icon>
-            </a>}
+	<!-- Banner -->
+	{siteConfig.banner.enable && (
+		<div
+			id="banner-wrapper"
+			class="absolute z-10 w-full transition duration-700 overflow-hidden"
+			style={`top: -${BANNER_HEIGHT_EXTEND}vh`}
+		>
+			<ImageWrapper
+				id="banner"
+				alt="Banner image of the blog"
+				class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
+				src={siteConfig.banner.src}
+				position={siteConfig.banner.position}
+			/>
+		</div>
+	)}
 
+	<!-- Main content -->
+	<div
+		class="absolute w-full z-30 pointer-events-none"
+		style={`top: ${mainPanelTop}`}
+	>
+		<div
+			class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto"
+		>
+			<div
+				id="main-grid"
+				class="transition duration-700 w-full
+				grid grid-cols-[1fr_2.5fr]   <!-- ★ 改這裡：Sidebar 左，Main 右 -->
+				grid-rows-[auto_1fr_auto]
+				lg:grid-rows-[auto]
+				mx-auto gap-4 px-4"
+			>
+				<!-- Banner image credit -->
+				{hasBannerCredit && (
+					<a
+						href={siteConfig.banner.credit.url}
+						id="banner-credit"
+						target="_blank"
+						rel="noopener"
+						aria-label="Visit image source"
+						class:list={[
+							"group onload-animation transition-all absolute flex justify-center items-center rounded-full px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9",
+							{ "hover:pr-9 active:bg-black/80": hasBannerLink },
+						]}
+					>
+						<Icon
+							class="text-white/75 text-[1.25rem] mr-1"
+							name="material-symbols:copyright-outline-rounded"
+						/>
+						<div class="text-white/75 text-xs">
+							{siteConfig.banner.credit.text}
+						</div>
+						<Icon
+							class:list={[
+								"transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
+								{ "group-hover:opacity-100": hasBannerLink },
+							]}
+							name="fa6-solid:arrow-up-right-from-square"
+						/>
+					</a>
+				)}
 
-            <main class="col-span-2 lg:col-span-1 lg:col-span-1 lg:col-start-1 overflow-hidden" style="min-height: 53vh;">
-                <div id="content-wrapper" class="onload-animation">
-                    <slot></slot>
-                    <div class="footer col-span-2 onload-animation hidden lg:block">
-                        <Footer></Footer>
-                    </div>
-                </div>
-            </main>
+				<!-- ★ Sidebar 移到前面（左側） -->
+				<SideBar
+					class="mb-4 lg:max-w-[17.5rem] onload-animation"
+					headings={headings}
+				/>
 
-            <SideBar class="mb-4 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
+				<!-- ★ Main content 在右側 -->
+				<main
+					class="col-span-2 lg:col-span-1 overflow-hidden"
+					style="min-height: 53vh;"
+				>
+					<div id="content-wrapper" class="onload-animation">
+						<slot />
+						<div class="footer col-span-2 onload-animation hidden lg:block">
+							<Footer />
+						</div>
+					</div>
+				</main>
+			</div>
 
-            
-        </div>
-        <div class="footer col-span-2 onload-animation block lg:hidden">
-            <Footer></Footer>
-        </div>
-        <BackToTop></BackToTop>
-    </div>
-</div>
+			<div class="footer col-span-2 onload-animation block lg:hidden">
+				<Footer />
+			</div>
 
-<!-- The things that should be under the banner, only the TOC for now -->
-<div class="absolute w-full z-0 hidden 2xl:block">
-    <div class="relative max-w-[var(--page-width)] mx-auto">
-        <!-- TOC component -->
-        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center",
-            {"toc-hide": siteConfig.banner.enable}]}
-        >
-            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                <div id="toc" class="w-full h-full">
-                    <div class="h-8 w-full"></div>
-                    <TOC headings={headings}></TOC>
-                    <div class="h-8 w-full"></div>
-                </div>
-            </div>
-        </div>}
+			<BackToTop />
+		</div>
+	</div>
 
-        {!siteConfig.toc.enable && <div id="toc"></div>}
-    </div>
-</div>
+	<!-- TOC（未改） -->
+	<div class="absolute w-full z-0 hidden 2xl:block">
+		<div class="relative max-w-[var(--page-width)] mx-auto">
+			{siteConfig.toc.enable && (
+				<div
+					id="toc-wrapper"
+					class:list={[
+						"hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center",
+						{ "toc-hide": siteConfig.banner.enable },
+					]}
+				>
+					<div
+						id="toc-inner-wrapper"
+						class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar"
+					>
+						<div id="toc" class="w-full h-full">
+							<div class="h-8 w-full"></div>
+							<TOC headings={headings} />
+							<div class="h-8 w-full"></div>
+						</div>
+					</div>
+				</div>
+			)}
 
-<NavMenuPanel links={links}></NavMenuPanel>
+			{!siteConfig.toc.enable && <div id="toc"></div>}
+		</div>
+	</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const loadingProgress = document.getElementById('loading-progress');
-    
-    if (!loadingOverlay || !loadingProgress) return;
-    
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress > 90) progress = 90;
-        loadingProgress.style.width = progress + '%';
-    }, 100);
-    
-   
-    window.addEventListener('load', function() {
-        clearInterval(progressInterval);
-        loadingProgress.style.width = '100%';
-        
-        setTimeout(() => {
-            loadingOverlay.style.opacity = '0';
-            setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-            }, 500);
-        }, 200);
-    });
-    
-   
-    if (document.readyState === 'complete') {
-        clearInterval(progressInterval);
-        loadingProgress.style.width = '100%';
-        loadingOverlay.style.opacity = '0';
-        setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-        }, 500);
-    }
-});
-
-
-</script>
-
+	<NavMenuPanel links={links} />
 </Layout>
