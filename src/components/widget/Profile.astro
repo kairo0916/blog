@@ -10,21 +10,16 @@ const BLOG_NAME = "Kairo Blog";
 
 <div class="card-base p-3">
   <a
-    aria-label={`Avatar - ${BLOG_NAME}`}
+    aria-label={ "Avatar - " + BLOG_NAME }
     href={url("#")}
-    class="group block relative mx-auto mt-1 mb-3
-           max-w-[12rem] overflow-hidden rounded-xl active:scale-95"
+    class="group block relative mx-auto mt-1 mb-3 max-w-[12rem] overflow-hidden rounded-xl active:scale-95"
   >
     <div
-      class="absolute transition pointer-events-none
-             group-hover:bg-black/30 group-active:bg-black/50
-             w-full h-full z-50 flex items-center justify-center"
+      class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50 w-full h-full z-50 flex items-center justify-center"
     >
       <Icon
         name="fa6-regular:address-card"
-        class="transition opacity-0 scale-90
-               group-hover:scale-100 group-hover:opacity-100
-               text-white text-5xl"
+        class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl"
       />
     </div>
 
@@ -46,18 +41,40 @@ const BLOG_NAME = "Kairo Blog";
       {config.bio}
     </div>
 
+    <div class="flex flex-wrap gap-2 justify-center mb-1">
+      {config.links && config.links.length > 1 && config.links.map(item => (
+        <a
+          rel="me"
+          aria-label={item.name}
+          href={item.url}
+          target="_blank"
+          class="btn-regular rounded-lg h-10 w-10 active:scale-90"
+        >
+          <Icon name={item.icon} class="text-[1.5rem]" />
+        </a>
+      ))}
+
+      {config.links && config.links.length === 1 && (
+        <a
+          rel="me"
+          aria-label={config.links[0].name}
+          href={config.links[0].url}
+          target="_blank"
+          class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95"
+        >
+          <Icon name={config.links[0].icon} class="text-[1.5rem]" />
+          {config.links[0].name}
+        </a>
+      )}
+    </div>
+
     <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
       <div class="text-center">
         <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
           <Icon name="material-symbols:visibility-outline" class="text-base" />
           <span>訪問量</span>
         </div>
-        <div
-          id="site-views"
-          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
-        >
-          -
-        </div>
+        <div id="site-views" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
       </div>
 
       <div class="text-center border-l border-neutral-200 dark:border-neutral-700">
@@ -65,52 +82,139 @@ const BLOG_NAME = "Kairo Blog";
           <Icon name="material-symbols:person" class="text-base" />
           <span>訪客數</span>
         </div>
-        <div
-          id="site-visitors"
-          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
-        >
-          -
-        </div>
+        <div id="site-visitors" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Umami site stats -->
 <script define:vars={{ umamiConfig }} type="module">
+  // 安全、保守的 Umami 抓取逻辑（不会产生未闭合字符串）
+  function toNumberCandidate(value) {
+    // 尝试把常见位置的数字格式统一取出
+    if (value == null) return null;
+    if (typeof value === "number") return value;
+    if (typeof value === "string") {
+      const n = Number(value.replace(/[, ]+/g, ""));
+      return Number.isFinite(n) ? n : null;
+    }
+    if (typeof value === "object") {
+      // 常见： { value: 123 }
+      if ("value" in value && (typeof value.value === "number" || typeof value.value === "string")) {
+        return toNumberCandidate(value.value);
+      }
+    }
+    return null;
+  }
+
+  function extractStatsFromResponse(data) {
+    // 支持多种返回结构
+    if (!data || typeof data !== "object") return { pageviews: 0, visitors: 0 };
+
+    const candidates = {
+      pageviews: 0,
+      visitors: 0
+    };
+
+    // 直接形态： data.pageviews.value 或 data.pageviews
+    const pvCandidates = [
+      data.pageviews,
+      data.views,
+      data.page_views,
+      (data.metrics && data.metrics.pageviews) || null
+    ];
+    const vCandidates = [
+      data.visitors,
+      data.uniqueVisitors,
+      data.unique_visitors,
+      (data.metrics && data.metrics.visitors) || null
+    ];
+
+    for (const c of pvCandidates) {
+      const v = toNumberCandidate(c);
+      if (v != null) { candidates.pageviews = v; break; }
+    }
+    for (const c of vCandidates) {
+      const v = toNumberCandidate(c);
+      if (v != null) { candidates.visitors = v; break; }
+    }
+
+    // 如果还没读到，尝试深一层：data.results 或数组汇总
+    if (!candidates.pageviews || !candidates.visitors) {
+      if (Array.isArray(data)) {
+        let pvSum = 0, vSum = 0, foundPv = false, foundV = false;
+        for (const item of data) {
+          const pv = toNumberCandidate(item?.pageviews ?? item?.views);
+          const vv = toNumberCandidate(item?.visitors);
+          if (pv != null) { pvSum += pv; foundPv = true; }
+          if (vv != null) { vSum += vv; foundV = true; }
+        }
+        if (foundPv) candidates.pageviews = pvSum;
+        if (foundV) candidates.visitors = vSum;
+      } else if (data.results && Array.isArray(data.results)) {
+        let pvSum = 0, vSum = 0, foundPv = false, foundV = false;
+        for (const item of data.results) {
+          const pv = toNumberCandidate(item?.pageviews ?? item?.views);
+          const vv = toNumberCandidate(item?.visitors);
+          if (pv != null) { pvSum += pv; foundPv = true; }
+          if (vv != null) { vSum += vv; foundV = true; }
+        }
+        if (foundPv) candidates.pageviews = pvSum;
+        if (foundV) candidates.visitors = vSum;
+      }
+    }
+
+    // 最后兜底为 0
+    return {
+      pageviews: candidates.pageviews || 0,
+      visitors: candidates.visitors || 0
+    };
+  }
+
   async function loadSiteStats() {
-    if (!umamiConfig || !umamiConfig.enable) return;
-
-    const viewsEl = document.getElementById("site-views");
-    const visitorsEl = document.getElementById("site-visitors");
-
     try {
-      const baseUrl = umamiConfig.baseUrl.replace(/\/$/, "");
-      const websiteId = umamiConfig.shareId;
+      if (!umamiConfig || !umamiConfig.enable) return;
 
-      const api =
-        `${baseUrl}/api/website/${websiteId}/stats` +
-        `?metrics=pageviews,visitors&period=30d` +
-        (umamiConfig.timezone
-          ? `&timezone=${umamiConfig.timezone}`
-          : "");
+      const viewsEl = document.getElementById("site-views");
+      const visitorsEl = document.getElementById("site-visitors");
 
-      const res = await fetch(api);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!viewsEl || !visitorsEl) return;
 
-      const data = await res.json();
+      const baseUrlRaw = String(umamiConfig.baseUrl || "").replace(/\/+$/, "");
+      const websiteId = String(umamiConfig.shareId || umamiConfig.websiteId || umamiConfig.siteId || "");
+      if (!baseUrlRaw || !websiteId) {
+        console.warn("[Umami] baseUrl or websiteId missing");
+        viewsEl.textContent = "-";
+        visitorsEl.textContent = "-";
+        return;
+      }
 
-      const pageviews = data?.pageviews?.value ?? 0;
-      const visitors = data?.visitors?.value ?? 0;
+      const api = baseUrlRaw + "/api/website/" + encodeURIComponent(websiteId) + "/stats" +
+        "?metrics=pageviews,visitors&period=30d" +
+        (umamiConfig.timezone ? "&timezone=" + encodeURIComponent(String(umamiConfig.timezone)) : "");
 
-      viewsEl.textContent = pageviews;
-      visitorsEl.textContent = visitors;
+      const response = await fetch(api, { method: "GET", credentials: "omit" });
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status);
+      }
+
+      const json = await response.json();
+      const stats = extractStatsFromResponse(json);
+
+      viewsEl.textContent = String(stats.pageviews ?? 0);
+      visitorsEl.textContent = String(stats.visitors ?? 0);
     } catch (err) {
       console.error("[Umami] Failed to load stats:", err);
-      viewsEl.textContent = "-";
-      visitorsEl.textContent = "-";
+      const viewsEl = document.getElementById("site-views");
+      const visitorsEl = document.getElementById("site-visitors");
+      if (viewsEl) viewsEl.textContent = "-";
+      if (visitorsEl) visitorsEl.textContent = "-";
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadSiteStats);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadSiteStats);
+  } else {
+    loadSiteStats();
+  }
 </script>
