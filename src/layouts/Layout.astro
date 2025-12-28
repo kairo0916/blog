@@ -170,7 +170,55 @@ const bannerOffset =
 		<style define:vars={{
 			configHue,
 			'page-width': `${PAGE_WIDTH}rem`,
-		}}></style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
+			'bg-url': siteConfig.background.src ? `url(${siteConfig.background.src})` : 'none',
+			'bg-enable': siteConfig.background.enable ? '1' : '0',
+			'bg-position': siteConfig.background.position || 'center',
+			'bg-size': siteConfig.background.size || 'cover',
+			'bg-repeat': siteConfig.background.repeat || 'no-repeat',
+			'bg-attachment': siteConfig.background.attachment || 'fixed',
+			'bg-opacity': (siteConfig.background.opacity || 0.3).toString()
+		}}>
+			:root {
+				--bg-url: var(--bg-url);
+				--bg-enable: var(--bg-enable);
+				--bg-position: var(--bg-position);
+				--bg-size: var(--bg-size);
+				--bg-repeat: var(--bg-repeat);
+				--bg-attachment: var(--bg-attachment);
+				--bg-opacity: var(--bg-opacity);
+			}
+			
+			/* Background image configuration */
+			body {
+				--bg-url: var(--bg-url);
+				--bg-enable: var(--bg-enable);
+				--bg-position: var(--bg-position);
+				--bg-size: var(--bg-size);
+				--bg-repeat: var(--bg-repeat);
+				--bg-attachment: var(--bg-attachment);
+				--bg-opacity: var(--bg-opacity);
+			}
+
+			#bg-box {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-position: var(--bg-position);
+				background-size: var(--bg-size);
+				background-repeat: var(--bg-repeat);
+				background-attachment: var(--bg-attachment);
+				opacity: 0;
+				pointer-events: none;
+				z-index: -1;
+				transition: opacity 0.3s ease-in-out;
+			}
+			
+			#bg-box.loaded {
+				opacity: calc(var(--bg-opacity) * var(--bg-enable));
+			}
+		</style>
 
 
 		<slot name="head"></slot>
