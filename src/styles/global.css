@@ -1,51 +1,55 @@
-@import url('./post-card.css');
+/* @import url('./post-card.css'); */
 
-/* =====================================
-   全站统一：微透明 · 不随 hover 改变
-   ===================================== */
+/* =========================================
+   全局微透明 Glass 风格（默认即生效）
+   不依赖 hover，不会变化
+   ========================================= */
 
-/* ---------- Light mode ---------- */
+/* 浅色模式 */
 :root {
-  --card-bg: rgba(255, 255, 255, 0.82);
-  --card-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(0, 0, 0, 0.08);
 }
 
-/* ---------- Dark mode ---------- */
+/* 深色模式 */
 .dark {
-  --card-bg: rgba(24, 24, 24, 0.78);
-  --card-border: rgba(255, 255, 255, 0.10);
+  --glass-bg: rgba(20, 20, 20, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.10);
 }
 
-/* ---------- Card 基底 ---------- */
-.card-base {
-  background-color: var(--card-bg);
-  border: 1px solid var(--card-border);
+/* =========================================
+   强制覆盖所有卡片 / Navbar / 面板
+   ========================================= */
 
-  /* 微玻璃感 */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  /* 禁止 hover 变化 */
-  transition: none;
-}
-
-/* ---------- 明确覆盖 hover（防止主题残留） ---------- */
-.card-base:hover {
-  background-color: var(--card-bg);
-  border-color: var(--card-border);
-}
-
-/* ---------- Navbar / Panel / 浮层 ---------- */
+.card-base,
 #navbar .card-base,
 .float-panel,
 .btn-card {
-  background-color: var(--card-bg);
-  border-color: var(--card-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border) !important;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transition: none !important;
 }
 
-/* ---------- 边框统一再淡一点 ---------- */
+/* =========================================
+   禁止 hover 还原成实色
+   ========================================= */
+
+.card-base:hover,
+#navbar .card-base:hover,
+.float-panel:hover,
+.btn-card:hover {
+  background-color: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+}
+
+/* =========================================
+   统一细灰边框（主题默认边框覆盖）
+   ========================================= */
+
 .border-black\/10 {
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
