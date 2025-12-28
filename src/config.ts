@@ -50,6 +50,11 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		{
+			name: "友鏈",
+			url: "/pages/friends.astro",
+			external: true,
+		},
+		{
 			name: "統計",
 			url: "https://cloud.umami.is/share/a1g8yIo7d1beMXkf",
 			external: true,
