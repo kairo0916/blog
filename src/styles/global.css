@@ -1,1 +1,63 @@
 @import url('./post-card.css');
+
+/* ===============================
+   Glassy UI 全站微透明方案
+   =============================== */
+
+/* 亮色模式 */
+:root {
+  --card-bg: rgba(255, 255, 255, 0.78);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --card-bg-hover: rgba(255, 255, 255, 0.88);
+}
+
+/* 深色模式 */
+.dark {
+  --card-bg: rgba(20, 20, 20, 0.72);
+  --card-border: rgba(255, 255, 255, 0.10);
+  --card-bg-hover: rgba(20, 20, 20, 0.82);
+}
+
+/* ===============================
+   Card 基底统一处理
+   =============================== */
+
+.card-base {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Hover 微微更实 */
+.card-base:hover {
+  background-color: var(--card-bg-hover);
+}
+
+/* ===============================
+   Navbar / 浮层 / Panel 也统一
+   =============================== */
+
+#navbar .card-base,
+.float-panel,
+.btn-card {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ===============================
+   边框再柔一点
+   =============================== */
+
+.border-black\/10 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark .border-white\/10 {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
