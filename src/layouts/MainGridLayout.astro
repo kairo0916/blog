@@ -159,13 +159,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
 					</a>
 				)}
 
-				<!-- ★ Sidebar 移到前面（左側） -->
-				<SideBar
-					class="mb-4 lg:max-w-[17.5rem] onload-animation"
-					headings={headings}
-				/>
-
-				<!-- ★ Main content 在右側 -->
+                <!-- ★ Main content 在右側 -->
 				<main
 					class="col-span-2 lg:col-span-1 overflow-hidden"
 					style="min-height: 53vh;"
@@ -178,6 +172,14 @@ let links: NavBarLink[] = navBarConfig.links.map(
 					</div>
 				</main>
 			</div>
+
+				<!-- ★ Sidebar 移到前面（左側） -->
+				<SideBar
+					class="mb-4 lg:max-w-[17.5rem] onload-animation"
+					headings={headings}
+				/>
+
+				
 
 			<div class="footer col-span-2 onload-animation block lg:hidden">
 				<Footer />
