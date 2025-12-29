@@ -24,7 +24,7 @@ import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { defineConfig } from "astro/config";
-import vercel from "@astrojs/vercel/server";
+import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 export default defineConfig({
