@@ -34,14 +34,13 @@ if (isLocal) {
   { import: "default" }
 );
 	let normalizedPath = path
-		.normalize(path.join("../../", basePath, src))
-		.replace(/\\/g, "/");
+  .normalize(`/src/${basePath}/${src}`)
+  .replace(/\\/g, "/")
+  .replace(/\/+/g, "/");
 	const file = files[normalizedPath];
 	if (!file) {
-		console.error(
-			`\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
-		);
-	}
+  console.error("[ImageWrapper] NOT FOUND:", normalizedPath);
+}
 	img = await file();
 }
 
