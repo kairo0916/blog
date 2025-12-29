@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { umamiConfig } from "../../config";
+import { umamiConfig } from "../../config.ts";
 
 export const GET: APIRoute = async () => {
   try {
@@ -23,20 +23,20 @@ export const GET: APIRoute = async () => {
       },
     });
 
-    let data;
-    try {
-      data = await res.json(); // 只讀一次
-    } catch {
-      const text = await res.text(); // 若不是 JSON 再讀 text
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          status: res.status,
-          error: "Upstream returned non-JSON",
-          bodySnippet: text.slice(0, 300),
-        }),
-        { status: 502 }
-      );
+    // 只讀一次 body
+    const contentType = res.headers.get("content-type") || "";
+    let data: any;
+
+    if (contentType.includes("application/json")) {
+      data = await res.json(); // 只有 JSON 才 parse
+    } else {
+      const text = await res.text(); // 非 JSON 就抓 text
+      data = {
+        ok: false,
+        status: res.status,
+        error: "Upstream returned non-JSON",
+        bodySnippet: text.slice(0, 300), // 方便 debug
+      };
     }
 
     return new Response(JSON.stringify({ ok: true, data }), {
