@@ -3,7 +3,6 @@ import { umamiConfig } from "../../config";
 
 export const GET: APIRoute = async () => {
   try {
-    // 1️⃣ 基本保護
     if (!umamiConfig?.enable) {
       return new Response(
         JSON.stringify({ error: "Umami disabled" }),
@@ -16,43 +15,28 @@ export const GET: APIRoute = async () => {
 
     if (!baseUrl || !shareId) {
       return new Response(
-        JSON.stringify({
-          error: "Missing umamiConfig.baseUrl or shareId",
-        }),
+        JSON.stringify({ error: "Missing umami config" }),
         { status: 400 }
       );
     }
 
-    // 2️⃣ 組 Umami Share API URL
     const cleanBase = baseUrl.replace(/\/+$/, "");
     const targetUrl = `${cleanBase}/share/${shareId}/stats`;
 
-    // 3️⃣ Server-side fetch（不受 CORS 影響）
-    const res = await fetch(targetUrl, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    });
+    const res = await fetch(targetUrl);
+    const json = await res.json();
 
-    const body = await res.text();
-
-    // 4️⃣ 原樣回傳給前端
-    return new Response(body, {
-      status: res.status,
+    return new Response(JSON.stringify(json), {
+      status: 200,
       headers: {
         "Content-Type": "application/json",
-        // ✨ 關鍵：前端只會看到「同源」
         "Access-Control-Allow-Origin": "*",
         "Cache-Control": "no-store",
       },
     });
-  } catch (err) {
+  } catch (e) {
     return new Response(
-      JSON.stringify({
-        error: "Umami proxy failed",
-        detail: String(err),
-      }),
+      JSON.stringify({ error: "Proxy failed", detail: String(e) }),
       { status: 500 }
     );
   }
