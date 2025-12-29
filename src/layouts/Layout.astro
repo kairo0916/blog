@@ -699,6 +699,16 @@ window.onresize = () => {
 
 </script>
 
+<script is:inline>
+(function () {
+  document.querySelectorAll('img:not([loading])')
+    .forEach(img => {
+      img.loading = 'lazy';
+      img.decoding = 'async';
+    });
+})();
+</script>
+
 <script>
 import PhotoSwipeLightbox from "photoswipe/lightbox"
 import "photoswipe/style.css"
