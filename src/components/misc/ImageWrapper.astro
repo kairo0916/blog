@@ -18,13 +18,13 @@ import { url } from "../../utils/url-utils";
 const { id, src, alt, position = "center", basePath = "/", lazy = true, placeholderSrc } = Astro.props;
 const className = Astro.props.class;
 
-const isLocal = !(
-	src.startsWith("/") ||
-	src.startsWith("http") ||
-	src.startsWith("https") ||
-	src.startsWith("data:")
-);
+const isExternal =
+  src.startsWith("http") ||
+  src.startsWith("https") ||
+  src.startsWith("data:");
+
 const isPublic = src.startsWith("/");
+const isLocal = !isExternal && !isPublic;
 
 // 處理本地圖片
 let img;
