@@ -21,19 +21,9 @@ export const GET: APIRoute = async () => {
     }
 
     const cleanBase = baseUrl.replace(/\/+$/, "");
-    const targetUrl = `\( {cleanBase}/share/ \){shareId}/stats`;
+    const targetUrl = `${cleanBase}/share/${shareId}/stats`;
 
     const res = await fetch(targetUrl);
-
-    // 檢查 Umami 是否回傳錯誤（例如 shareId 無效時可能回傳 HTML 登入頁）
-    if (!res.ok) {
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch from Umami", status: res.status }),
-        { status: 502 }
-      );
-    }
-
-    // 強制將回傳內容視為 JSON（Umami share/stats 正常應為 JSON）
     const json = await res.json();
 
     return new Response(JSON.stringify(json), {
