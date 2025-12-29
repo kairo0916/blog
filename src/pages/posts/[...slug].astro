@@ -157,7 +157,28 @@ const jsonLd = {
 
             {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
             
-
+            <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "{title}",
+      "author": {
+        "@type": "Person",
+        "name": "Kairo"
+      },
+      "datePublished": "{Astro.props.date || new Date().toISOString().split('T')[0]}",
+      "image": "{banner || siteConfig.banner.src}",
+      "publisher": {
+        "@type": "Organization",
+        "name": "{siteConfig.name}",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "{siteConfig.logo}"
+        }
+      },
+      "description": "{siteConfig.description}"
+    }
+  </script>
             
             <script src="https://giscus.app/client.js"
         data-repo="kairo0916/blog"
