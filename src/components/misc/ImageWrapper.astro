@@ -63,13 +63,13 @@ const imageStyle = `object-position: ${position}`;
     <!-- 正式圖片 -->
     {isLocal && img && (
       <Image
-        src={img}
-        alt={alt || ""}
-        class={imageClass}
-        style={imageStyle}
-        loading={lazy ? "lazy" : "eager"}
-        on:load={(e) => e.currentTarget.classList.add("opacity-100")}
-      />
+  src={img}
+  alt={alt || ""}
+  loading="lazy"
+  decoding="async"
+  class="opacity-0 transition-opacity duration-700"
+  on:load={(e) => e.currentTarget.classList.add('opacity-100')}
+/>
     )}
     {!isLocal && (
       <img
