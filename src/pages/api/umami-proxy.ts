@@ -6,14 +6,13 @@ export const GET: APIRoute = async () => {
     const token = process.env.UMAMI_TOKEN;
     if (!token) {
       return new Response(
-        JSON.stringify({ error: "Missing UMAMI_TOKEN environment variable" }),
+        JSON.stringify({ ok: false, error: "Missing UMAMI_TOKEN environment variable" }),
         { status: 500 }
       );
     }
 
-    const baseUrl = umamiConfig.baseUrl;
+    const baseUrl = umamiConfig.baseUrl.replace(/\/+$/, "");
     const siteId = umamiConfig.shareId;
-
     const targetUrl = `${baseUrl}/api/websites/${siteId}/stats`;
 
     const res = await fetch(targetUrl, {
@@ -26,9 +25,9 @@ export const GET: APIRoute = async () => {
 
     let data;
     try {
-      data = await res.json();
+      data = await res.json(); // 只讀一次
     } catch {
-      const text = await res.text();
+      const text = await res.text(); // 若不是 JSON 再讀 text
       return new Response(
         JSON.stringify({
           ok: false,
@@ -40,7 +39,7 @@ export const GET: APIRoute = async () => {
       );
     }
 
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify({ ok: true, data }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
@@ -50,11 +49,7 @@ export const GET: APIRoute = async () => {
     });
   } catch (err) {
     return new Response(
-      JSON.stringify({
-        ok: false,
-        error: "Proxy failed",
-        detail: String(err),
-      }),
+      JSON.stringify({ ok: false, error: "Proxy failed", detail: String(err) }),
       { status: 500 }
     );
   }
