@@ -70,14 +70,13 @@ img {
   height: auto;
 }
 
-/* 懶加載圖片：初始狀態 */
-img[data-lazy] {
+/* 只處理我們標記過的圖片 */
+img[data-fade] {
   opacity: 0;
-  transition: opacity 0.7s ease;
+  transition: opacity 0.6s ease;
 }
 
-/* 圖片載入完成 */
-img[data-lazy].is-loaded {
+img[data-fade].is-loaded {
   opacity: 1;
 }
 
