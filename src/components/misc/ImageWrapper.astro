@@ -29,9 +29,10 @@ const isLocal = !isExternal && !isPublic;
 // 處理本地圖片
 let img;
 if (isLocal) {
-	const files = import.meta.glob<ImageMetadata>("../../**", {
-		import: "default",
-	});
+	const files = import.meta.glob<ImageMetadata>(
+  "/src/**/*.{png,jpg,jpeg,webp,avif}",
+  { import: "default" }
+);
 	let normalizedPath = path
 		.normalize(path.join("../../", basePath, src))
 		.replace(/\\/g, "/");
