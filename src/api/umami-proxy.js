@@ -1,34 +1,43 @@
 // api/umami-proxy.js
-// For Vercel (Node.js serverless). If you use another host, adapt accordingly.
+// Vercel serverless handler (Node). 將 Umami 分享 stats 代理回來，避免瀏覽器 CORS。
 export default async function handler(req, res) {
   try {
     const { baseUrl, websiteId, timezone } = req.query;
+
     if (!baseUrl || !websiteId) {
       res.status(400).json({ error: "baseUrl and websiteId are required" });
       return;
     }
 
-    // sanitize baseUrl
     const base = String(baseUrl).replace(/\/+$/, "");
     const id = String(websiteId);
     const tz = timezone ? String(timezone) : "";
 
-    const target = base + "/api/website/" + encodeURIComponent(id) + "/stats" +
-                   "?metrics=pageviews,visitors&period=30d" +
-                   (tz ? "&timezone=" + encodeURIComponent(tz) : "");
+    const target = `${base}/share/${encodeURIComponent(id)}/stats${tz ? `?timezone=${encodeURIComponent(tz)}` : ""}`;
 
-    const fetchRes = await fetch(target, { method: "GET" });
-    const data = await fetchRes.json().catch(() => null);
+    // 如果需要 token，把 UMAMI_TOKEN 設到 Vercel 的環境變數（可選）
+    const headers = { Accept: "application/json" };
+    if (process.env.UMAMI_TOKEN) {
+      headers.Authorization = `Bearer ${process.env.UMAMI_TOKEN}`;
+    }
 
-    // forward useful info
+    const fetchRes = await fetch(target, { method: "GET", headers });
+
+    let data = null;
+    try {
+      data = await fetchRes.json();
+    } catch (e) {
+      data = null;
+    }
+
     res.setHeader("Content-Type", "application/json");
-    // cache short on CDN
-    res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=120");
+    res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=60");
+
     res.status(fetchRes.ok ? 200 : 502).json({
       ok: fetchRes.ok,
       status: fetchRes.status,
       url: target,
-      data
+      data,
     });
   } catch (err) {
     console.error("[umami-proxy] error:", err);
