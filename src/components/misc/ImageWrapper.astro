@@ -67,18 +67,18 @@ const imageStyle = `object-position: ${position}`;
   alt={alt || ""}
   loading="lazy"
   decoding="async"
-  class="opacity-0 transition-opacity duration-700"
-  on:load={(e) => e.currentTarget.classList.add('opacity-100')}
+  data-fade
+  on:load={(e) => e.currentTarget.classList.add('is-loaded')}
 />
     )}
     {!isLocal && (
       <img
-        src={isPublic ? url(src) : src}
-        alt={alt || ""}
-        class={imageClass}
-        style={imageStyle}
-        loading={lazy ? "lazy" : "eager"}
-        on:load={(e) => e.currentTarget.classList.add("opacity-100")}
-      />
+  src={isPublic ? url(src) : src}
+  alt={alt || ""}
+  loading="lazy"
+  decoding="async"
+  data-fade
+  onload="this.classList.add('is-loaded')"
+/>
     )}
 </div>
