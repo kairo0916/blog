@@ -9,43 +9,85 @@ const BLOG_NAME = "Kairo Blog";
 ---
 
 <div class="card-base p-3">
-  <a aria-label={ "Avatar - " + BLOG_NAME } href={url("#")}
-     class="group block relative mx-auto mt-1 mb-3 max-w-[12rem] overflow-hidden rounded-xl active:scale-95">
-    <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50 w-full h-full z-50 flex items-center justify-center">
-      <Icon name="fa6-regular:address-card" class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl" />
+  <a
+    aria-label={"Avatar - " + BLOG_NAME}
+    href={url("#")}
+    class="group block relative mx-auto mt-1 mb-3 max-w-[12rem] overflow-hidden rounded-xl active:scale-95"
+  >
+    <div
+      class="absolute inset-0 pointer-events-none transition
+             group-hover:bg-black/30 group-active:bg-black/50
+             z-10 flex items-center justify-center"
+    >
+      <Icon
+        name="fa6-regular:address-card"
+        class="text-white text-5xl transition
+               opacity-0 scale-90
+               group-hover:opacity-100 group-hover:scale-100"
+      />
     </div>
 
-    <ImageWrapper src={config.avatar || ""} alt="Profile Image" class="mx-auto w-full h-full" />
+    <ImageWrapper
+      src={config.avatar || ""}
+      alt="Profile Image"
+      class="mx-auto w-full h-full"
+    />
   </a>
 
   <div class="px-2">
-    <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50">{config.name}</div>
+    <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50">
+      {config.name}
+    </div>
+
     <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2"></div>
-    <div class="text-center text-neutral-400 mb-2.5">{config.bio}</div>
+
+    <div class="text-center text-neutral-400 mb-2.5">
+      {config.bio}
+    </div>
 
     <div class="flex flex-wrap gap-2 justify-center mb-1">
-      {config.links && config.links.length > 1 && config.links.map(item => (
-        <a rel="me" aria-label={item.name} href={item.url} target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90">
-          <Icon name={item.icon} class="text-[1.5rem]" />
-        </a>
-      ))}
+      {config.links?.length > 1 &&
+        config.links.map(item => (
+          <a
+            rel="me"
+            aria-label={item.name}
+            href={item.url}
+            target="_blank"
+            class="btn-regular rounded-lg h-10 w-10 active:scale-90"
+          >
+            <Icon name={item.icon} class="text-[1.5rem]" />
+          </a>
+        ))}
 
-      {config.links && config.links.length === 1 && (
-        <a rel="me" aria-label={config.links[0].name} href={config.links[0].url} target="_blank"
-           class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
+      {config.links?.length === 1 && (
+        <a
+          rel="me"
+          aria-label={config.links[0].name}
+          href={config.links[0].url}
+          target="_blank"
+          class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95"
+        >
           <Icon name={config.links[0].icon} class="text-[1.5rem]" />
           {config.links[0].name}
         </a>
       )}
     </div>
 
-    <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
+    <div
+      class="grid grid-cols-2 mt-3 pt-3
+             border-t border-neutral-200 dark:border-neutral-700"
+    >
       <div class="text-center">
         <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
           <Icon name="material-symbols:visibility-outline" class="text-base" />
           <span>訪問量</span>
         </div>
-        <div id="site-views" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
+        <div
+          id="site-views"
+          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
+        >
+          載入中…
+        </div>
       </div>
 
       <div class="text-center border-l border-neutral-200 dark:border-neutral-700">
@@ -53,134 +95,57 @@ const BLOG_NAME = "Kairo Blog";
           <Icon name="material-symbols:person" class="text-base" />
           <span>訪客數</span>
         </div>
-        <div id="site-visitors" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">-</div>
+        <div
+          id="site-visitors"
+          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
+        >
+          載入中…
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script define:vars={{ umamiConfig }} type="module">
-  // Helper: safe parse numeric candidates
-  function toNumber(value) {
-    if (value == null) return null;
-    if (typeof value === "number") return value;
-    if (typeof value === "string") {
-      const n = Number(value.replace(/[, ]+/g, ""));
-      return Number.isFinite(n) ? n : null;
-    }
-    if (typeof value === "object" && "value" in value) {
-      return toNumber(value.value);
-    }
-    return null;
-  }
-
-  // Try to read a few expected shapes
-  function parseUmamiResponse(data) {
-    if (!data || typeof data !== "object") return { pageviews: 0, visitors: 0 };
-
-    // common shapes: { pageviews: { value: 123 }, visitors: { value: 45 } }
-    const pageviews = toNumber(data?.pageviews?.value ?? data?.pageviews ?? data?.views ?? data?.page_views) ?? 0;
-    const visitors = toNumber(data?.visitors?.value ?? data?.visitors ?? data?.uniqueVisitors ?? data?.unique_visitors) ?? 0;
-
-    // array-style fallback: sum
-    if ((!pageviews || !visitors) && Array.isArray(data)) {
-      let pv = 0, vv = 0, hasPv = false, hasV = false;
-      for (const it of data) {
-        const p = toNumber(it?.pageviews ?? it?.views);
-        const v = toNumber(it?.visitors);
-        if (p != null) { pv += p; hasPv = true; }
-        if (v != null) { vv += v; hasV = true; }
-      }
-      return { pageviews: hasPv ? pv : pageviews, visitors: hasV ? vv : visitors };
-    }
-
-    return { pageviews, visitors };
-  }
-
-  // Attempt 1: direct client fetch to Umami (fast if CORS allowed)
-  async function fetchDirectUmami(baseUrl, websiteId, timezone) {
-    const base = String(baseUrl || "").replace(/\/+$/, "");
-    const id = String(websiteId || "");
-    if (!base || !id) throw new Error("missing baseUrl or websiteId");
-    const url = base + "/api/website/" + encodeURIComponent(id) + "/stats" +
-                "?metrics=pageviews,visitors&period=30d" +
-                (timezone ? "&timezone=" + encodeURIComponent(String(timezone)) : "");
-    const resp = await fetch(url, { method: "GET", credentials: "omit" });
-    if (!resp.ok) throw new Error("HTTP " + resp.status);
-    const json = await resp.json();
-    return parseUmamiResponse(json);
-  }
-
-  // Attempt 2: call our serverless proxy (no CORS)
-  async function fetchViaProxy(baseUrl, websiteId, timezone) {
-    const params = new URLSearchParams();
-    params.set("baseUrl", String(baseUrl || ""));
-    params.set("websiteId", String(websiteId || ""));
-    if (timezone) params.set("timezone", String(timezone));
-    const proxyUrl = "/api/umami-proxy?" + params.toString();
-    const resp = await fetch(proxyUrl, { method: "GET", credentials: "same-origin" });
-    if (!resp.ok) throw new Error("Proxy HTTP " + resp.status);
-    const payload = await resp.json();
-    // proxy returns original data under .data (see proxy implementation)
-    return parseUmamiResponse(payload?.data ?? payload);
-  }
-
-  async function loadSiteStats() {
+  async function loadUmamiStats() {
     const viewsEl = document.getElementById("site-views");
     const visitorsEl = document.getElementById("site-visitors");
+
     if (!viewsEl || !visitorsEl) return;
 
-    // show loading
-    viewsEl.textContent = "載入中...";
-    visitorsEl.textContent = "載入中...";
+    if (!umamiConfig?.enable || !umamiConfig?.baseUrl || !umamiConfig?.shareId) {
+      viewsEl.textContent = "-";
+      visitorsEl.textContent = "-";
+      return;
+    }
 
     try {
-      if (!umamiConfig || !umamiConfig.enable) {
-        console.info("[Umami] disabled by config");
-        viewsEl.textContent = "-";
-        visitorsEl.textContent = "-";
-        return;
-      }
+      const base = String(umamiConfig.baseUrl).replace(/\/+$/, "");
+      const shareId = String(umamiConfig.shareId);
 
-      const baseUrl = umamiConfig.baseUrl;
-      const websiteId = umamiConfig.shareId ?? umamiConfig.websiteId ?? umamiConfig.siteId;
-      const tz = umamiConfig.timezone;
+      const apiUrl = `${base}/share/${shareId}/stats`;
 
-      // 1) try direct fetch (fast path)
-      try {
-        console.info("[Umami] trying direct fetch", baseUrl, websiteId);
-        const stats = await fetchDirectUmami(baseUrl, websiteId, tz);
-        console.info("[Umami] direct fetch success", stats);
-        viewsEl.textContent = String(stats.pageviews ?? 0);
-        visitorsEl.textContent = String(stats.visitors ?? 0);
-        return;
-      } catch (err) {
-        console.warn("[Umami] direct fetch failed — will try proxy. error:", err?.message ?? err);
-      }
+      const res = await fetch(apiUrl, { method: "GET" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
 
-      // 2) fallback to proxy
-      try {
-        console.info("[Umami] trying proxy fetch");
-        const stats = await fetchViaProxy(baseUrl, websiteId, tz);
-        console.info("[Umami] proxy fetch success", stats);
-        viewsEl.textContent = String(stats.pageviews ?? 0);
-        visitorsEl.textContent = String(stats.visitors ?? 0);
-        return;
-      } catch (err) {
-        console.error("[Umami] proxy fetch failed:", err);
-        viewsEl.textContent = "-";
-        visitorsEl.textContent = "-";
-      }
+      const data = await res.json();
+
+      // Share API 固定格式
+      const pageviews = Number(data.pageviews) || 0;
+      const visitors = Number(data.visitors) || 0;
+
+      viewsEl.textContent = pageviews.toLocaleString();
+      visitorsEl.textContent = visitors.toLocaleString();
     } catch (err) {
-      console.error("[Umami] unexpected error:", err);
+      console.error("[Umami] stats load failed:", err);
       viewsEl.textContent = "-";
       visitorsEl.textContent = "-";
     }
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", loadSiteStats);
+    document.addEventListener("DOMContentLoaded", loadUmamiStats);
   } else {
-    loadSiteStats();
+    loadUmamiStats();
   }
 </script>
