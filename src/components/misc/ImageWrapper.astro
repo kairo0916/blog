@@ -62,23 +62,10 @@ const imageStyle = `object-position: ${position}`;
 
     <!-- 正式圖片 -->
     {isLocal && img && (
-      <Image
-  src={img}
-  alt={alt || ""}
-  loading="lazy"
-  decoding="async"
-  data-fade
-  on:load={(e) => e.currentTarget.classList.add('is-loaded')}
-/>
-    )}
-    {!isLocal && (
-      <img
-  src={isPublic ? url(src) : src}
-  alt={alt || ""}
-  loading="lazy"
-  decoding="async"
-  data-fade
-  onload="this.classList.add('is-loaded')"
-/>
-    )}
+  <Image src={img} alt={alt || ""} />
+)}
+
+{!isLocal && (
+  <img src={isPublic ? url(src) : src} alt={alt || ""} />
+)}
 </div>
