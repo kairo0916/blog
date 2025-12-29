@@ -1,29 +1,21 @@
 ---
 import { Icon } from "astro-icon/components";
 import { profileConfig, umamiConfig } from "../../config";
-import { url } from "../../utils/url-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 
 const config = profileConfig;
-const BLOG_NAME = "Kairo Blog";
 ---
 
 <div class="card-base p-3">
   <a
-    aria-label={"Avatar - " + BLOG_NAME}
-    href={url("#")}
+    aria-label="Avatar - Kairo Blog"
+    href="#"
     class="group block relative mx-auto mt-1 mb-3 max-w-[12rem] overflow-hidden rounded-xl active:scale-95"
   >
-    <div
-      class="absolute inset-0 pointer-events-none transition
-             group-hover:bg-black/30 group-active:bg-black/50
-             z-10 flex items-center justify-center"
-    >
+    <div class="absolute inset-0 pointer-events-none transition group-hover:bg-black/30 group-active:bg-black/50 z-10 flex items-center justify-center">
       <Icon
         name="fa6-regular:address-card"
-        class="text-white text-5xl transition
-               opacity-0 scale-90
-               group-hover:opacity-100 group-hover:scale-100"
+        class="text-white text-5xl transition opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100"
       />
     </div>
 
@@ -46,20 +38,23 @@ const BLOG_NAME = "Kairo Blog";
     </div>
 
     <div class="flex flex-wrap gap-2 justify-center mb-1">
-      {config.links?.length > 1 &&
-        config.links.map(item => (
-          <a
-            rel="me"
-            aria-label={item.name}
-            href={item.url}
-            target="_blank"
-            class="btn-regular rounded-lg h-10 w-10 active:scale-90"
-          >
-            <Icon name={item.icon} class="text-[1.5rem]" />
-          </a>
-        ))}
+      {config.links && config.links.length > 1 &&
+        config.links.map(function (item) {
+          return (
+            <a
+              rel="me"
+              aria-label={item.name}
+              href={item.url}
+              target="_blank"
+              class="btn-regular rounded-lg h-10 w-10 active:scale-90"
+            >
+              <Icon name={item.icon} class="text-[1.5rem]" />
+            </a>
+          );
+        })
+      }
 
-      {config.links?.length === 1 && (
+      {config.links && config.links.length === 1 && (
         <a
           rel="me"
           aria-label={config.links[0].name}
@@ -73,19 +68,13 @@ const BLOG_NAME = "Kairo Blog";
       )}
     </div>
 
-    <div
-      class="grid grid-cols-2 mt-3 pt-3
-             border-t border-neutral-200 dark:border-neutral-700"
-    >
+    <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
       <div class="text-center">
         <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
           <Icon name="material-symbols:visibility-outline" class="text-base" />
           <span>訪問量</span>
         </div>
-        <div
-          id="site-views"
-          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
-        >
+        <div id="site-views" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">
           載入中…
         </div>
       </div>
@@ -95,10 +84,7 @@ const BLOG_NAME = "Kairo Blog";
           <Icon name="material-symbols:person" class="text-base" />
           <span>訪客數</span>
         </div>
-        <div
-          id="site-visitors"
-          class="font-bold text-lg text-neutral-700 dark:text-neutral-300"
-        >
+        <div id="site-visitors" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">
           載入中…
         </div>
       </div>
@@ -106,46 +92,49 @@ const BLOG_NAME = "Kairo Blog";
   </div>
 </div>
 
-<script define:vars={{ umamiConfig }} type="module">
-  async function loadUmamiStats() {
-    const viewsEl = document.getElementById("site-views");
-    const visitorsEl = document.getElementById("site-visitors");
+<script define:vars={{ umamiConfig }}>
+(function () {
+  function loadStats() {
+    var viewsEl = document.getElementById("site-views");
+    var visitorsEl = document.getElementById("site-visitors");
 
     if (!viewsEl || !visitorsEl) return;
 
-    if (!umamiConfig?.enable || !umamiConfig?.baseUrl || !umamiConfig?.shareId) {
+    if (!umamiConfig || !umamiConfig.enable || !umamiConfig.baseUrl || !umamiConfig.shareId) {
       viewsEl.textContent = "-";
       visitorsEl.textContent = "-";
       return;
     }
 
-    try {
-      const base = String(umamiConfig.baseUrl).replace(/\/+$/, "");
-      const shareId = String(umamiConfig.shareId);
-
-      const apiUrl = `${base}/share/${shareId}/stats`;
-
-      const res = await fetch(apiUrl, { method: "GET" });
-      if (!res.ok) throw new Error("HTTP " + res.status);
-
-      const data = await res.json();
-
-      // Share API 固定格式
-      const pageviews = Number(data.pageviews) || 0;
-      const visitors = Number(data.visitors) || 0;
-
-      viewsEl.textContent = pageviews.toLocaleString();
-      visitorsEl.textContent = visitors.toLocaleString();
-    } catch (err) {
-      console.error("[Umami] stats load failed:", err);
-      viewsEl.textContent = "-";
-      visitorsEl.textContent = "-";
+    var baseUrl = umamiConfig.baseUrl;
+    if (baseUrl.endsWith("/")) {
+      baseUrl = baseUrl.slice(0, -1);
     }
+
+    var apiUrl = baseUrl + "/share/" + umamiConfig.shareId + "/stats";
+
+    fetch(apiUrl)
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var pv = Number(data.pageviews || 0);
+        var uv = Number(data.visitors || 0);
+        viewsEl.textContent = pv.toLocaleString();
+        visitorsEl.textContent = uv.toLocaleString();
+      })
+      .catch(function (err) {
+        console.error("[Umami] load failed", err);
+        viewsEl.textContent = "-";
+        visitorsEl.textContent = "-";
+      });
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", loadUmamiStats);
+    document.addEventListener("DOMContentLoaded", loadStats);
   } else {
-    loadUmamiStats();
+    loadStats();
   }
+})();
 </script>
