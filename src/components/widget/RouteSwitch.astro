@@ -3,91 +3,211 @@ interface Route {
   name: string;
   key: string;
   url: string;
-  ping: string;
+  pingUrl?: string; // ping 用的 endpoint（預設為 url）
 }
 
+// 可編輯的路線陣列：改這裡就夠了
 const routes: Route[] = [
-  {
-    name: "Vercel",
-    key: "vercel",
-    url: "https://kairo.qzz.io",
-    ping: "https://kairo.qzz.io",
-  },
-  {
-    name: "EdgeOne",
-    key: "edgeone",
-    url: "https://edge.kairo.qzz.io",
-    ping: "https://edge.kairo.qzz.io",
-  },
+  { name: "Vercel", key: "vercel", url: "https://your-vercel-url.com", pingUrl: "https://your-vercel-url.com" },
+  { name: "EdgeOne", key: "edgeone", url: "https://your-edgeone-url.com", pingUrl: "https://your-edgeone-url.com" },
 ];
 
-// 預設路線
+// 預設路線 key（改這個改預設）
 const defaultRoute = "vercel";
+
+// 延遲 ms（點擊後跳轉延遲）
+const redirectDelay = 250;
 ---
-<div class="route-widget card-base p-4">
-  <div class="route-title mb-3 text-sm font-medium opacity-80">
-    路線選擇
+<div class="rsw-widget rsw-card" role="region" aria-label="路線切換">
+  <div class="rsw-header">
+    <div class="rsw-title">路線選擇</div>
+    <div class="rsw-sub">選擇部署 / 路線</div>
   </div>
 
-  <div class="route-buttons flex gap-2">
-    {routes.map(route => (
+  <div class="rsw-buttons" role="tablist" aria-label="路線列表">
+    {routes.map((r) => (
       <button
-        class="route-btn"
-        data-key={route.key}
-        data-url={route.url}
-        data-ping={route.ping}
+        type="button"
+        class="rsw-btn"
+        data-key={r.key}
+        data-url={r.url}
+        data-ping={r.pingUrl ?? r.url}
+        aria-pressed={r.key === defaultRoute ? "true" : "false"}
       >
-        <span>{route.name}</span>
-        <span class="ping text-xs opacity-70">-- ms</span>
+        <span class="rsw-name">{r.name}</span>
+        <span class="rsw-ping" aria-live="polite">— ms</span>
       </button>
     ))}
   </div>
 </div>
 
+<style is:inline>
+/* ===== RouteSwitch 內嵌樣式（保守、低衝突） ===== */
+.rsw-card {
+  --bg: var(--card-bg, white);
+  --border: var(--card-border, rgba(0,0,0,0.06));
+  --hover: var(--card-bg-hover, rgba(0,0,0,0.02));
+  --accent: oklch(0.72 0.12 var(--hue, 220));
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 0.6rem;
+  border-radius: 0.6rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  font-family: inherit;
+  color: inherit;
+}
+.rsw-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin-bottom: 0.5rem;
+}
+.rsw-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.rsw-sub {
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+/* 按鈕區 */
+.rsw-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+.rsw-btn {
+  flex: 1 1 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-size: 0.9rem;
+}
+.rsw-btn:hover {
+  background: var(--hover);
+}
+.rsw-btn:active {
+  transform: translateY(1px);
+}
+
+/* 當前路線樣式 */
+.rsw-btn[aria-pressed="true"],
+.rsw-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* 名稱與延遲 */
+.rsw-name {
+  font-weight: 500;
+}
+.rsw-ping {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+/* 小螢幕優化 */
+@media (max-width: 420px) {
+  .rsw-title { font-size: 0.9rem; }
+  .rsw-btn { padding: 0.45rem 0.5rem; font-size: 0.86rem; }
+}
+</style>
+
 <script is:inline>
-  (function () {
-    const DEFAULT = "{defaultRoute}";
-    const buttons = document.querySelectorAll(".route-btn");
+(function () {
+  // 後端變數注入（由 Astro 前端替換）
+  const ROUTES = /**/ {JSON.stringify(routes)} /**/ ;
+  const DEFAULT = /**/ {JSON.stringify(defaultRoute)} /**/ ;
+  const REDIRECT_DELAY = /**/ {redirectDelay} /**/ ;
 
-    function setActive(key) {
-      buttons.forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.key === key);
-      });
-    }
+  // 工具：把 ms 字串化
+  function fmt(ms) {
+    if (ms === null || ms === undefined) return '— ms';
+    return ms + ' ms';
+  }
 
-    // 預設啟用
-    setActive(DEFAULT);
-
-    // Ping 測速
-    function ping(url, cb) {
+  // Ping：使用 fetch + no-cors 測延遲（非精準 ICMP，但足夠體感）
+  function pingOnce(url, timeout = 3000) {
+    return new Promise((resolve) => {
       const start = performance.now();
-      fetch(url, { mode: "no-cors", cache: "no-store" })
-        .catch(() => {})
+      // 加個空請求（no-cors）以免拋錯
+      const controller = new AbortController();
+      const id = setTimeout(() => {
+        controller.abort();
+        resolve(null);
+      }, timeout);
+
+      fetch(url, { method: 'HEAD', mode: 'no-cors', cache: 'no-store', signal: controller.signal })
+        .catch(() => { /* ignore */ })
         .finally(() => {
+          clearTimeout(id);
           const ms = Math.round(performance.now() - start);
-          cb(ms);
+          resolve(ms);
         });
-    }
-
-    buttons.forEach(btn => {
-      const pingEl = btn.querySelector(".ping");
-      const pingUrl = btn.dataset.ping;
-
-      // 頁面載入時 Ping 一次
-      ping(pingUrl, ms => {
-        pingEl.textContent = ms + " ms";
-      });
-
-      // 點擊切換
-      btn.addEventListener("click", () => {
-        const url = btn.dataset.url;
-        setActive(btn.dataset.key);
-
-        // 延遲一點再跳
-        setTimeout(() => {
-          window.location.href = url;
-        }, 250);
-      });
     });
-  })();
+  }
+
+  function init() {
+    const root = document.querySelector('.rsw-widget');
+    if (!root) return;
+    const buttons = Array.from(root.querySelectorAll('.rsw-btn'));
+
+    // set default active (try localStorage first, else default)
+    const saved = (function () { try { return localStorage.getItem('rsw:selected'); } catch(e){ return null; } })();
+    const initial = saved || DEFAULT;
+
+    buttons.forEach((btn) => {
+      const key = btn.dataset.key;
+      if (key === initial) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+      } else {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', 'false');
+      }
+
+      // ping span
+      const pingEl = btn.querySelector('.rsw-ping');
+      const pingUrl = btn.dataset.ping || btn.dataset.url;
+
+      // 先顯示 loading 樣式
+      pingEl.textContent = '… ms';
+
+      // ping 並更新顯示
+      pingOnce(pingUrl).then(ms => {
+        pingEl.textContent = fmt(ms);
+      });
+
+      // click 行為：切換 active 並跳轉（直接跳，不開新分頁）
+      btn.addEventListener('click', () => {
+        // 切換 UI
+        buttons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true');
+
+        // 記住選擇
+        try { localStorage.setItem('rsw:selected', btn.dataset.key); } catch (e) {}
+
+        // 小延遲後跳轉（讓 UI 有感）
+        setTimeout(() => {
+          window.location.href = btn.dataset.url;
+        }, REDIRECT_DELAY);
+      }, { passive: true });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
