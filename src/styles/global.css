@@ -119,3 +119,49 @@ img:not(.is-loaded) {
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
 }
+
+   
+
+/* =========================
+   Route Switch Widget
+   ========================= */
+
+.route-widget {
+  border-radius: var(--radius);
+}
+
+.route-title {
+  letter-spacing: 0.02em;
+}
+
+.route-buttons {
+  display: flex;
+}
+
+.route-btn {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.route-btn:hover {
+  background: var(--card-bg-hover);
+}
+
+.route-btn.active {
+  background: oklch(0.72 0.12 var(--hue));
+  color: white;
+  border-color: transparent;
+}
+
+.route-btn.active .ping {
+  opacity: 0.9;
+}
