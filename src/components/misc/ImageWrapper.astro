@@ -8,64 +8,47 @@ interface Props {
 	alt?: string;
 	position?: string;
 	basePath?: string;
-	lazy?: boolean; // 新增屬性
-	placeholderSrc?: string; // 可選低解析圖
 }
 
 import { Image } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/", lazy = true, placeholderSrc } = Astro.props;
+const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
 const className = Astro.props.class;
 
-const isExternal =
-  src.startsWith("http") ||
-  src.startsWith("https") ||
-  src.startsWith("data:");
-
+const isLocal = !(
+	src.startsWith("/") ||
+	src.startsWith("http") ||
+	src.startsWith("https") ||
+	src.startsWith("data:")
+);
 const isPublic = src.startsWith("/");
-const isLocal = !isExternal && !isPublic;
 
-// 處理本地圖片
+// TODO temporary workaround for images dynamic import
+// https://github.com/withastro/astro/issues/3373
+// biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
 let img;
 if (isLocal) {
-	const files = import.meta.glob<ImageMetadata>(
-  "/src/**/*.{png,jpg,jpeg,webp,avif}",
-  { import: "default" }
-);
+	const files = import.meta.glob<ImageMetadata>("../../**", {
+		import: "default",
+	});
 	let normalizedPath = path
-  .normalize(`/src/${basePath}/${src}`)
-  .replace(/\\/g, "/")
-  .replace(/\/+/g, "/");
+		.normalize(path.join("../../", basePath, src))
+		.replace(/\\/g, "/");
 	const file = files[normalizedPath];
 	if (!file) {
-  console.error("[ImageWrapper] NOT FOUND:", normalizedPath);
-}
+		console.error(
+			`\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
+		);
+	}
 	img = await file();
 }
 
-const imageClass = "w-full h-full object-cover transition-opacity duration-700 opacity-0";
+const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
 ---
-
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
-    <!-- 低解析占位圖 / 半透明層 -->
-    {placeholderSrc && (
-      <img
-        src={placeholderSrc}
-        alt=""
-        class="absolute inset-0 w-full h-full object-cover blur-lg scale-110"
-        aria-hidden="true"
-      />
-    )}
     <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-
-    <!-- 正式圖片 -->
-    {isLocal && img && (
-  <Image src={img} alt={alt || ""} />
-)}
-
-{!isLocal && (
-  <img src={isPublic ? url(src) : src} alt={alt || ""} />
-)}
+    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle}/>}
+    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle}/>}
 </div>
