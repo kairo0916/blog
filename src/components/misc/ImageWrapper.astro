@@ -14,74 +14,41 @@ import { Image } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
 const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
-const className = Astro.props.class || "";
+const className = Astro.props.class;
 
-// 判斷來源（修正過的邏輯）
-const isExternal =
-	src.startsWith("http") || src.startsWith("https") || src.startsWith("data:");
+const isLocal = !(
+	src.startsWith("/") ||
+	src.startsWith("http") ||
+	src.startsWith("https") ||
+	src.startsWith("data:")
+);
 const isPublic = src.startsWith("/");
-const isLocal = !isExternal && !isPublic;
 
-// 安全的 glob（只抓 src 裡常見圖片格式）
+// TODO temporary workaround for images dynamic import
+// https://github.com/withastro/astro/issues/3373
+// biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
 let img;
 if (isLocal) {
-	const files = import.meta.glob<ImageMetadata>("/src/**/*.{png,jpg,jpeg,webp,avif,gif,svg}", {
+	const files = import.meta.glob<ImageMetadata>("../../**", {
 		import: "default",
 	});
-	// 建立一個可預測的絕對路徑 key
-	// basePath 可能是 '/' 或 'images' 或 './images'，把它正規化
-	const normalizedBase = basePath.replace(/^\.\//, "").replace(/^\/+|\/+$/g, "");
-	// src 可能是 './foo.jpg'、'foo.jpg'、'img/foo.jpg'，也正規化
-	const normalizedSrc = src.replace(/^\.\//, "").replace(/^\/+/, "");
-	let normalizedPath = `/src/${normalizedBase ? normalizedBase + "/" : ""}${normalizedSrc}`;
-	// 清掉多餘斜線
-	normalizedPath = normalizedPath.replace(/\/+/g, "/");
-
+	let normalizedPath = path
+		.normalize(path.join("../../", basePath, src))
+		.replace(/\\/g, "/");
 	const file = files[normalizedPath];
 	if (!file) {
 		console.error(
-			`[ImageWrapper] Image file not found: ${normalizedPath} — check your src/basePath.`,
+			`\n[ERROR] Image file not found: ${normalizedPath.replace("../../", "src/")}`,
 		);
-	} else {
-		img = await file();
 	}
+	img = await file();
 }
 
 const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
 ---
-
-<div id={id} class:list={[className, 'image-wrapper', 'overflow-hidden relative']}>
-	<!-- 覆蓋層（保留原有結構） -->
-	<div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-
-	{isLocal && img && (
-		<!-- Astro Image（本地）: 加 lazy、加解碼、加載完成加 class 保持向後相容 -->
-		<Image
-			src={img}
-			alt={alt || ""}
-			class={`${imageClass} transition-opacity duration-700`}
-			style={imageStyle}
-			loading="lazy"
-			decoding="async"
-			// on:load handler：加上 is-loaded class（用原生事件或全站 JS 也可以）
-			on:load={(e) => {
-				// 保守：若元素支援 classList
-				try { e.currentTarget.classList.add('is-loaded'); } catch (err) {}
-			}}
-		/>
-	)}
-
-	{!isLocal && (
-		<!-- Remote 或 public 圖片 -->
-		<img
-			src={isPublic ? url(src) : src}
-			alt={alt || ""}
-			class={`${imageClass} transition-opacity duration-700`}
-			style={imageStyle}
-			loading="lazy"
-			decoding="async"
-			onload="this.classList.add('is-loaded')"
-		/>
-	)}
+<div id={id} class:list={[className, 'overflow-hidden relative']}>
+    <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
+    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle}/>}
+    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle}/>}
 </div>
