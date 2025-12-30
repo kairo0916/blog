@@ -344,51 +344,6 @@ const bannerOffset =
 }
 </style>
 
-// 懶加載代碼
-<script is:inline>
-(function () {
-  const lazyImages = document.querySelectorAll('img[data-lazy]');
-
-  if (!('IntersectionObserver' in window)) {
-    // 舊瀏覽器 fallback
-    lazyImages.forEach(img => loadImage(img));
-    return;
-  }
-
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-
-      const img = entry.target;
-      loadImage(img);
-      obs.unobserve(img);
-    });
-  }, {
-    rootMargin: '200px 0px' // 提前載入，避免滑到才空白
-  });
-
-  lazyImages.forEach(img => observer.observe(img));
-
-  function loadImage(img) {
-    const src = img.getAttribute('data-src');
-    if (!src) return;
-
-    img.src = src;
-
-    img.addEventListener('load', () => {
-      img.classList.add('is-loaded');
-
-      // 移除 placeholder
-      const placeholder = img.parentElement?.querySelector('img[data-placeholder]');
-      if (placeholder) {
-        placeholder.style.opacity = '0';
-        setTimeout(() => placeholder.remove(), 400);
-      }
-    }, { once: true });
-  }
-})();
-</script>
-
 <script>
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
