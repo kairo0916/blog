@@ -1,0 +1,93 @@
+---
+interface Route {
+  name: string;
+  key: string;
+  url: string;
+  ping: string;
+}
+
+const routes: Route[] = [
+  {
+    name: "Vercel",
+    key: "vercel",
+    url: "https://your-vercel-url.com",
+    ping: "https://your-vercel-url.com",
+  },
+  {
+    name: "EdgeOne",
+    key: "edgeone",
+    url: "https://your-edgeone-url.com",
+    ping: "https://your-edgeone-url.com",
+  },
+];
+
+// 預設路線
+const defaultRoute = "vercel";
+---
+<div class="route-widget card-base p-4">
+  <div class="route-title mb-3 text-sm font-medium opacity-80">
+    路線選擇
+  </div>
+
+  <div class="route-buttons flex gap-2">
+    {routes.map(route => (
+      <button
+        class="route-btn"
+        data-key={route.key}
+        data-url={route.url}
+        data-ping={route.ping}
+      >
+        <span>{route.name}</span>
+        <span class="ping text-xs opacity-70">-- ms</span>
+      </button>
+    ))}
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const DEFAULT = "{defaultRoute}";
+    const buttons = document.querySelectorAll(".route-btn");
+
+    function setActive(key) {
+      buttons.forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.key === key);
+      });
+    }
+
+    // 預設啟用
+    setActive(DEFAULT);
+
+    // Ping 測速
+    function ping(url, cb) {
+      const start = performance.now();
+      fetch(url, { mode: "no-cors", cache: "no-store" })
+        .catch(() => {})
+        .finally(() => {
+          const ms = Math.round(performance.now() - start);
+          cb(ms);
+        });
+    }
+
+    buttons.forEach(btn => {
+      const pingEl = btn.querySelector(".ping");
+      const pingUrl = btn.dataset.ping;
+
+      // 頁面載入時 Ping 一次
+      ping(pingUrl, ms => {
+        pingEl.textContent = ms + " ms";
+      });
+
+      // 點擊切換
+      btn.addEventListener("click", () => {
+        const url = btn.dataset.url;
+        setActive(btn.dataset.key);
+
+        // 延遲一點再跳
+        setTimeout(() => {
+          window.location.href = url;
+        }, 250);
+      });
+    });
+  })();
+</script>
