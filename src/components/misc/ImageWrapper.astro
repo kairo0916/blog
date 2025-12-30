@@ -1,6 +1,5 @@
 ---
 import path from "node:path";
-
 interface Props {
 	id?: string;
 	src: string;
@@ -9,9 +8,9 @@ interface Props {
 	position?: string;
 	basePath?: string;
 }
-
 import { Image } from "astro:assets";
 import { url } from "../../utils/url-utils";
+import { imageFallbackConfig, siteConfig } from "../../config";
 
 const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
 const className = Astro.props.class;
@@ -26,7 +25,7 @@ const isPublic = src.startsWith("/");
 
 // TODO temporary workaround for images dynamic import
 // https://github.com/withastro/astro/issues/3373
-// biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
+// biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
 let img;
 if (isLocal) {
 	const files = import.meta.glob<ImageMetadata>("../../**", {
@@ -47,8 +46,43 @@ if (isLocal) {
 const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
 ---
-<div id={id} class:list={[className, 'overflow-hidden relative']}>
-    <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle}/>}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle}/>}
+<div id={id} class:list={[className, 'overflow-hidden relative image-wrapper']} style={`--theme-hue: ${siteConfig.themeColor.hue}`}>
+
+    <div class="loading-bar absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-1 bg-gray-200 dark:bg-gray-700 z-10 rounded-full overflow-hidden">
+        <div class="loading-progress h-full w-8 bg-[oklch(0.70_0.14_var(--theme-hue))] animate-loading-progress rounded-full"></div>
+    </div>
+    
+    {isLocal && img && <Image src={img} alt={alt || ""} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';"/>}
+    {!isLocal && (
+        imageFallbackConfig.enable && src.includes(imageFallbackConfig.originalDomain) ? 
+            <img src={isPublic ? url(src) : src} alt={alt || ""} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';" onerror={`this.onerror=null; this.src='${(isPublic ? url(src) : src).replace(imageFallbackConfig.originalDomain, imageFallbackConfig.fallbackDomain)}';`}/> :
+            <img src={isPublic ? url(src) : src} alt={alt || ""} class={`${imageClass} image-content opacity-0 transition-opacity duration-500`} style={imageStyle} onload="this.style.opacity='1'; this.parentElement.querySelector('.loading-bar').style.opacity='0';"/>
+    )}
 </div>
+
+<style>
+    .loading-bar {
+        transition: opacity 0.5s ease-out;
+    }
+    
+    @keyframes loading-progress {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(400%);
+        }
+    }
+    
+    .animate-loading-progress {
+        animation: loading-progress 1.5s ease-in-out infinite;
+    }
+    
+    .image-content {
+        transition: transform 0.3s ease-out, opacity 0.5s ease-out;
+    }
+    
+    .image-wrapper:hover .image-content {
+        transform: scale(1.05);
+    }
+</style>
