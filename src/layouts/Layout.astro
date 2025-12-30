@@ -111,6 +111,77 @@ const bannerOffset =
 			/>
 		))}
 
+        // 自動選擇極佳節點
+        <script is:inline>
+(() => {
+  const MAIN = "https://kairo.qzz.io";
+
+  const NODES = [
+    { key: "edgeone", url: "https://edge.kairo.qzz.io" },
+    { key: "cloudflare", url: "https://cf.kairo.qzz.io" },
+  ];
+
+  const TIMEOUT = 3000;
+  const FLAG = "__best_route_selected";
+
+  // 防止重導地獄
+  if (sessionStorage.getItem(FLAG)) return;
+  sessionStorage.setItem(FLAG, "1");
+
+  // 只在主站判斷
+  if (!location.href.startsWith(MAIN)) return;
+
+  function ping(url) {
+    return new Promise((resolve) => {
+      const controller = new AbortController();
+      const start = performance.now();
+
+      const timer = setTimeout(() => {
+        controller.abort();
+        resolve(null);
+      }, TIMEOUT);
+
+      fetch(url + "/?_=" + Date.now(), {
+        method: "GET",
+        mode: "no-cors",
+        signal: controller.signal,
+      })
+        .then(() => {
+          clearTimeout(timer);
+          resolve(Math.round(performance.now() - start));
+        })
+        .catch(() => {
+          clearTimeout(timer);
+          resolve(null);
+        });
+    });
+  }
+
+  Promise.all(
+    NODES.map((n) =>
+      ping(n.url).then((ms) => ({ ...n, ms }))
+    )
+  ).then((results) => {
+    const valid = results.filter((r) => r.ms !== null);
+    if (!valid.length) return;
+
+    valid.sort((a, b) => a.ms - b.ms);
+    const best = valid[0];
+
+    // 已經在最佳節點就不跳
+    if (location.href.startsWith(best.url)) return;
+
+    const target =
+      best.url +
+      location.pathname +
+      location.search +
+      location.hash;
+
+    location.replace(target);
+  });
+})();
+</script>
+
         <script defer src="https://cloud.umami.is/script.js" data-website-id="7084c8b9-50af-4d0b-9d61-28213659fbe1"></script>
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
