@@ -103,3 +103,16 @@ img[data-lazy] {
 #banner-wrapper img[data-lazy] {
   transition: opacity 0.9s ease, transform 0.9s ease;
 }
+
+/* === ImageWrapper 緊急修復 === */
+.image-wrapper,
+.image-wrapper > * {
+  min-height: 1px;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
