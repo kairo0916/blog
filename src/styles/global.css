@@ -58,61 +58,64 @@
 
 
 
-/* =========================================
-   Global Image Lazy Loading
-   Astro / Fuwari safe
-   ========================================= */
+/* ===========================
+   ImageWrapper — Safe global styles
+   (懶加載 + LQIP + 淡入)
+   =========================== */
 
-/* 圖片容器（ImageWrapper 已是 relative，這是兜底） */
-.image-wrapper,
-img {
-  max-width: 100%;
-  height: auto;
+/* wrapper 基本樣式，保證有高度與定位 */
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  /* 防止高度塌陷：至少佔一點空間，避免 layout 塌陷 */
+  min-height: 1px;
 }
 
-/* 只處理我們標記過的圖片 */
-img[data-fade] {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-
-img[data-fade].is-loaded {
-  opacity: 1;
-}
-
-/* LQIP（低解析占位圖） */
-img[data-placeholder] {
+/* placeholder（低解析圖）——放在最底層 */
+.image-wrapper .placeholder {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(16px);
-  transform: scale(1.1);
-  transition: opacity 0.4s ease;
+  filter: blur(12px);
+  transform: scale(1.05);
+  transition: opacity 0.45s ease;
   z-index: 1;
+  pointer-events: none;
 }
 
-/* 正式圖片在上層 */
-img[data-lazy] {
-  position: relative;
-  z-index: 2;
-}
-
-/* Banner 額外平滑一點（可選） */
-#banner-wrapper img[data-lazy] {
-  transition: opacity 0.9s ease, transform 0.9s ease;
-}
-
-/* === ImageWrapper 緊急修復 === */
-.image-wrapper,
-.image-wrapper > * {
-  min-height: 1px;
-}
-
+/* 正式圖片：初始為透明，載入後會變成 .is-loaded */
 .image-wrapper img {
+  position: relative; /* 疊在 placeholder 之上 */
+  z-index: 2;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateZ(0); /* 促進 GPU 加速 */
+}
+
+/* 圖片載入完成（JS 或 onload 加上）會出現 */
+.image-wrapper img.is-loaded {
+  opacity: 1;
+}
+
+/* noscript 保命：如果 JS 被阻擋，圖片仍顯示 */
+noscript .image-wrapper img,
+.image-wrapper img[loading="eager"] {
+  opacity: 1 !important;
+}
+
+/* Banner 可選的更溫和過渡（如果你有大圖 header） */
+#banner-wrapper .image-wrapper img {
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+/* 小補丁：如果你在某處需要讓原本的 img 行為維持 */
+img:not(.is-loaded) {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
