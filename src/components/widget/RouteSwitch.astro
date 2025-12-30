@@ -2,7 +2,7 @@
 /**
  * src/components/widget/RouteSwitch.astro
  *
- * Route switcher widget — 內嵌樣式 + 內嵌腳本（貼上即用）
+ * Route switcher widget — 使用主題（Fuwari）class，內嵌腳本（貼上即用）
  *
  * 已依你要求設定連結：
  * - Vercel:     https://kairo.qzz.io
@@ -38,7 +38,7 @@ const redirectDelay = 250;
     {routes.map((r) => (
       <button
         type="button"
-        class="rsw-btn flex items-center justify-between w-full px-3 py-2 rounded-xl transition-colors active:translate-y-[1px] focus:outline-none"
+        class="rsw-btn flex items-center justify-between w-full px-3 py-2 rounded-xl transition-colors active:translate-y-[1px] focus:outline-none border"
         data-key={r.key}
         data-url={r.url}
         data-ping={r.pingUrl ?? r.url}
@@ -56,48 +56,6 @@ const redirectDelay = 250;
     ))}
   </div>
 </div>
-
-<style is:inline>
-/* ===== RouteSwitch 內嵌樣式（保守、低衝突） ===== */
-/* 盡量使用 Fuwari / 全域變數風格以便主題一致 */
-.rsw-widget {
-  --accent: oklch(0.72 0.12 var(--hue, 220));
-}
-.rsw-btn {
-  border: 1px solid var(--card-border, rgba(0,0,0,0.06));
-  background: var(--card-bg, white);
-}
-.rsw-btn:hover {
-  background: var(--card-bg-hover, rgba(0,0,0,0.02));
-}
-.rsw-btn[aria-pressed="true"],
-.rsw-btn.active {
-  background: var(--accent);
-  color: white;
-  border-color: transparent;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-}
-.rsw-badge {
-  width: 28px;
-  height: 24px;
-  background: rgba(0,0,0,0.04);
-  border-radius: 6px;
-  font-size: 0.78rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.rsw-btn[aria-pressed="true"] .rsw-badge {
-  background: rgba(255,255,255,0.12);
-}
-.rsw-ping {
-  min-width: 48px;
-  text-align: right;
-}
-@media (max-width:420px) {
-  .rsw-btn { padding: 0.45rem 0.5rem; font-size: 0.86rem; }
-}
-</style>
 
 <script is:inline>
 (function () {
@@ -164,7 +122,7 @@ const redirectDelay = 250;
       buttons.forEach(b => {
         const k = b.dataset.key;
         if (k === key) {
-          b.classList.add('active');
+          b.classList.add('active'); // 保留 "active" class 供主題決定外觀
           b.setAttribute('aria-pressed', 'true');
         } else {
           b.classList.remove('active');
