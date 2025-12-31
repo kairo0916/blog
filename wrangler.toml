@@ -1,6 +1,6 @@
-# wrangler.toml
 name = "blog"
-compatibility_date = "2025-12-30"
+compatibility_date = "2025-12-31"
 
-[site]
-bucket = "./dist"
+[assets]
+directory = "./dist"
+entry-point = "./workers-site"
