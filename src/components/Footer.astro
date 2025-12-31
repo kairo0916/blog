@@ -26,7 +26,7 @@ try {
 
       let taipei = null;
       if (isoDate) {
-        // 使用 toLocaleString 並指定 hour12: false 以確保 24 小時制
+        // 使用 24 小時制，不顯示上午/下午
         const raw = new Date(isoDate).toLocaleString("zh-TW", {
           timeZone: "Asia/Taipei",
           year: "numeric",
@@ -37,8 +37,8 @@ try {
           second: "2-digit",
           hour12: false
         });
-        // 把斜線改成短橫並去除可能的非可見字元，結果像：2026-01-01 13:14:15
-        taipei = raw.replace(/\//g, "-").replace(/\u200E/g, "").replace(/\u202f/g, " ");
+        // 格式化為：YYYY-MM-DD HH:MM:SS
+        taipei = raw.replace(/\//g, "-").replace(/\u200E/g, "").replace(/\u202f/g, " ").trim();
       }
 
       latestCommit = {
@@ -68,8 +68,9 @@ try {
   role="contentinfo"
   aria-label="Footer"
 >
-  <div class="w-full max-w-[var(--page-width)] flex flex-col items-center text-sm leading-tight">
+  <div class="w-full max-w-[var(--page-width)] flex flex-col items-center text-sm">
     <div class="flex flex-col items-center text-sm leading-tight space-y-0.5">
+
       <div class="mt-0">&copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}。保留所有權利。</div>
 
       <div class="mt-0">
@@ -90,18 +91,6 @@ try {
         <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href={url("sitemap-index.xml")}>網站地圖</a>
       </div>
 
-      <!-- 只顯示 (ID @ DATE) 格式，靠近其它文字 -->
-      <div class="mt-0">
-        {latestCommit
-          ? (
-            <a class="no-underline text-sm font-medium" target="_blank" rel="noopener" href={latestCommit.html_url}>
-              ({latestCommit.shortSha} @ {latestCommit.taipei})
-            </a>
-          )
-          : <span class="text-sm">(無法取得最新 Commit)</span>
-        }
-      </div>
-
       <div class="mt-0">
         本網站已
         <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href="https://github.com/kairo0916/blog">開源</a>
@@ -114,6 +103,19 @@ try {
         <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href="https://github.com/saicaca/fuwari">Fuwari</a>
         強力驅動
       </div>
+
+      <!-- 最新 Commit 文字 -->
+      <div class="mt-1">
+        {latestCommit
+          ? (
+            <a class="no-underline text-sm font-medium" target="_blank" rel="noopener" href={latestCommit.html_url}>
+              ({latestCommit.shortSha} @ {latestCommit.taipei})
+            </a>
+          )
+          : <span class="text-sm">(無法取得最新 Commit)</span>
+        }
+      </div>
+
     </div>
   </div>
 </div>
