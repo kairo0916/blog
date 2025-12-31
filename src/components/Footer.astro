@@ -60,11 +60,12 @@ try {
 <!-- footer 分隔線（略小一點間距） -->
 <div class="transition border-t border-black/10 dark:border-white/15 my-6 border-dashed mx-32"></div>
 
-<!-- 整個 footer 加深灰色遮罩（半透明），行距收緊 -->
+<!-- 整個 footer 加深灰色遮罩（半透明）、所有文字粗體、行距收緊 -->
 <div
   class="transition rounded-2xl mb-12 flex flex-col items-center justify-center px-6 py-4
          bg-gray-800/82 dark:bg-gray-900/82 text-gray-100
-         border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/10"
+         border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/10
+         font-bold"
   role="contentinfo"
   aria-label="Footer"
 >
@@ -76,7 +77,7 @@ try {
       <div class="mt-0">
         採用
         <a
-          class="link font-medium underline text-[var(--primary)]"
+          class="link font-bold underline text-[var(--primary)]"
           target="_blank"
           rel="noopener"
           href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant"
@@ -86,33 +87,33 @@ try {
       </div>
 
       <div class="mt-0 flex items-center gap-2">
-        <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href={url("rss.xml")}>RSS</a>
+        <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href={url("rss.xml")}>RSS</a>
         <span class="opacity-40">/</span>
-        <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href={url("sitemap-index.xml")}>網站地圖</a>
+        <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href={url("sitemap-index.xml")}>網站地圖</a>
       </div>
 
       <div class="mt-0">
         本網站已
-        <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href="https://github.com/kairo0916/blog">開源</a>
+        <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href="https://github.com/kairo0916/blog">開源</a>
       </div>
 
       <div class="mt-0">
         由
-        <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href="https://astro.build">Astro</a>
+        <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href="https://astro.build">Astro</a>
         和
-        <a class="link font-medium text-[var(--primary)]" target="_blank" rel="noopener" href="https://github.com/saicaca/fuwari">Fuwari</a>
+        <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href="https://github.com/saicaca/fuwari">Fuwari</a>
         強力驅動
       </div>
 
-      <!-- 最新 Commit 文字 -->
+      <!-- 把 (ID @ DATE) 放到「由 ... 強力驅動」下面，簡短顯示（同樣為粗體） -->
       <div class="mt-1">
         {latestCommit
           ? (
-            <a class="no-underline text-sm font-medium" target="_blank" rel="noopener" href={latestCommit.html_url}>
+            <a class="no-underline text-sm font-bold" target="_blank" rel="noopener" href={latestCommit.html_url}>
               ({latestCommit.shortSha} @ {latestCommit.taipei})
             </a>
           )
-          : <span class="text-sm">(無法取得最新 Commit)</span>
+          : <span class="text-sm font-bold">(無法取得最新 Commit)</span>
         }
       </div>
 
