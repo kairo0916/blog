@@ -3,61 +3,124 @@ import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
 
 const currentYear = new Date().getFullYear();
+
+// 嘗試在 server-side 取得最新 commit（在 build / SSR 時執行）
+let latestCommit = null;
+
+try {
+  const apiUrl = "https://api.github.com/repos/kairo0916/blog/commits?per_page=1";
+  const headers = {};
+
+  if (process.env.GITHUB_TOKEN) {
+    headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
+  }
+
+  const res = await fetch(apiUrl, { headers });
+  if (res.ok) {
+    const commits = await res.json();
+    if (Array.isArray(commits) && commits.length > 0) {
+      const c = commits[0];
+      const sha = c.sha || "";
+      const shortSha = sha.slice(0, 7);
+      const isoDate = (c.commit && (c.commit.committer?.date || c.commit.author?.date)) || null;
+      let taipei = null;
+      if (isoDate) {
+        const d = new Date(isoDate);
+        taipei = d.toLocaleString("zh-TW", {
+          timeZone: "Asia/Taipei",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+      }
+      latestCommit = {
+        sha,
+        shortSha,
+        isoDate,
+        taipei,
+        html_url: c.html_url || `https://github.com/kairo0916/blog/commit/${sha}`
+      };
+    }
+  } else {
+    console.warn(`GitHub API returned ${res.status}`);
+  }
+} catch (err) {
+  console.warn("Fetch latest commit failed:", err);
+}
 ---
 
-<!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">-->
+<!-- footer 分隔線 -->
 <div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div>
-<!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">-->
-<div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6">
-    <div class="transition text-50 text-sm text-center">
-        <div class="transition text-50 text-sm text-center leading-relaxed">
-  &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. 保留所有權利。<br />
-  <span>
-    採用
-    <a
-      class="transition link text-[var(--primary)] font-medium"
-      target="_blank"
-      href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant"
-    >
-      CC BY-NC-SA 4.0
-    </a>
-    許可
-  </span>
-  <br />
-  <span class="flex justify-center gap-3 mt-1">
-    <a
-      class="transition link text-[var(--primary)] font-medium"
-      target="_blank"
-      href={url("rss.xml")}
-    >
-      RSS
-    </a>
-    <span class="opacity-40">/</span>
-    <a
-      class="transition link text-[var(--primary)] font-medium"
-      target="_blank"
-      href={url("sitemap-index.xml")}
-    >
-      網站地圖
-    </a>
-  </span>
-  <div class="mt-1">
-    本網站已
-    <a
-      class="transition link text-[var(--primary)] font-medium"
-      target="_blank"
-      href="https://github.com/kairo0916/blog"
-    >
-      開源
-    </a>
-  </div>
-  <div class="mt-1">
-    由
-    <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a>
-    和
-    <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a>
-    強力驅動
-  </div>
-</div>
+
+<!-- footer 內容容器 -->
+<div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6 py-6 bg-white/5 dark:bg-black/10">
+  <div class="transition text-50 text-sm text-center leading-relaxed">
+    &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. 保留所有權利。<br />
+    <span>
+      採用
+      <a
+        class="transition link text-[var(--primary)] font-medium"
+        target="_blank"
+        href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant"
+      >
+        CC BY-NC-SA 4.0
+      </a>
+      許可
+    </span>
+    <br />
+    <span class="flex justify-center gap-3 mt-1">
+      <a
+        class="transition link text-[var(--primary)] font-medium"
+        target="_blank"
+        href={url("rss.xml")}
+      >
+        RSS
+      </a>
+      <span class="opacity-40">/</span>
+      <a
+        class="transition link text-[var(--primary)] font-medium"
+        target="_blank"
+        href={url("sitemap-index.xml")}
+      >
+        網站地圖
+      </a>
+    </span>
+
+    <!-- 最新 commit 區塊，深灰半透明背景 -->
+    <div class="mt-2 text-sm text-gray-100 dark:text-gray-200 px-3 py-1 rounded bg-gray-800/70 dark:bg-gray-900/70">
+      {latestCommit
+        ? (
+          <span>
+            最新 Commit：
+            <a class="link font-medium underline text-white" target="_blank" rel="noopener" href={latestCommit.html_url}>
+              {latestCommit.shortSha} @ {latestCommit.taipei}
+            </a>
+          </span>
+        )
+        : <span>最新 Commit：無法取得（部署環境可能限制對 GitHub API 的存取）</span>
+      }
     </div>
+
+    <div class="mt-1">
+      本網站已
+      <a
+        class="transition link text-[var(--primary)] font-medium"
+        target="_blank"
+        href="https://github.com/kairo0916/blog"
+      >
+        開源
+      </a>
+    </div>
+
+    <div class="mt-1">
+      由
+      <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a>
+      和
+      <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a>
+      強力驅動
+    </div>
+  </div>
 </div>
