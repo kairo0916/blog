@@ -1,34 +1,23 @@
 .custom-md {
     /* 標題尺寸 */
-    h1 {
-        @apply text-3xl;
-    }
+    h1 { @apply text-3xl; }
 
     /* 標題錨點顯示 */
     h1, h2, h3, h4, h5, h6 {
         .anchor {
             @apply transition -m-0.5 ml-[0.2ch] p-0.5 select-none opacity-0 no-underline !important;
-
-            .anchor-icon {
-                @apply mx-[0.45ch] !important;
-            }
+            .anchor-icon { @apply mx-[0.45ch] !important; }
         }
-
-        &:hover {
-            .anchor {
-                @apply opacity-100 !important;
-            }
-        }
+        &:hover { .anchor { @apply opacity-100 !important; } }
     }
 
     /* 連結樣式 */
     a:not(.no-styling) {
         @apply relative bg-none link font-medium text-[var(--primary)]
-        underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
+               underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
         box-decoration-break: clone;
         -webkit-box-decoration-break: clone;
         display: inline-block;
-    
         &:hover, &:active {
             @apply decoration-transparent;
             background: var(--btn-plain-bg-hover);
@@ -37,23 +26,63 @@
         }
     }
 
-    /* Inline code + 多行 code block */
-    /* 保留你原本的行號與字型設定，並新增不換行與水平滾動 */
-    code {
-        @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
+    /* ---------- code & code block 處理（關鍵區塊） ---------- */
 
+    /* Inline code（不在 pre 裡的 code）：
+       - 不換行（nowrap）
+       - 若太長則可水平滾動（inline-block + overflow-x）
+       - 限制最大寬度以避免破壞佈局 */
+    code:not(pre code) {
+        @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md;
         font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
 
-        /* 不換行（inline code）並允許水平滾動 */
-        @apply whitespace-nowrap overflow-x-auto;
+        display: inline-block;         /* 讓 overflow-x 生效 */
+        max-width: 100%;
+        vertical-align: middle;
 
-        &:before {
-            content:none;
-        }
-        &:after {
-            content:none;
-        }
+        white-space: nowrap;           /* 關鍵：不要自動換行 */
+        overflow-x: auto;              /* 橫向滾動 */
+        -webkit-overflow-scrolling: touch;
+        word-break: normal;
+        overflow-wrap: normal;
 
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+
+        &:before, &:after { content: none; }
+    }
+
+    /* code block container（pre）：
+       - 保留原始換行 / 格式（pre）
+       - 不會自動換行長行；超長用橫向滾動 */
+    pre {
+        @apply overflow-x-auto rounded-md p-4;
+        white-space: pre;              /* 保留換行 */
+        -webkit-overflow-scrolling: touch;
+        max-width: 100%;
+        word-break: normal;
+        overflow-wrap: normal;
+        tab-size: 4;
+    }
+
+    /* pre 裡面的 code（實際顯示區）：
+       - 確保是 block 顯示，並且水平滾動（若超出） */
+    pre code {
+        display: block;
+        white-space: pre;              /* 關鍵：保留換行但不自動換行長行 */
+        overflow-x: visible;           /* 讓 pre 的 overflow-x 控制滾動 */
+        max-width: none;
+    }
+
+    /* 若你的 code block 結構是 .language-xxx 或 .frame > pre > code，也可以額外包含 */
+    .frame pre, .language-plaintext, pre[class*="language-"] {
+        @apply overflow-x-auto;
+        white-space: pre;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* 保留行號設定（如你有在 code 裡用 span.line） */
+    code {
         counter-reset: line;
         span.line {
             &:before {
@@ -68,78 +97,35 @@
         }
     }
 
-    /* code block container（pre）處理：
-       - 保留原有換行與空白（pre）
-       - 若超寬則橫向滾動（不換行）
-    */
-    pre {
-        @apply overflow-x-auto rounded-md p-4;
-        white-space: pre;          /* 保留原始換行/空格 */
-        -webkit-overflow-scrolling: touch;
-        /* 若要指定 codeblock 背景，可在此套用（視你的變數而定）
-           background: var(--codeblock-bg); */
-    }
-
-    /* 若 code 在 pre 中，強制保持原始格式（不斷行） */
-    pre code {
-        white-space: pre;       /* preserve whitespace & newlines */
-        display: block;
-        overflow: visible;
-    }
-
     /* copy 按鈕 */
     .copy-btn {
         all: initial;
         @apply btn-regular-dark opacity-0 shadow-lg shadow-black/50 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
     }
-    .frame:hover .copy-btn {
-        opacity: 1;
-    }
+    .frame:hover .copy-btn { opacity: 1; }
 
     .copy-btn-icon {
         @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 fill-white pointer-events-none;
     }
-    .copy-btn .copy-icon {
-        @apply opacity-100 fill-white dark:fill-white/75;
-    }
-    .copy-btn.success .copy-icon {
-        @apply opacity-0 fill-[var(--deep-text)]
-    }
-    .copy-btn .success-icon {
-        @apply opacity-0 fill-white;
-    }
-    .copy-btn.success .success-icon {
-        @apply opacity-100
-    }
+    .copy-btn .copy-icon { @apply opacity-100 fill-white dark:fill-white/75; }
+    .copy-btn.success .copy-icon { @apply opacity-0 fill-[var(--deep-text)]; }
+    .copy-btn .success-icon { @apply opacity-0 fill-white; }
+    .copy-btn.success .success-icon { @apply opacity-100; }
 
     .expressive-code {
         @apply my-4;
-        ::selection {
-            @apply bg-[var(--codeblock-selection)];
-        }
+        ::selection { @apply bg-[var(--codeblock-selection)]; }
     }
 
     /* 列表標記顏色 */
-    ul, ol {
-        li::marker {
-            @apply text-[var(--primary)];
-        }
-    }
+    ul, ol { li::marker { @apply text-[var(--primary)]; } }
 
     /* 引言樣式 */
     blockquote {
         @apply not-italic border-transparent relative;
         font-weight: inherit;
-
-        &:before {
-            @apply content-[''] absolute -left-1 block transition bg-[var(--btn-regular-bg)] h-full w-1 rounded-full;
-        }
-
-        /* Remove the double quotes from default styles */
-        p:before, p:after {
-            @apply content-none;
-        }
-
+        &:before { @apply content-[''] absolute -left-1 block transition bg-[var(--btn-regular-bg)] h-full w-1 rounded-full; }
+        p:before, p:after { @apply content-none; } /* 移除雙引號 */
     }
 
     /* KaTeX 容器 */
@@ -148,5 +134,4 @@
         overflow-x: auto;
         margin: 1em 0;
     }
-    
 }
