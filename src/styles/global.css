@@ -167,36 +167,38 @@ img:not(.is-loaded) {
 }
 
 
+/* ===============================
+   2026 Global Background System
+   =============================== */
 
-/* =========================
-   全站背景基礎
-========================= */
+/* 1️⃣ 基礎 fallback（圖片還沒來之前） */
 html {
-  height: 100%;
+  background:
+    radial-gradient(
+      1200px 600px at 10% -10%,
+      oklch(96% 0.03 var(--hue)) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      oklch(94% 0.02 var(--hue)) 0%,
+      oklch(88% 0.02 var(--hue)) 100%
+    );
 }
 
-body {
-  position: relative;
-  min-height: 100%;
-  background: transparent;
-  isolation: isolate; /* 確保背景層不干擾內容 */
-}
-
-/* =========================
-   背景圖層（主背景）
-========================= */
+/* 2️⃣ 真正的背景圖層（獨立一層，不影響內容） */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -2;
 
-  /* 背景圖 + 遮罩 */
+  /* 主背景圖 */
   background-image:
     linear-gradient(
-      to bottom,
-      var(--bg-overlay-start),
-      var(--bg-overlay-end)
+      180deg,
+      rgba(255,255,255,0.55),
+      rgba(255,255,255,0.75)
     ),
     url("https://eopfapi.acofork.com/pic?img=ua");
 
@@ -204,43 +206,57 @@ body::before {
   background-position: center;
   background-repeat: no-repeat;
 
-  /* 現代效能小優化 */
+  /* 🌞 提亮 + 稍微對比 */
+  filter:
+    brightness(1.15)
+    contrast(1.05)
+    saturate(1.05);
+
+  /* 🚀 效能優化 */
   transform: translateZ(0);
   will-change: transform;
 }
 
-/* =========================
-   玻璃模糊層（讓內容好讀）
-========================= */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
+/* 3️⃣ 深色模式專用（不刺眼） */
+.dark body::before {
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,0.45),
+      rgba(0,0,0,0.65)
+    ),
+    url("https://eopfapi.acofork.com/pic?img=ua");
 
-  backdrop-filter: blur(22px) saturate(120%);
-  -webkit-backdrop-filter: blur(22px) saturate(120%);
+  filter:
+    brightness(1.05)
+    contrast(1.1)
+    saturate(1.1);
 }
 
-/* =========================
-   淺色 / 深色模式遮罩控制
-========================= */
-:root {
-  --bg-overlay-start: rgba(255, 255, 255, 0.35);
-  --bg-overlay-end: rgba(255, 255, 255, 0.65);
-}
-
-.dark {
-  --bg-overlay-start: rgba(0, 0, 0, 0.35);
-  --bg-overlay-end: rgba(0, 0, 0, 0.7);
-}
-
-/* =========================
-   內容容器保險（避免被背景吃掉）
-========================= */
-main,
-header,
+/* 4️⃣ Glass / 卡片用遮罩（取代超重 blur） */
+.glass,
+.card-base,
 footer {
-  position: relative;
-  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .glass,
+.dark .card-base,
+.dark footer {
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+/* 5️⃣ 手機效能保命符 */
+@media (max-width: 768px) {
+  body::before {
+    filter: brightness(1.1) contrast(1.05);
+  }
+
+  .glass,
+  .card-base,
+  footer {
+    backdrop-filter: blur(6px);
+  }
 }
