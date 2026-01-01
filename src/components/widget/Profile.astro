@@ -2,7 +2,6 @@
 import { Icon } from "astro-icon/components";
 import { profileConfig, umamiConfig } from "../../config";
 import ImageWrapper from "../misc/ImageWrapper.astro";
-import WidgetLayout from "./WidgetLayout.astro";
 
 const config = profileConfig;
 ---
@@ -39,28 +38,26 @@ const config = profileConfig;
       )}
     </div>
 
-    <!-- 替換後的統計 widget（原封不動插入的統計區塊，已整合到 Profile.astro） -->
-    <WidgetLayout name="统计" id="umami-stats">
-        <div class="text-center py-2">
-            <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100" id="total-pageviews">-</div>
-            <div class="text-sm text-neutral-500 dark:text-neutral-400">总浏览量</div>
+    <div class="grid grid-cols-2 mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700">
+      <div class="text-center">
+        <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
+          <Icon name="material-symbols:visibility-outline" class="text-base" />
+          <span>訪問量</span>
         </div>
-        <div class="grid grid-cols-2 divide-x divide-neutral-200 dark:divide-neutral-700 text-center pt-2">
-            <div class="px-2">
-                <div class="text-xl font-bold text-neutral-900 dark:text-neutral-100" id="total-visits">-</div>
-                <div class="text-sm text-neutral-500 dark:text-neutral-400">访问数</div>
-            </div>
-            <div class="px-2">
-                <div class="text-xl font-bold text-neutral-900 dark:text-neutral-100" id="total-visitors">-</div>
-                <div class="text-sm text-neutral-500 dark:text-neutral-400">游客数</div>
-            </div>
-        </div>
-    </WidgetLayout>
+        <div id="site-views" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">載入中…</div>
+      </div>
 
+      <div class="text-center border-l border-neutral-200 dark:border-neutral-700">
+        <div class="text-xs text-neutral-500 mb-1 flex items-center justify-center gap-1">
+          <Icon name="material-symbols:person" class="text-base" />
+          <span>訪客數</span>
+        </div>
+        <div id="site-visitors" class="font-bold text-lg text-neutral-700 dark:text-neutral-300">載入中…</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- 使用 define:vars 安全注入 umamiConfig 到前端 -->
 <script define:vars={{ umamiConfig }}>
 (function () {
   // ------- utils -------
@@ -118,36 +115,13 @@ const config = profileConfig;
   function setStatsToDOM(pv, uv) {
     var viewsEl = document.getElementById("site-views");
     var visitorsEl = document.getElementById("site-visitors");
-    // also update the widget ids (total-pageviews, total-visits, total-visitors)
-    var totalPageviewsEl = document.getElementById("total-pageviews");
-    var totalVisitsEl = document.getElementById("total-visits");
-    var totalVisitorsEl = document.getElementById("total-visitors");
-
-    if (!viewsEl && !totalPageviewsEl) return;
+    if (!viewsEl || !visitorsEl) return;
 
     var ts = String(Date.now());
-
-    if (viewsEl) {
-      viewsEl.textContent = String(Number(pv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      viewsEl.setAttribute("data-umami-updated", ts);
-    }
-    if (visitorsEl) {
-      visitorsEl.textContent = String(Number(uv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      visitorsEl.setAttribute("data-umami-updated", ts);
-    }
-    if (totalPageviewsEl) {
-      totalPageviewsEl.textContent = String(Number(pv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      totalPageviewsEl.setAttribute("data-umami-updated", ts);
-    }
-    if (totalVisitsEl) {
-      totalVisitsEl.textContent = String(Number(pv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      totalVisitsEl.setAttribute("data-umami-updated", ts);
-    }
-    if (totalVisitorsEl) {
-      totalVisitorsEl.textContent = String(Number(uv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      totalVisitorsEl.setAttribute("data-umami-updated", ts);
-    }
-
+    viewsEl.textContent = String(Number(pv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    visitorsEl.textContent = String(Number(uv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    viewsEl.setAttribute("data-umami-updated", ts);
+    visitorsEl.setAttribute("data-umami-updated", ts);
     console.info("[Umami] wrote stats to DOM:", { pageviews: pv, visitors: uv, ts: ts });
   }
 
@@ -155,7 +129,7 @@ const config = profileConfig;
   function attachOverwriteObserver() {
     var viewsEl = document.getElementById("site-views");
     var visitorsEl = document.getElementById("site-visitors");
-    if (!viewsEl && !document.getElementById("total-pageviews")) return;
+    if (!viewsEl || !visitorsEl) return;
 
     function makeObserver(el, name) {
       var lastValue = el.textContent;
@@ -163,12 +137,16 @@ const config = profileConfig;
         mutations.forEach(function (m) {
           var nowVal = el.textContent;
           var updatedTs = el.getAttribute("data-umami-updated");
+          // if updatedTs missing or changed to older, note it
           if (nowVal !== lastValue) {
             console.warn("[Umami] Detected DOM change on", name, "newValue:", nowVal, "previous:", lastValue, "data-umami-updated:", updatedTs);
+            // if our last write had a timestamp, reapply it (best-effort)
             if (updatedTs) {
+              // reapply lastValue (restore)
               console.info("[Umami] attempting to restore previous value for", name);
               el.textContent = lastValue;
             } else {
+              // record the new lastValue
               lastValue = nowVal;
             }
           }
@@ -178,10 +156,8 @@ const config = profileConfig;
       return observer;
     }
 
-    var vEl = document.getElementById("site-views");
-    var tvEl = document.getElementById("total-pageviews");
-    if (vEl) makeObserver(vEl, "site-views");
-    if (tvEl) makeObserver(tvEl, "total-pageviews");
+    makeObserver(viewsEl, "site-views");
+    makeObserver(visitorsEl, "site-visitors");
   }
 
   // ------- fetch strategies -------
@@ -236,15 +212,12 @@ const config = profileConfig;
   function load() {
     var viewsEl = document.getElementById("site-views");
     var visitorsEl = document.getElementById("site-visitors");
-    if (!viewsEl && !document.getElementById("total-pageviews")) return;
+    if (!viewsEl || !visitorsEl) return;
 
     if (!umamiConfig || !umamiConfig.enable) {
       console.info("[Umami] disabled in config");
-      if (viewsEl) viewsEl.textContent = "-";
-      var tp = document.getElementById("total-pageviews");
-      var tv = document.getElementById("total-visitors");
-      if (tp) tp.textContent = "-";
-      if (tv) tv.textContent = "-";
+      viewsEl.textContent = "-";
+      visitorsEl.textContent = "-";
       return;
     }
 
@@ -253,11 +226,8 @@ const config = profileConfig;
 
     if (!baseUrl || !shareId) {
       console.warn("[Umami] missing baseUrl or shareId in umamiConfig", umamiConfig);
-      if (viewsEl) viewsEl.textContent = "-";
-      var tp2 = document.getElementById("total-pageviews");
-      var tv2 = document.getElementById("total-visitors");
-      if (tp2) tp2.textContent = "-";
-      if (tv2) tv2.textContent = "-";
+      viewsEl.textContent = "-";
+      visitorsEl.textContent = "-";
       return;
     }
 
@@ -283,11 +253,8 @@ const config = profileConfig;
         console.error("[Umami] proxy fetch failed:", err2);
 
         // final fallback: set '-' and leave logs
-        var tp3 = document.getElementById("total-pageviews");
-        var tv3 = document.getElementById("total-visitors");
-        if (viewsEl) viewsEl.textContent = "-";
-        if (tp3) tp3.textContent = "-";
-        if (tv3) tv3.textContent = "-";
+        viewsEl.textContent = "-";
+        visitorsEl.textContent = "-";
       });
     });
 
