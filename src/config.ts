@@ -108,8 +108,8 @@ export const licenseConfig: LicenseConfig = {
 
 export const umamiConfig: UmamiConfig = {
 	enable: true,
-	baseUrl: "https://umami.kairo.qzz.io",
-	websiteId: "QEfgg7EJvn4DXMXk",
+	baseUrl: "https://cloud.umami.is/share/wyzGhFMajaO6Z8vA",
+	websiteId: "wyzGhFMajaO6Z8vA",
 	shardToken: process.env.UMAMI_TOKEN,
 	timezone: "Asia/Taipei",
 };
