@@ -165,3 +165,82 @@ img:not(.is-loaded) {
 .route-btn.active .ping {
   opacity: 0.9;
 }
+
+
+
+/* =========================
+   全站背景基礎
+========================= */
+html {
+  height: 100%;
+}
+
+body {
+  position: relative;
+  min-height: 100%;
+  background: transparent;
+  isolation: isolate; /* 確保背景層不干擾內容 */
+}
+
+/* =========================
+   背景圖層（主背景）
+========================= */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+
+  /* 背景圖 + 遮罩 */
+  background-image:
+    linear-gradient(
+      to bottom,
+      var(--bg-overlay-start),
+      var(--bg-overlay-end)
+    ),
+    url("https://eopfapi.acofork.com/ri/v/");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* 現代效能小優化 */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* =========================
+   玻璃模糊層（讓內容好讀）
+========================= */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  backdrop-filter: blur(22px) saturate(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(120%);
+}
+
+/* =========================
+   淺色 / 深色模式遮罩控制
+========================= */
+:root {
+  --bg-overlay-start: rgba(255, 255, 255, 0.35);
+  --bg-overlay-end: rgba(255, 255, 255, 0.65);
+}
+
+.dark {
+  --bg-overlay-start: rgba(0, 0, 0, 0.35);
+  --bg-overlay-end: rgba(0, 0, 0, 0.7);
+}
+
+/* =========================
+   內容容器保險（避免被背景吃掉）
+========================= */
+main,
+header,
+footer {
+  position: relative;
+  z-index: 1;
+}
