@@ -1,5 +1,4 @@
 ---
-// NavBar.astro
 import { Icon } from "astro-icon/components";
 import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
@@ -9,7 +8,6 @@ import { url } from "../utils/url-utils";
 import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
-
 const className = Astro.props.class;
 
 let links: NavBarLink[] = navBarConfig.links.map(
@@ -21,171 +19,50 @@ let links: NavBarLink[] = navBarConfig.links.map(
 	},
 );
 ---
-
-<!-- ============================
-     Navbar + Color Palette UI
-     ============================ -->
-<div id="navbar" class="z-50 onload-animation px-4 md:px-6">
-    <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div>
-
-    <div
-        class:list={[
-            className,
-            "card-base border border-black/10 dark:border-white/10 !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"
-        ]}
-    >
+<div id="navbar" class="z-50 onload-animation">
+    <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation -->
+    <div class:list={[
+        className,
+        "card-base border border-black/10 dark:border-white/10 !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"]}>
         <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
             <div class="flex flex-row text-[var(--primary)] items-center text-md">
                 <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
                 {siteConfig.title}
             </div>
         </a>
-
         <div class="hidden md:flex">
-            {links.map((l) => (
-                <a
-                    aria-label={l.name}
-                    href={l.external ? l.url : url(l.url)}
-                    target={l.external ? "_blank" : null}
-                    class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
+            {links.map((l) => {
+                return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                          class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
                 >
                     <div class="flex items-center">
                         {l.name}
-                        {l.external && (
-                            <Icon
-                                name="fa6-solid:arrow-up-right-from-square"
-                                class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]"
-                            />
-                        )}
+                        {l.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]"></Icon>}
                     </div>
-                </a>
-            ))}
+                </a>;
+            })}
         </div>
-
-        <div class="flex items-center gap-2">
-            <!-- 搜尋元件 -->
-            <Search client:only="svelte" />
-
-            <!-- 新增：調色盤按鈕（在搜尋之後）-->
-            <div class="relative">
-                <button
-                    aria-label="Color Palette"
-                    id="color-palette-switch"
-                    class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90"
-                    title="調整色彩 / 背景"
-                >
-                    <Icon name="material-symbols:palette-outline" class="text-[1.25rem]" />
-                </button>
-
-                <!-- 浮動面板 -->
-                <div id="color-panel" class="absolute right-0 mt-2 w-[300px] rounded-lg shadow-lg bg-white/95 dark:bg-black/85 border border-black/5 dark:border-white/6 p-4 text-sm hidden z-50">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="font-semibold">色彩設定</div>
-                        <button id="color-panel-close" aria-label="Close" class="text-xs px-2 py-1 rounded hover:bg-black/5 dark:hover:bg-white/5">Close</button>
-                    </div>
-
-                    <!-- 1) 顏色調整 -->
-                    <label class="block mb-3">
-                        <div class="text-xs font-medium mb-1">主色（Primary）</div>
-                        <div class="flex items-center gap-3">
-                            <input id="primary-color-input" type="color" class="h-9 w-12 p-0 border rounded" />
-                            <input id="primary-hex-input" type="text" class="flex-1 h-9 px-2 rounded border bg-transparent" placeholder="#3b82f6" />
-                        </div>
-                    </label>
-
-                    <!-- 2) 背景明度 -->
-                    <label class="block mb-3">
-                        <div class="text-xs font-medium mb-1">背景明度</div>
-                        <input id="bg-brightness" type="range" min="0.6" max="1.5" step="0.01" value="1.15" class="w-full" />
-                        <div class="text-xs mt-1 text-muted">數值：<span id="bg-brightness-value">1.15</span></div>
-                    </label>
-
-                    <!-- 3) 移除背景開關 -->
-                    <label class="flex items-center gap-2 mb-3">
-                        <input id="bg-remove" type="checkbox" />
-                        <div class="text-xs">移除背景（顯示純色）</div>
-                    </label>
-
-                    <div class="flex gap-2 mt-2">
-                        <button id="palette-reset" class="btn-plain px-3 py-2 rounded bg-gray-100 dark:bg-white/5">重設</button>
-                        <button id="palette-apply" class="btn-plain px-3 py-2 rounded bg-[var(--primary)] text-white ml-auto">套用</button>
-                    </div>
-
-                    <div class="text-xs text-gray-500 mt-3">
-                        設定會保存在瀏覽器，重新整理仍會保留。
-                    </div>
-                </div>
-            </div>
-
-            <!-- 既有的顯示設定按鈕（保留原本條件） -->
+        <div class="flex">
+            <!--<SearchPanel client:load>-->
+            <Search client:only="svelte"></Search>
             {!siteConfig.themeColor.fixed && (
-                <button
-                    aria-label="Display Settings"
-                    class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90"
-                    id="display-settings-switch"
-                >
-                    <Icon name="material-symbols:palette-outline" class="text-[1.25rem]" />
-                </button>
+                    <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
+                        <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
+                    </button>
             )}
 
-            <button
-                aria-label="Menu"
-                name="Nav Menu"
-                class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden"
-                id="nav-menu-switch"
-            >
-                <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]" />
+            <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
+                <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>
         </div>
-
-        <NavMenuPanel links={links} />
-        <DisplaySettings client:only="svelte" />
+        <NavMenuPanel links={links}></NavMenuPanel>
+        <DisplaySettings client:only="svelte"></DisplaySettings>
     </div>
 </div>
 
-<!-- ============================
-     本檔內用簡單 CSS 覆寫（確保 panel / 背景開關 CSS 可以運作）
-     這段會加入到頁面，會覆蓋全域 body::before filter 定義
-     ============================ -->
-<style>
-/* 面板小三角（可選） */
-#color-panel::before {
-  content: "";
-  position: absolute;
-  top: -8px;
-  right: 12px;
-  width: 12px;
-  height: 12px;
-  transform: rotate(45deg);
-  background: inherit;
-  border-left: 1px solid rgba(0,0,0,0.04);
-  border-top: 1px solid rgba(0,0,0,0.04);
-}
-
-/* 覆寫 body::before 的 filter 參數由 CSS 變數控制 */
-body::before {
-  filter: brightness(var(--bg-brightness, 1.15)) contrast(var(--bg-contrast, 1.05)) saturate(var(--bg-saturate, 1.05));
-  transition: filter 240ms ease, background-image 240ms ease;
-}
-
-/* 當使用者選擇「移除背景」時，在 html 上設 class 'bg-removed' */
-html.bg-removed body::before {
-  background-image: none !important;
-  background-color: var(--bg-fallback, #f3f4f6) !important;
-  filter: none !important;
-}
-
-/* 隱藏面板（用 hidden class 切換） */
-#color-panel.hidden { display: none; }
-/* small responsive tweak */
-@media (max-width: 420px) {
-  #color-panel { right: -8px; left: 8px; width: calc(100vw - 32px); }
-}
-</style>
-
 <script>
 function loadButtonScript() {
-    // 既有的按鈕行為（顯示設定、選單）保留
+
     let settingBtn = document.getElementById("display-settings-switch");
     if (settingBtn) {
         settingBtn.onclick = function () {
@@ -205,187 +82,6 @@ function loadButtonScript() {
             }
         };
     }
-
-    /* ------------------------
-       Color palette UI logic
-       ------------------------ */
-    const paletteBtn = document.getElementById("color-palette-switch");
-    const panel = document.getElementById("color-panel");
-    const closeBtn = document.getElementById("color-panel-close");
-    const colorInput = document.getElementById("primary-color-input");
-    const hexInput = document.getElementById("primary-hex-input");
-    const brightnessInput = document.getElementById("bg-brightness");
-    const brightnessValue = document.getElementById("bg-brightness-value");
-    const bgRemoveCheckbox = document.getElementById("bg-remove");
-    const applyBtn = document.getElementById("palette-apply");
-    const resetBtn = document.getElementById("palette-reset");
-
-    // defaults (match earlier global defaults)
-    const DEFAULTS = {
-        primary: getComputedStyle(document.documentElement).getPropertyValue('--primary')?.trim() || '#3b82f6',
-        bgBrightness: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bg-brightness')) || 1.15,
-        bgContrast: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bg-contrast')) || 1.05,
-        bgSaturate: parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bg-saturate')) || 1.05,
-        bgRemoved: document.documentElement.classList.contains('bg-removed') || false
-    };
-
-    // load saved or defaults
-    function loadSettings() {
-        const savedPrimary = localStorage.getItem('site:primary-color') || DEFAULTS.primary;
-        const savedBrightness = parseFloat(localStorage.getItem('site:bg-brightness')) || DEFAULTS.bgBrightness;
-        const savedBgRemoved = localStorage.getItem('site:bg-removed') === 'true' ? true : DEFAULTS.bgRemoved;
-
-        // set UI
-        colorInput.value = normalizeHex(savedPrimary);
-        hexInput.value = normalizeHex(savedPrimary);
-        brightnessInput.value = savedBrightness;
-        brightnessValue.textContent = Number(savedBrightness).toFixed(2);
-        bgRemoveCheckbox.checked = !!savedBgRemoved;
-
-        // apply to document
-        applyToDocument({ primary: savedPrimary, bgBrightness: savedBrightness, bgRemoved: savedBgRemoved });
-    }
-
-    function normalizeHex(hex) {
-        if (!hex) return '#3b82f6';
-        hex = hex.trim();
-        if (hex[0] !== '#') {
-            if (hex.startsWith('rgb')) return rgbToHex(hex);
-            hex = '#' + hex;
-        }
-        if (hex.length === 4) {
-            return '#' + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-        }
-        return hex;
-    }
-
-    function rgbToHex(rgb) {
-        const m = rgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
-        if (!m) return '#3b82f6';
-        return '#' + [1,2,3].map(i => {
-            const v = parseInt(m[i], 10).toString(16);
-            return v.length === 1 ? '0'+v : v;
-        }).join('');
-    }
-
-    function applyToDocument({ primary, bgBrightness, bgRemoved }) {
-        if (primary) {
-            document.documentElement.style.setProperty('--primary', normalizeHex(primary));
-        }
-        if (bgBrightness !== undefined) {
-            document.documentElement.style.setProperty('--bg-brightness', Number(bgBrightness));
-        }
-        if (!document.documentElement.style.getPropertyValue('--bg-contrast')) {
-            document.documentElement.style.setProperty('--bg-contrast', DEFAULTS.bgContrast);
-        }
-        if (!document.documentElement.style.getPropertyValue('--bg-saturate')) {
-            document.documentElement.style.setProperty('--bg-saturate', DEFAULTS.bgSaturate);
-        }
-
-        if (bgRemoved) {
-            document.documentElement.classList.add('bg-removed');
-            localStorage.setItem('site:bg-removed', 'true');
-        } else {
-            document.documentElement.classList.remove('bg-removed');
-            localStorage.setItem('site:bg-removed', 'false');
-        }
-    }
-
-    // open/close handlers
-    function openPanel() {
-        panel.classList.remove('hidden');
-        const rect = panel.getBoundingClientRect();
-        if (rect.right > window.innerWidth) {
-            panel.style.right = '8px';
-        }
-        colorInput.focus();
-    }
-    function closePanel() {
-        panel.classList.add('hidden');
-    }
-
-    paletteBtn?.addEventListener('click', () => {
-        if (!panel) return;
-        if (panel.classList.contains('hidden')) openPanel(); else closePanel();
-    });
-    closeBtn?.addEventListener('click', closePanel);
-
-    // sync color inputs
-    colorInput?.addEventListener('input', (e) => {
-        const v = e.target.value;
-        hexInput.value = v;
-        document.documentElement.style.setProperty('--primary', normalizeHex(v));
-    });
-
-    hexInput?.addEventListener('change', (e) => {
-        const v = e.target.value.trim();
-        const n = normalizeHex(v);
-        colorInput.value = n;
-        hexInput.value = n;
-        document.documentElement.style.setProperty('--primary', n);
-    });
-
-    // brightness
-    brightnessInput?.addEventListener('input', (e) => {
-        const v = e.target.value;
-        brightnessValue.textContent = Number(v).toFixed(2);
-        document.documentElement.style.setProperty('--bg-brightness', v);
-    });
-
-    // bg remove toggle
-    bgRemoveCheckbox?.addEventListener('change', (e) => {
-        const checked = e.target.checked;
-        if (checked) {
-            document.documentElement.classList.add('bg-removed');
-        } else {
-            document.documentElement.classList.remove('bg-removed');
-        }
-    });
-
-    // apply and save
-    applyBtn?.addEventListener('click', () => {
-        const primary = normalizeHex(colorInput.value);
-        const brightness = Number(brightnessInput.value);
-        const removed = !!bgRemoveCheckbox.checked;
-
-        localStorage.setItem('site:primary-color', primary);
-        localStorage.setItem('site:bg-brightness', String(brightness));
-        localStorage.setItem('site:bg-removed', removed ? 'true' : 'false');
-
-        applyToDocument({ primary, bgBrightness: brightness, bgRemoved: removed });
-
-        applyBtn.textContent = '已套用';
-        setTimeout(() => applyBtn.textContent = '套用', 900);
-    });
-
-    // reset defaults
-    resetBtn?.addEventListener('click', () => {
-        localStorage.removeItem('site:primary-color');
-        localStorage.removeItem('site:bg-brightness');
-        localStorage.removeItem('site:bg-removed');
-
-        colorInput.value = normalizeHex(DEFAULTS.primary);
-        hexInput.value = normalizeHex(DEFAULTS.primary);
-        brightnessInput.value = DEFAULTS.bgBrightness;
-        brightnessValue.textContent = Number(DEFAULTS.bgBrightness).toFixed(2);
-        bgRemoveCheckbox.checked = DEFAULTS.bgRemoved;
-
-        applyToDocument({ primary: DEFAULTS.primary, bgBrightness: DEFAULTS.bgBrightness, bgRemoved: DEFAULTS.bgRemoved });
-
-        resetBtn.textContent = '已重設';
-        setTimeout(() => resetBtn.textContent = '重設', 900);
-    });
-
-    // close panel when clicking outside
-    document.addEventListener('click', (ev) => {
-        const tgt = ev.target;
-        if (!panel || !paletteBtn) return;
-        if (panel.contains(tgt) || paletteBtn.contains(tgt)) return;
-        if (!panel.classList.contains('hidden')) closePanel();
-    });
-
-    // initialize UI from localStorage / defaults
-    loadSettings();
 }
 
 loadButtonScript();
