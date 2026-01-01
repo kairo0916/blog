@@ -166,7 +166,6 @@ function toggleHideBg() {
             />
         </div>
     </div>
-    {/if}
 </div>
 
 
