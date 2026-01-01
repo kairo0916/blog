@@ -166,7 +166,6 @@ function toggleHideBg() {
             />
         </div>
     </div>
-</div>
 
 
 <style lang="stylus">
