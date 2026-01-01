@@ -44,12 +44,18 @@ const mainPanelTop = siteConfig.banner.enable
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
 
 <!-- Navbar -->
-<slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-4 md:px-4 mx-auto" class:list={[""]}>
-    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
-        <Navbar></Navbar>
-    </div>
-</div>
+	<slot slot="head" name="head"></slot>
+	<div
+		id="top-row"
+		class="z-50 pointer-events-none relative transition-all duration-700 px-0 mx-auto"
+	>
+		<div
+			id="navbar-wrapper"
+			class="pointer-events-auto sticky top-0 transition-all"
+		>
+			<Navbar />
+		</div>
+	</div>
 
 <!-- Banner -->
 {siteConfig.banner.enable && <div id="banner-wrapper" class=`absolute z-10 w-full transition duration-700 overflow-hidden` style=`top: -${BANNER_HEIGHT_EXTEND}vh`>
