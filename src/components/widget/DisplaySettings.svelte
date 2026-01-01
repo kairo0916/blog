@@ -140,7 +140,6 @@ function toggleHideBg() {
         </div>
         <input type="checkbox" class="toggle-switch" checked={hideBg} on:change={toggleHideBg} />
     </div>
-    {/if}
 
     <div class="flex flex-row gap-2 mb-3 mt-3 items-center justify-between">
         <div class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
