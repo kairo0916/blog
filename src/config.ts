@@ -20,7 +20,7 @@ export const siteConfig: SiteConfig = {
   forceDarkMode: true,
 	},
 	banner: {
-		enable: true,
+		enable: false,
 		src: "assets/images/banner.png",
 		position: "center",
 		credit: {
