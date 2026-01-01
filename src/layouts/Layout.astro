@@ -792,6 +792,62 @@ window.onresize = () => {
 
 </script>
 
+<script>
+import { Fancybox } from "@fancyapps/ui"
+import "@fancyapps/ui/dist/fancybox/fancybox.css"
+
+const setup = () => {
+	Fancybox.bind(".custom-md img, #post-cover img", {
+		wheel: 'zoom',
+		clickContent: 'close',
+		dblclickContent: 'zoom',
+		click: 'close',
+		dblclick: 'zoom',
+		Panels: {
+			display: ['counter', 'zoom']
+		},
+		Images: {
+			panning: true,
+			zoom: true,
+			protect: false
+		}
+	})
+
+	window.swup.hooks.on("page:view", () => {
+		Fancybox.bind(".custom-md img, #post-cover img", {
+			wheel: 'zoom',
+			clickContent: 'close',
+			dblclickContent: 'zoom',
+			click: 'close',
+			dblclick: 'zoom',
+			Panels: {
+				display: ['counter', 'zoom']
+			},
+			Images: {
+				panning: true,
+				zoom: true,
+				protect: false
+			}
+		})
+	})
+
+	window.swup.hooks.on(
+		"content:replace",
+		() => {
+			Fancybox.unbind(".custom-md img, #post-cover img")
+		},
+		{ before: true },
+	)
+}
+
+if (window.swup) {
+	setup()
+} else {
+	document.addEventListener("swup:enable", setup)
+}
+</script>
+
+/*
 <script is:inline>
 (function () {
   document.querySelectorAll('img:not([loading])')
@@ -863,3 +919,4 @@ if (window.swup) {
 	document.addEventListener("swup:enable", setup)
 }
 </script>
+*/
