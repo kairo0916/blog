@@ -127,5 +127,5 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 
 export const gitHubEditConfig: GitHubEditConfig = {
 	enable: true,
-	baseUrl: "https://github.com/kairo0916/blog/main/src/content/posts",
+	baseUrl: "https://github.com/kairo0916/blog/tree/main/src/content/posts",
 };
