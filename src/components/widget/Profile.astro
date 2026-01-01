@@ -60,75 +60,252 @@ const config = profileConfig;
   </div>
 </div>
 
-<script>
-/* 将站点端配置注入前端的 UMAMI_CONFIG（由 build-time umamiConfig 填充） */
-const UMAMI_CONFIG = ${JSON.stringify({
-  baseUrl: umamiConfig?.baseUrl || "",
-  websiteId: umamiConfig?.websiteId || umamiConfig?.shareId || umamiConfig?.siteId || "",
-  shareToken: process.env.UMAMI_TOKEN
-})};
-
-function formatNumber(num) {
-    if (num >= 1000000) {
-        return (num / 1000000).toFixed(1) + 'M';
-    } else if (num >= 1000) {
-        return (num / 1000).toFixed(1) + 'K';
+<!-- 使用 define:vars 安全注入 umamiConfig 到前端 -->
+<script define:vars={{ umamiConfig }}>
+(function () {
+  // ------- utils -------
+  function safeNumber(v) {
+    if (v === null || v === undefined) return null;
+    if (typeof v === "number") return v;
+    if (typeof v === "string") {
+      var s = v.replace(/[, ]+/g, "");
+      var n = Number(s);
+      return Number.isFinite(n) ? n : null;
     }
-    return String(num);
-}
+    if (typeof v === "object" && "value" in v) {
+      return safeNumber(v.value);
+    }
+    return null;
+  }
 
-async function fetchUmamiStats() {
+  function parseShareResponse(data) {
+    // support proxy wrapper: { ok, status, url, data }
+    if (data && typeof data === "object" && ("data" in data)) {
+      data = data.data;
+    }
+    if (!data) return { pageviews: 0, visitors: 0 };
+
+    // Preferred Share API shape: { pageviews: 123, visitors: 45 }
+    var pv = safeNumber(data.pageviews);
+    var uv = safeNumber(data.visitors);
+    if (pv !== null || uv !== null) {
+      return { pageviews: pv || 0, visitors: uv || 0 };
+    }
+
+    // If data is array (time series), sum up
+    if (Array.isArray(data)) {
+      var sumPv = 0;
+      var sumUv = 0;
+      for (var i = 0; i < data.length; i++) {
+        var item = data[i] || {};
+        sumPv += Number(safeNumber(item.pageviews) || safeNumber(item.views) || 0);
+        sumUv += Number(safeNumber(item.visitors) || 0);
+      }
+      return { pageviews: sumPv, visitors: sumUv };
+    }
+
+    // fallback: try common nested locations
+    if (data.pageviews && typeof data.pageviews === "object") {
+      pv = safeNumber(data.pageviews.value || data.pageviews.total || data.pageviews.count);
+    }
+    if (data.visitors && typeof data.visitors === "object") {
+      uv = safeNumber(data.visitors.value || data.visitors.total || data.visitors.count);
+    }
+    return { pageviews: pv || 0, visitors: uv || 0 };
+  }
+
+  // ------- DOM helpers -------
+  function setStatsToDOM(pv, uv) {
+    var viewsEl = document.getElementById("site-views");
+    var visitorsEl = document.getElementById("site-visitors");
+    // also update the widget ids (total-pageviews, total-visits, total-visitors)
+    var totalPageviewsEl = document.getElementById("total-pageviews");
+    var totalVisitsEl = document.getElementById("total-visits");
+    var totalVisitorsEl = document.getElementById("total-visitors");
+
+    if (!viewsEl && !totalPageviewsEl) return;
+
+    var ts = String(Date.now());
+
+    if (viewsEl) {
+      viewsEl.textContent = String(Number(pv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      viewsEl.setAttribute("data-umami-updated", ts);
+    }
+    if (visitorsEl) {
+      visitorsEl.textContent = String(Number(uv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      visitorsEl.setAttribute("data-umami-updated", ts);
+    }
+    if (totalPageviewsEl) {
+      totalPageviewsEl.textContent = String(Number(pv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      totalPageviewsEl.setAttribute("data-umami-updated", ts);
+    }
+    if (totalVisitsEl) {
+      totalVisitsEl.textContent = String(Number(pv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      totalVisitsEl.setAttribute("data-umami-updated", ts);
+    }
+    if (totalVisitorsEl) {
+      totalVisitorsEl.textContent = String(Number(uv || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      totalVisitorsEl.setAttribute("data-umami-updated", ts);
+    }
+
+    console.info("[Umami] wrote stats to DOM:", { pageviews: pv, visitors: uv, ts: ts });
+  }
+
+  // If something else overwrites our nodes, this observer will detect and log + attempt restore
+  function attachOverwriteObserver() {
+    var viewsEl = document.getElementById("site-views");
+    var visitorsEl = document.getElementById("site-visitors");
+    if (!viewsEl && !document.getElementById("total-pageviews")) return;
+
+    function makeObserver(el, name) {
+      var lastValue = el.textContent;
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          var nowVal = el.textContent;
+          var updatedTs = el.getAttribute("data-umami-updated");
+          if (nowVal !== lastValue) {
+            console.warn("[Umami] Detected DOM change on", name, "newValue:", nowVal, "previous:", lastValue, "data-umami-updated:", updatedTs);
+            if (updatedTs) {
+              console.info("[Umami] attempting to restore previous value for", name);
+              el.textContent = lastValue;
+            } else {
+              lastValue = nowVal;
+            }
+          }
+        });
+      });
+      observer.observe(el, { childList: true, characterData: true, subtree: true });
+      return observer;
+    }
+
+    var vEl = document.getElementById("site-views");
+    var tvEl = document.getElementById("total-pageviews");
+    if (vEl) makeObserver(vEl, "site-views");
+    if (tvEl) makeObserver(tvEl, "total-pageviews");
+  }
+
+  // ------- fetch strategies -------
+  function tryDirectShareFetch(baseUrl, shareId, cb) {
     try {
-        const endAt = Date.now();
-        const startAt = 0;
-
-        const url = `${UMAMI_CONFIG.baseUrl}/websites/${UMAMI_CONFIG.websiteId}/stats?startAt=${startAt}&endAt=${endAt}&unit=hour&timezone=Asia%2FShanghai`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'accept': 'application/json',
-                'x-umami-share-token': UMAMI_CONFIG.shareToken
-            }
+      var base = String(baseUrl || "");
+      while (base.endsWith("/")) base = base.slice(0, -1);
+      var url = base + "/share/" + String(shareId) + "/stats";
+      console.info("[Umami] trying share API direct fetch:", url);
+      fetch(url, { method: "GET", credentials: "omit" })
+        .then(function (res) {
+          console.info("[Umami] direct fetch status", res.status);
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(function (json) {
+          console.info("[Umami] direct fetch body:", json);
+          cb(null, json);
+        })
+        .catch(function (err) {
+          cb(err);
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const pageviewsElement = document.getElementById('total-pageviews');
-        const visitsElement = document.getElementById('total-visits');
-        const visitorsElement = document.getElementById('total-visitors');
-
-        if (pageviewsElement) {
-            pageviewsElement.textContent = formatNumber(data.pageviews || 0);
-        }
-
-        if (visitsElement) {
-            visitsElement.textContent = formatNumber(data.visits || 0);
-        }
-
-        if (visitorsElement) {
-            visitorsElement.textContent = formatNumber(data.visitors || 0);
-        }
-
-    } catch (error) {
-        console.error('获取Umami统计数据失败:', error);
-        const elements = ['total-pageviews', 'total-visits', 'total-visitors'];
-        elements.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.textContent = '获取失败';
-                element.classList.add('text-red-500');
-            }
-        });
+    } catch (e) {
+      cb(e);
     }
-}
+  }
 
-document.addEventListener('DOMContentLoaded', fetchUmamiStats);
+  function tryProxyFetch(proxyPath, baseUrl, shareId, cb) {
+    try {
+      var params = "baseUrl=" + encodeURIComponent(String(baseUrl || "")) + "&websiteId=" + encodeURIComponent(String(shareId || ""));
+      var proxyUrl = proxyPath + "?" + params;
+      console.info("[Umami] trying proxy fetch:", proxyUrl);
+      fetch(proxyUrl, { method: "GET", credentials: "same-origin" })
+        .then(function (res) {
+          console.info("[Umami] proxy fetch status", res.status);
+          if (!res.ok) throw new Error("Proxy HTTP " + res.status);
+          return res.json();
+        })
+        .then(function (json) {
+          console.info("[Umami] proxy fetch body:", json);
+          cb(null, json);
+        })
+        .catch(function (err) {
+          cb(err);
+        });
+    } catch (e) {
+      cb(e);
+    }
+  }
 
-if (window.swup) {
-    window.swup.hooks.on('page:view', fetchUmamiStats);
-}
+  // ------- main -------
+  function load() {
+    var viewsEl = document.getElementById("site-views");
+    var visitorsEl = document.getElementById("site-visitors");
+    if (!viewsEl && !document.getElementById("total-pageviews")) return;
+
+    if (!umamiConfig || !umamiConfig.enable) {
+      console.info("[Umami] disabled in config");
+      if (viewsEl) viewsEl.textContent = "-";
+      var tp = document.getElementById("total-pageviews");
+      var tv = document.getElementById("total-visitors");
+      if (tp) tp.textContent = "-";
+      if (tv) tv.textContent = "-";
+      return;
+    }
+
+    var baseUrl = umamiConfig.baseUrl || "";
+    var shareId = umamiConfig.shareId || umamiConfig.websiteId || umamiConfig.siteId || "";
+
+    if (!baseUrl || !shareId) {
+      console.warn("[Umami] missing baseUrl or shareId in umamiConfig", umamiConfig);
+      if (viewsEl) viewsEl.textContent = "-";
+      var tp2 = document.getElementById("total-pageviews");
+      var tv2 = document.getElementById("total-visitors");
+      if (tp2) tp2.textContent = "-";
+      if (tv2) tv2.textContent = "-";
+      return;
+    }
+
+    // attach observer so we can detect overwrites
+    attachOverwriteObserver();
+
+    // step 1: try direct share fetch
+    tryDirectShareFetch(baseUrl, shareId, function (err, body) {
+      if (!err && body) {
+        var parsed = parseShareResponse(body);
+        setStatsToDOM(parsed.pageviews, parsed.visitors);
+        return;
+      }
+      console.warn("[Umami] direct fetch failed:", err);
+
+      // step 2: try proxy if available
+      tryProxyFetch("/api/umami-proxy", baseUrl, shareId, function (err2, body2) {
+        if (!err2 && body2) {
+          var parsed2 = parseShareResponse(body2);
+          setStatsToDOM(parsed2.pageviews, parsed2.visitors);
+          return;
+        }
+        console.error("[Umami] proxy fetch failed:", err2);
+
+        // final fallback: set '-' and leave logs
+        var tp3 = document.getElementById("total-pageviews");
+        var tv3 = document.getElementById("total-visitors");
+        if (viewsEl) viewsEl.textContent = "-";
+        if (tp3) tp3.textContent = "-";
+        if (tv3) tv3.textContent = "-";
+      });
+    });
+
+    // extra: retry every 60s to ensure eventual success and counter temporary overwrites
+    setInterval(function () {
+      tryDirectShareFetch(baseUrl, shareId, function (e, b) {
+        if (!e && b) {
+          var p = parseShareResponse(b);
+          setStatsToDOM(p.pageviews, p.visitors);
+        }
+      });
+    }, 60000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", load);
+  } else {
+    load();
+  }
+})();
 </script>
