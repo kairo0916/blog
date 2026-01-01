@@ -198,7 +198,7 @@ body::before {
       var(--bg-overlay-start),
       var(--bg-overlay-end)
     ),
-    url("https://eopfapi.acofork.com/ri/v/");
+    url("https://eopfapi.acofork.com/pic?img=ua");
 
   background-size: cover;
   background-position: center;
