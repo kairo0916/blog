@@ -7,34 +7,34 @@ import { siteConfig } from "@/config";
 const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", { eager: true, import: "default" }));
 ---
 
-<MainGridLayout title="友鏈">
+<MainGridLayout title="友链">
   <div class="friends-wrap card-base p-6 md:p-8">
     <div class="header flex items-center gap-3 mb-6">
-      <div class="badge">
+      <div class="badge" aria-hidden="true">
         <Icon name="material-symbols:diversity-3" class="icon" />
       </div>
-      <h1 class="title">友鏈</h1>
+      <h1 class="title">友链</h1>
     </div>
 
     <p class="hint text-sm text-muted mb-6">
-      想加入友鏈？請建立 PR 或聯絡管理員，通過審核後會收錄在此處。
+      想加入友链？请建立 PR 或联系管理员，通过审核后会收录在此处。
     </p>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {friends.map((friend) => (
         <a
           class="friend-card"
           href={friend.url}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`開啟 ${friend.name} 的網站`}
+          aria-label={`打开 ${friend.name} 的网站`}
         >
           <div class="card-top">
             <div class="avatar" style={`--hue: ${siteConfig.themeColor?.hue ?? 220}`}>
               <div class="avatar-ring" aria-hidden="true"></div>
               <img
                 src={friend.avatar}
-                alt={`${friend.name} 的頭像`}
+                alt={`${friend.name} 的头像`}
                 loading="lazy"
                 onload="this.classList.add('is-loaded')"
               />
@@ -58,76 +58,130 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
 </MainGridLayout>
 
 <style is:inline>
-/* ---------- 變數 ---------- */
+/* -------------------------
+   主题变量（可按需微调）
+   ------------------------- */
 :root{
-  --card-bg: rgba(255,255,255,0.02);
-  --card-border: rgba(255,255,255,0.04);
-  --muted: rgba(230,238,251,0.66);
-  --glass-shadow: rgba(2,6,23,0.45);
+  --card-bg: rgba(255,255,255,0.04);
+  --card-bg-strong: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.06);
+  --muted: rgba(230,238,251,0.75);
+  --glass-shadow: rgba(2,6,23,0.38);
+  --accent: 60 85% 60%; /* H S L 用于 hsl() 的占位（若需） */
+  --card-radius: 12px;
 }
 
-/* wrapper */
+/* 支持暗色 */
+.dark {
+  --card-bg: rgba(20,20,20,0.46);
+  --card-bg-strong: rgba(20,20,20,0.56);
+  --card-border: rgba(255,255,255,0.06);
+  --muted: rgba(200,210,225,0.66);
+  --glass-shadow: rgba(0,0,0,0.5);
+}
+
+/* -------------------------
+   外层 wrapper
+   ------------------------- */
 .friends-wrap {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  color: var(--text, #e6eefb);
+  color: var(--text, inherit);
 }
 
 /* header */
+.header {
+  display:flex;
+  align-items:center;
+}
 .header .badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display:flex;
   align-items:center;
   justify-content:center;
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 6px 18px rgba(2,6,23,0.25);
+  box-shadow: 0 8px 22px rgba(2,6,23,0.18);
 }
-.header .icon { font-size: 1.25rem; color: var(--primary, #60A5FA); }
-.title { font-size: 1.25rem; font-weight: 700; }
+.header .icon { font-size: 1.25rem; color: var(--primary, oklch(0.70 0.14 var(--hue))); }
+.title { font-size: 1.25rem; font-weight: 700; margin: 0; }
 
 /* hint */
-.hint { color: var(--muted); }
+.hint { color: var(--muted); margin-bottom: 0.75rem; }
 
-/* grid & card */
+/* -------------------------
+   网格卡片
+   ------------------------- */
+.grid { /* using utility grid from wrapper; nothing needed here */ }
+
+/* 卡片基础 */
 .friend-card {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  padding: 14px;
-  border-radius: 12px;
-  background: var(--card-bg);
+  padding: 16px;
+  border-radius: var(--card-radius);
+  background: linear-gradient(180deg, var(--card-bg), rgba(255,255,255,0.01));
   border: 1px solid var(--card-border);
-  box-shadow: 0 8px 30px var(--glass-shadow);
+  box-shadow: 0 10px 30px var(--glass-shadow);
   text-decoration: none;
   color: inherit;
-  transition: transform .16s cubic-bezier(.2,.8,.2,1), box-shadow .16s ease, border-color .16s ease;
+  transition:
+    transform .18s cubic-bezier(.2,.9,.2,1),
+    box-shadow .18s ease,
+    border-color .18s ease,
+    background .18s ease;
   overflow: hidden;
-  min-height: 110px;
+  min-height: 118px;
+  position: relative;
+  isolation: isolate;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* 轻微光泽边框（用伪元素创造细线渐变） */
+.friend-card::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+  -webkit-mask:
+    linear-gradient(#000, #000) content-box,
+    linear-gradient(#000, #000);
+  mask:
+    linear-gradient(#000, #000) content-box,
+    linear-gradient(#000, #000);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  opacity: 0.9;
 }
 
 /* hover & focus */
 .friend-card:hover,
-.friend-card:focus {
-  transform: translateY(-6px) scale(1.01);
-  border-color: rgba(255,255,255,0.08);
-  box-shadow: 0 16px 48px rgba(2,6,23,0.55);
+.friend-card:focus,
+.friend-card:focus-visible {
+  transform: translateY(-8px) scale(1.006);
+  border-color: rgba(255,255,255,0.09);
+  box-shadow: 0 20px 60px rgba(2,6,23,0.6);
   outline: none;
 }
 
-/* top row with avatar, meta and visit icon */
+/* card-top 行：头像 + meta + icon */
 .card-top {
   display:flex;
   align-items:center;
   gap: 12px;
 }
 
-/* avatar */
+/* 头像 */
 .avatar {
-  --size: 56px;
+  --size: 60px;
   width: var(--size);
   height: var(--size);
   position: relative;
@@ -137,77 +191,83 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   place-items: center;
   background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   overflow: visible;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.12) inset;
 }
 
-/* decorative gradient ring (subtle) */
+/* 光环（渐变 + 模糊，颜色以 --hue 控制） */
 .avatar-ring {
   position: absolute;
-  inset: -3px;
+  inset: -5px;
   border-radius: 999px;
-  padding: 3px;
-  background: conic-gradient(from 0deg, hsl(var(--hue) 90% 60% / 1), transparent 40%, hsl(calc(var(--hue) + 60) 85% 55% / 0.9));
-  filter: blur(6px);
-  opacity: 0.12;
+  padding: 4px;
+  background:
+    conic-gradient(from 130deg, hsla(var(--hue),86%,60%,0.95), transparent 35%),
+    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  filter: blur(8px) saturate(1.05);
+  opacity: 0.14;
   pointer-events: none;
+  transition: opacity .28s ease, transform .28s ease;
 }
 
-/* actual image */
+/* 实际图片 */
 .avatar img{
-  width: calc(var(--size) - 6px);
-  height: calc(var(--size) - 6px);
+  width: calc(var(--size) - 8px);
+  height: calc(var(--size) - 8px);
   border-radius: 999px;
   object-fit: cover;
   transform: scale(1.03);
   opacity: 0;
-  transition: opacity .38s ease, transform .38s ease, filter .38s ease;
+  transition: opacity .36s ease, transform .36s ease, filter .36s ease;
   display:block;
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid rgba(255,255,255,0.04);
-  filter: blur(6px) saturate(.9);
+  border: 1px solid rgba(255,255,255,0.05);
+  filter: blur(6px) saturate(.95);
+  z-index: 2;
 }
 
-/* when loaded, reveal cleanly */
+/* 加载完成的平滑效果 */
 .avatar img.is-loaded {
   opacity: 1;
   transform: scale(1);
   filter: blur(0);
 }
 
-/* fallback skeleton (before image loaded) */
+/* 占位骨架（图片前） */
 .avatar::before{
   content: "";
-  width: calc(var(--size) - 10px);
-  height: calc(var(--size) - 10px);
+  width: calc(var(--size) - 14px);
+  height: calc(var(--size) - 14px);
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   display:block;
   position: absolute;
   inset: 0;
   margin: auto;
-  box-shadow: inset 0 -6px 12px rgba(0,0,0,0.15);
-  z-index: 0;
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,0.12);
+  z-index: 1;
 }
 
-/* meta */
+/* meta 文本 */
 .meta { display:flex; flex-direction:column; gap:2px; min-width:0; }
-.name { font-weight: 700; color: var(--text, #e6eefb); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.domain { font-size: 0.85rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.name { font-weight: 700; color: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1rem; }
+.domain { font-size: 0.86rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* visit icon (appear subtle) */
+/* visit 图标区域 */
 .visit {
   margin-left: auto;
   color: rgba(255,255,255,0.65);
   display:flex;
   align-items:center;
   justify-content:center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   transition: transform .16s ease, background .16s ease, color .16s ease;
+  z-index: 3;
 }
-.friend-card:hover .visit { transform: translateY(-2px) scale(1.06); color: var(--primary, #60A5FA); background: rgba(255,255,255,0.02); }
+.friend-card:hover .visit { transform: translateY(-3px) scale(1.08); color: var(--primary, oklch(0.70 0.14 var(--hue))); background: rgba(255,255,255,0.02); }
 
-/* description */
+/* 描述 */
 .desc{
   color: var(--muted);
   font-size: 0.95rem;
@@ -216,22 +276,33 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  margin-top: 4px;
 }
 
-/* responsive tweaks */
+/* 小屏优化 */
 @media (max-width: 640px) {
-  .avatar { --size: 48px; }
+  .avatar { --size: 52px; }
   .friend-card { padding: 12px; min-height: 96px; }
+  .visit { width: 36px; height: 36px; }
 }
 
-/* accessibility */
+/* 减少运动 */
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
 
-/* small polish: keyboard focus */
+/* 键盘可访问焦点样式 */
 .friend-card:focus-visible {
   outline: 3px solid rgba(96,165,250,0.14);
   outline-offset: 3px;
+  transform: translateY(-6px) scale(1.004);
+}
+
+/* 细微提升：当图片加载完成，让 ring 更柔和 */
+.avatar img.is-loaded + .avatar-ring,
+.avatar img.is-loaded ~ .avatar-ring {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 </style>
+```0
