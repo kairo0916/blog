@@ -58,36 +58,39 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
 </MainGridLayout>
 
 <style is:inline>
-/* -------------------------
-   主题变量（可按需微调）
-   ------------------------- */
+/* ---------------------------
+   主题变量（深/浅色都准备好）
+   你要调透明度就在这里改 --card-bg / --card-bg-strong / --card-border / --muted / --text
+   --------------------------- */
 :root{
+  /* 亮色模式的主色设定（如果你主要使用深色可以忽略）*/
+  --text: #0b0b0b; /* 正文文字（亮模默认） */
+  --muted: rgba(55,65,81,0.70); /* 次要文字/域名（亮模） */
   --card-bg: rgba(255,255,255,0.04);
   --card-bg-strong: rgba(255,255,255,0.06);
   --card-border: rgba(255,255,255,0.06);
-  --muted: rgba(230,238,251,0.75);
   --glass-shadow: rgba(2,6,23,0.38);
-  --accent: 60 85% 60%; /* H S L 用于 hsl() 的占位（若需） */
   --card-radius: 12px;
 }
 
-/* 支持暗色 */
+/* 深色模式覆盖 —— 关键：设置 --text 为浅色 */
 .dark {
+  --text: #e6eefb; /* 正文文字（深模） */
+  --muted: rgba(200,210,225,0.64); /* 次要文字（深模） */
   --card-bg: rgba(20,20,20,0.46);
   --card-bg-strong: rgba(20,20,20,0.56);
   --card-border: rgba(255,255,255,0.06);
-  --muted: rgba(200,210,225,0.66);
   --glass-shadow: rgba(0,0,0,0.5);
 }
 
-/* -------------------------
+/* ---------------------------
    外层 wrapper
-   ------------------------- */
+   --------------------------- */
 .friends-wrap {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  color: var(--text, inherit);
+  color: var(--text);
 }
 
 /* header */
@@ -102,22 +105,19 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   display:flex;
   align-items:center;
   justify-content:center;
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border: 1px solid rgba(255,255,255,0.04);
   box-shadow: 0 8px 22px rgba(2,6,23,0.18);
 }
 .header .icon { font-size: 1.25rem; color: var(--primary, oklch(0.70 0.14 var(--hue))); }
-.title { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.title { font-size: 1.25rem; font-weight: 700; margin: 0; color: var(--text); }
 
 /* hint */
 .hint { color: var(--muted); margin-bottom: 0.75rem; }
 
-/* -------------------------
-   网格卡片
-   ------------------------- */
-.grid { /* using utility grid from wrapper; nothing needed here */ }
-
-/* 卡片基础 */
+/* ---------------------------
+   卡片网格
+   --------------------------- */
 .friend-card {
   display: flex;
   flex-direction: column;
@@ -128,7 +128,7 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   border: 1px solid var(--card-border);
   box-shadow: 0 10px 30px var(--glass-shadow);
   text-decoration: none;
-  color: inherit;
+  color: var(--text);
   transition:
     transform .18s cubic-bezier(.2,.9,.2,1),
     box-shadow .18s ease,
@@ -142,7 +142,7 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   -webkit-backdrop-filter: blur(6px);
 }
 
-/* 轻微光泽边框（用伪元素创造细线渐变） */
+/* 轻微光泽边框伪元素（保持高对比同时不破坏深色） */
 .friend-card::after{
   content: "";
   position: absolute;
@@ -167,12 +167,12 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
 .friend-card:focus,
 .friend-card:focus-visible {
   transform: translateY(-8px) scale(1.006);
-  border-color: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.08);
   box-shadow: 0 20px 60px rgba(2,6,23,0.6);
   outline: none;
 }
 
-/* card-top 行：头像 + meta + icon */
+/* 顶部一行：头像 + meta + icon */
 .card-top {
   display:flex;
   align-items:center;
@@ -194,7 +194,7 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   box-shadow: 0 6px 18px rgba(2,6,23,0.12) inset;
 }
 
-/* 光环（渐变 + 模糊，颜色以 --hue 控制） */
+/* 光环（渐变 + 模糊）*/
 .avatar-ring {
   position: absolute;
   inset: -5px;
@@ -204,7 +204,7 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
     conic-gradient(from 130deg, hsla(var(--hue),86%,60%,0.95), transparent 35%),
     linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   filter: blur(8px) saturate(1.05);
-  opacity: 0.14;
+  opacity: 0.12;
   pointer-events: none;
   transition: opacity .28s ease, transform .28s ease;
 }
@@ -232,7 +232,7 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   filter: blur(0);
 }
 
-/* 占位骨架（图片前） */
+/* 占位骨架 */
 .avatar::before{
   content: "";
   width: calc(var(--size) - 14px);
@@ -249,7 +249,7 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
 
 /* meta 文本 */
 .meta { display:flex; flex-direction:column; gap:2px; min-width:0; }
-.name { font-weight: 700; color: inherit; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1rem; }
+.name { font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1rem; }
 .domain { font-size: 0.86rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* visit 图标区域 */
@@ -298,11 +298,10 @@ const friends = Object.values(import.meta.glob<Friend>("@/data/friends/*.json", 
   transform: translateY(-6px) scale(1.004);
 }
 
-/* 细微提升：当图片加载完成，让 ring 更柔和 */
+/* 图片加载完成时微调 ring */
 .avatar img.is-loaded + .avatar-ring,
 .avatar img.is-loaded ~ .avatar-ring {
   opacity: 0.9;
   transform: scale(1.02);
 }
 </style>
-```0
