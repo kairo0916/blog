@@ -1,0 +1,283 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { siteConfig } from "../config";
+const title = "申请友链";
+---
+<MainGridLayout title={title} description="提交你的友链申请" lang={siteConfig.lang}>
+  <div class="max-w-[var(--page-width)] mx-auto px-4 md:px-6 py-8">
+
+    <div class="mb-6 onload-animation">
+      <h1 class="text-3xl font-bold mb-2">{title}</h1>
+      <p class="text-sm text-75">填写下面表单并提交。提交后会生成一份可复制/通过邮件发送的申请文本。</p>
+    </div>
+
+    <div id="form-wrap" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- 表单栏 -->
+      <div class="col-span-2">
+        <form id="fl-form" class="card-base p-6" on:submit="return false;">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- 网站名称 -->
+            <label class="flex flex-col">
+              <span class="text-sm font-medium mb-2">网站名称 * </span>
+              <input id="siteName" name="siteName" required
+                     class="input px-3 py-2 rounded-md border border-[var(--line-color)]"
+                     placeholder="例如：Kairo's Blog" />
+            </label>
+
+            <!-- 网站链接 -->
+            <label class="flex flex-col">
+              <span class="text-sm font-medium mb-2">网站链接 * </span>
+              <input id="siteUrl" name="siteUrl" required
+                     class="input px-3 py-2 rounded-md border border-[var(--line-color)]"
+                     placeholder="https://example.com" />
+            </label>
+
+            <!-- 头像地址 -->
+            <label class="flex flex-col">
+              <span class="text-sm font-medium mb-2">头像地址</span>
+              <input id="avatarUrl" name="avatarUrl"
+                     class="input px-3 py-2 rounded-md border border-[var(--line-color)]"
+                     placeholder="https://example.com/avatar.png" />
+            </label>
+
+            <!-- 分类 -->
+            <label class="flex flex-col">
+              <span class="text-sm font-medium mb-2">分类 *</span>
+              <select id="category" name="category" required class="px-3 py-2 rounded-md border border-[var(--line-color)]">
+                <option value="" disabled selected>请选择分类</option>
+                <option value="技术">技术</option>
+                <option value="分享">分享</option>
+                <option value="学习">学习</option>
+                <option value="交流">交流</option>
+                <option value="生活">生活</option>
+                <option value="其他">其他（需填写）</option>
+              </select>
+            </label>
+
+            <!-- 其他分类输入（隐藏/显示） -->
+            <label id="other-category-wrap" class="flex flex-col hidden md:flex col-span-2">
+              <span class="text-sm font-medium mb-2">其他（请填写）</span>
+              <input id="otherCategory" name="otherCategory" class="px-3 py-2 rounded-md border border-[var(--line-color)]" placeholder="请说明你的分类" />
+            </label>
+
+            <!-- 网站描述 -->
+            <label class="flex flex-col md:col-span-2">
+              <span class="text-sm font-medium mb-2">网站描述 *（简短，一两句话）</span>
+              <textarea id="description" name="description" rows="4" required
+                        class="px-3 py-2 rounded-md border border-[var(--line-color)]"
+                        placeholder="你的网站主要内容、定位、受众等"></textarea>
+            </label>
+
+            <!-- 联系邮箱 -->
+            <label class="flex flex-col">
+              <span class="text-sm font-medium mb-2">联络邮箱 * </span>
+              <input id="contactEmail" name="contactEmail" required type="email"
+                     class="px-3 py-2 rounded-md border border-[var(--line-color)]"
+                     placeholder="name@example.com" />
+            </label>
+
+            <!-- Github 用户名 -->
+            <label class="flex flex-col">
+              <span class="text-sm font-medium mb-2">GitHub 用户名</span>
+              <input id="github" name="github"
+                     class="px-3 py-2 rounded-md border border-[var(--line-color)]"
+                     placeholder="例如 kairo0916" />
+            </label>
+
+            <!-- Checkbox -->
+            <div class="flex items-center gap-3 md:col-span-2">
+              <input id="addedLink" name="addedLink" type="checkbox" class="w-4 h-4" />
+              <label for="addedLink" class="text-sm">我已在我的网站上添加了本博客的链接</label>
+            </div>
+
+          </div>
+
+          <!-- 错误 / 成功提示 -->
+          <div id="form-msg" class="mt-4 text-sm text-red-500"></div>
+
+          <!-- 按钮 -->
+          <div class="mt-6 flex gap-3 items-center">
+            <button id="submitBtn" class="btn-regular px-4 py-2 rounded-lg">提交申请</button>
+            <button id="resetBtn" type="button" class="btn-plain px-4 py-2 rounded-lg">清空表单</button>
+            <div id="loading" class="text-sm text-75 ml-2 hidden">处理中…</div>
+          </div>
+        </form>
+      </div>
+
+      <!-- 侧栏：申请要求 + 预览结果 -->
+      <aside class="space-y-6">
+
+        <!-- 要求卡片 -->
+        <div class="card-base p-6">
+          <h3 class="font-bold mb-3">申请要求</h3>
+          <ul class="text-sm space-y-2">
+            <li>✅ 活跃且可访问</li>
+            <li>✅ 优质内容</li>
+            <li>✅ 已在你的网站上添加本博客链接</li>
+            <li>✅ 内容适当且安全（不含违法/成人/恶意内容）</li>
+          </ul>
+        </div>
+
+        <!-- 预览卡片 -->
+        <div id="previewCard" class="card-base p-6 hidden">
+          <h3 class="font-bold mb-2">预览：申请内容（Markdown）</h3>
+          <pre id="previewText" class="text-sm whitespace-pre-wrap break-words bg-transparent p-0 m-0"></pre>
+
+          <div class="mt-4 flex gap-2">
+            <button id="copyBtn" class="btn-card px-3 py-2 rounded-lg">复制内容</button>
+            <button id="mailtoBtn" class="btn-regular px-3 py-2 rounded-lg">用邮箱发送</button>
+            <button id="closePreview" class="btn-plain px-3 py-2 rounded-lg">关闭预览</button>
+          </div>
+
+          <p class="text-xs text-50 mt-2">复制后你可以粘贴到邮件或后台进行处理。</p>
+
+          <!-- 用户要求的提示（含超链接 lssus，指向仓库新 Issue 页面） -->
+          <div class="mt-4 p-3 rounded-md bg-[var(--btn-plain-bg-hover)] text-sm">
+            如果你不想 Fork 仓库，请自行 <a href="https://github.com/kairo0916/blog/issues/new" target="_blank" class="text-[var(--primary)] font-medium">创建 lssus</a> 提交你的讯息。
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    // 表单逻辑（原生 JS）
+    (function () {
+      const form = document.getElementById('fl-form');
+      const submitBtn = document.getElementById('submitBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const msg = document.getElementById('form-msg');
+      const loading = document.getElementById('loading');
+
+      const previewCard = document.getElementById('previewCard');
+      const previewText = document.getElementById('previewText');
+      const copyBtn = document.getElementById('copyBtn');
+      const mailtoBtn = document.getElementById('mailtoBtn');
+      const closePreview = document.getElementById('closePreview');
+
+      const category = document.getElementById('category');
+      const otherWrap = document.getElementById('other-category-wrap');
+      const otherInput = document.getElementById('otherCategory');
+
+      function showOtherIfNeeded() {
+        if (category.value === '其他') {
+          otherWrap.classList.remove('hidden');
+          otherInput.required = true;
+        } else {
+          otherWrap.classList.add('hidden');
+          otherInput.required = false;
+          otherInput.value = '';
+        }
+      }
+
+      // 初始
+      showOtherIfNeeded();
+
+      category.addEventListener('change', showOtherIfNeeded);
+
+      // 简单 URL 验证
+      function validUrl(u) {
+        try {
+          const parsed = new URL(u);
+          return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function validateForm(data) {
+        msg.textContent = '';
+
+        if (!data.siteName.trim()) return '请填写网站名称。';
+        if (!data.siteUrl.trim() || !validUrl(data.siteUrl.trim())) return '请填写有效的网站链接（包含 https:// 或 http://）。';
+        if (!data.description.trim()) return '请填写网站描述。';
+        if (!data.contactEmail.trim()) return '请填写联络信箱。';
+        // email 简单检查
+        if (!/^\S+@\S+\.\S+$/.test(data.contactEmail.trim())) return '请填写有效的电子邮箱。';
+        if (!data.addedLink) return '请确认：你已在网站上添加了本博客的链接。';
+        if (data.category === '其他' && !data.otherCategory.trim()) return '请选择“其他”并填写具体分类。';
+        return null;
+      }
+
+      function buildMarkdown(data) {
+        const cat = data.category === '其他' ? `其他：${data.otherCategory}` : data.category;
+        return [
+`### 友链申请：${data.siteName}`,
+`- 网站链接：${data.siteUrl}`,
+`- 网站描述：${data.description}`,
+`- 头像：${data.avatarUrl || '（无）'}`,
+`- 分类：${cat}`,
+`- 联络邮箱：${data.contactEmail}`,
+`- GitHub：${data.github || '（无）'}`,
+`- 已添加本站链接：${data.addedLink ? '是' : '否'}`,
+``,
+`> （请管理员审查并手动添加/回复）`
+        ].join('\n');
+      }
+
+      // 处理提交（前端）
+      submitBtn.addEventListener('click', () => {
+        const data = {
+          siteName: document.getElementById('siteName').value || '',
+          siteUrl: document.getElementById('siteUrl').value || '',
+          description: document.getElementById('description').value || '',
+          avatarUrl: document.getElementById('avatarUrl').value || '',
+          category: document.getElementById('category').value || '',
+          otherCategory: document.getElementById('otherCategory').value || '',
+          contactEmail: document.getElementById('contactEmail').value || '',
+          github: document.getElementById('github').value || '',
+          addedLink: !!document.getElementById('addedLink').checked
+        };
+
+        const err = validateForm(data);
+        if (err) {
+          msg.textContent = err;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        // 显示预览
+        const md = buildMarkdown(data);
+        previewText.textContent = md;
+        previewCard.classList.remove('hidden');
+        previewCard.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // 复制到剪贴板
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(previewText.textContent);
+          copyBtn.textContent = '已复制 ✓';
+          setTimeout(() => (copyBtn.textContent = '复制内容'), 2000);
+        } catch (e) {
+          alert('复制失败，请手动选取并复制。');
+        }
+      });
+
+      // 用邮箱发送（mailto）
+      mailtoBtn.addEventListener('click', () => {
+        const body = encodeURIComponent(previewText.textContent);
+        const subject = encodeURIComponent('友链申请：' + (document.getElementById('siteName').value || '网站'));
+        window.location.href = `mailto:${encodeURIComponent('')}?subject=${subject}&body=${body}`;
+      });
+
+      // 关闭预览
+      closePreview.addEventListener('click', () => {
+        previewCard.classList.add('hidden');
+      });
+
+      // 清空表单
+      resetBtn.addEventListener('click', () => {
+        form.reset();
+        showOtherIfNeeded();
+        msg.textContent = '';
+      });
+
+    })();
+  </script>
+
+</MainGridLayout>
