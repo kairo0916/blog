@@ -138,6 +138,15 @@
     transform: translateY(-50%);
 }
 
+@keyframes shine {
+  0% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: -100%;
+  }
+}
+
 .collapsed {
     height: var(--collapsedHeight);
 }
