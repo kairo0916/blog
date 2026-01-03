@@ -15,7 +15,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: "一個分享網站開發、程式實作、自動化工具與技術經驗的博客，作者Kairo",
 	lang: "zh_TW",
 	themeColor: {
-		hue: 361,
+		hue: 290,
 		fixed: false,
     forceDarkMode: false,
 	},
