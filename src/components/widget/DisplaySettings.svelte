@@ -27,6 +27,8 @@ let hue = getHue();
 let theme = getStoredTheme();
 let isRainbowMode = getRainbowMode();
 let rainbowSpeed = getRainbowSpeed();
+let lastUpdate = 0;
+let rainbowHue = 0;
 let bgBlur = getBgBlur();
 let hideBg = getHideBg();
 let isDevMode = getDevMode();
@@ -57,19 +59,20 @@ let isDevMode = getDevMode();
 		setRainbowMode(isRainbowMode);
 
 		if (isRainbowMode) {
-			document.documentElement.classList.add("is-rainbow-mode");
-            document.documentElement.style.setProperty("--rainbow-duration", `${120 / rainbowSpeed}s`);
-		} else {
-            document.documentElement.classList.remove("is-rainbow-mode");
-            document.documentElement.style.removeProperty("--rainbow-duration");
-			setHue(hue); // Restore the static hue
-		}
+		lastUpdate = performance.now();
+        rainbowHue = 0; // Reset rotation start
+		animationId = requestAnimationFrame(updateRainbow);
+	} else {
+		cancelAnimationFrame(animationId);
+        // Reset background rotation to 0 when stopped
+        setBgHueRotate(0);
 	}
+}
 
 	function toggleHideBg() {
-		hideBg = !hideBg;
-		setHideBg(hideBg);
-	}
+	hideBg = !hideBg;
+	setHideBg(hideBg);
+    }
 
 	function toggleDevMode() {
 		isDevMode = !isDevMode;
@@ -133,7 +136,7 @@ let isDevMode = getDevMode();
             before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
             before:absolute before:-left-3 before:top-[0.33rem]"
         >
-            主题色彩
+            主題色彩
             <button aria-label="Reset to Default" class="btn-regular w-7 h-7 rounded-md  active:scale-90"
                     class:opacity-0={hue === defaultHue} class:pointer-events-none={hue === defaultHue} on:click={resetHue}>
                 <div class="text-[var(--btn-content)]">
@@ -148,7 +151,7 @@ let isDevMode = getDevMode();
         </div>
     </div>
     <div class="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded select-none mb-3">
-        <input aria-label="主题色彩" type="range" min="0" max="360" bind:value={hue} disabled={isRainbowMode}
+        <input aria-label="主題色彩" type="range" min="0" max="360" bind:value={hue} disabled={isRainbowMode}
                class="slider" id="colorSlider" step="1" style="width: 100%">
     </div>
 
@@ -178,7 +181,7 @@ let isDevMode = getDevMode();
             before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
             before:absolute before:-left-3 before:top-[0.33rem]"
         >
-            变换速率
+            變換速率
         </div>
         <div class="flex gap-1">
              <div class="transition bg-[var(--btn-regular-bg)] w-10 h-7 rounded-md flex justify-center
@@ -188,7 +191,7 @@ let isDevMode = getDevMode();
         </div>
     </div>
     <div class="w-full h-6 bg-[var(--btn-regular-bg)] rounded select-none overflow-hidden">
-        <input aria-label="变换速率" type="range" min="1" max="100" bind:value={rainbowSpeed} on:change={onSpeedChange}
+        <input aria-label="變換速率" type="range" min="1" max="100" bind:value={rainbowSpeed} on:change={onSpeedChange}
                class="slider" step="1" style="width: 100%; --value-percent: {(rainbowSpeed - 1) / 99 * 100}%">
     </div>
     {/if}
