@@ -2,7 +2,7 @@
 title: GitHub Actions 自動化 CI/CD
 published: 2025-12-31
 description: "完整、實務導向的 GitHub Actions CI/CD 教學：工作流程架構、範例 YAML、最佳實務、安全性與進階技巧，帶你從單機測試到自動部署、監控與擴展。"
-image: ""
+image: "./image/githubactions.jepg"
 draft: false
 ---
 
