@@ -1,7 +1,6 @@
 ---
 import type { MarkdownHeading } from "astro";
 import { siteConfig } from "../../config";
-import { url } from "../../utils/url-utils";
 
 interface Props {
 	class?: string;
@@ -16,7 +15,8 @@ for (const heading of headings) {
 }
 
 const className = Astro.props.class;
-const isPostsRoute = Astro.url.pathname.startsWith(url("/posts/"));
+
+const isPostsRoute = Astro.url.pathname.startsWith("/posts/");
 
 const removeTailingHash = (text: string) => {
 	let lastIndexOfHash = text.lastIndexOf("#");
@@ -32,7 +32,7 @@ let heading1Count = 1;
 const maxLevel = siteConfig.toc.depth;
 ---
 {isPostsRoute &&
-<table-of-contents class:list={[className, "group"]}>
+<table-of-contents class:list={[className, "group block relative z-0 bg-[var(--float-panel-bg-opaque)] rounded-xl p-2"]}>
     {headings.filter((heading) => heading.depth < minDepth + maxLevel).map((heading) =>
             <a href={`#${heading.slug}`} class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
         hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
@@ -55,7 +55,7 @@ const maxLevel = siteConfig.toc.depth;
                 }]}>{removeTailingHash(heading.text)}</div>
             </a>
     )}
-    <div id="active-indicator" style="opacity: 0" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-0 right-0 rounded-xl transition-all " +
+    <div id="active-indicator" class:list={[{'hidden': headings.length == 0}, "-z-10 absolute bg-[var(--toc-btn-hover)] left-2 right-2 rounded-xl transition-all " +
         "group-hover:bg-transparent border-2 border-[var(--toc-btn-hover)] group-hover:border-[var(--toc-btn-active)] border-dashed"]}></div>
 </table-of-contents>}
 
@@ -90,14 +90,18 @@ class TableOfContents extends HTMLElement {
                 this.anchorNavTarget = null;
         });
 
-        if (!this.active.includes(true))
+        if (!this.active.includes(true)) {
+            // 当没有任何标题在视窗中时，隐藏 active-indicator
+            this.activeIndicator?.setAttribute("style", "display: none;");
             this.fallback();
+            return;
+        }
         this.update();
     };
 
     toggleActiveHeading = () => {
         let i = this.active.length - 1;
-        let min = this.active.length - 1, max = -1;
+        let min = this.active.length - 1, max = 0;
         while (i >= 0 && !this.active[i]) {
             this.tocEntries[i].classList.remove(this.visibleClass);
             i--;
@@ -112,15 +116,10 @@ class TableOfContents extends HTMLElement {
             this.tocEntries[i].classList.remove(this.visibleClass);
             i--;
         }
-        if (min > max) {
-            this.activeIndicator?.setAttribute("style", `opacity: 0`);
-        } else {
-            let parentOffset = this.tocEl?.getBoundingClientRect().top || 0;
-            let scrollOffset = this.tocEl?.scrollTop || 0;
-            let top = this.tocEntries[min].getBoundingClientRect().top - parentOffset + scrollOffset;
-            let bottom = this.tocEntries[max].getBoundingClientRect().bottom - parentOffset + scrollOffset;
-            this.activeIndicator?.setAttribute("style", `top: ${top}px; height: ${bottom - top}px`);
-        }
+        
+        let top = this.tocEntries[min].offsetTop;
+        let bottom = this.tocEntries[max].offsetTop + this.tocEntries[max].offsetHeight;
+        this.activeIndicator?.setAttribute("style", `display: block; top: ${top}px; height: ${bottom - top}px`);
     };
 
     scrollToActiveHeading = () => {
