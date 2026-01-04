@@ -8,19 +8,19 @@ interface Props {
 const { class: className, style } = Astro.props;
 ---
 
-<WidgetLayout name="统计" id="umami-stats" class:list={[className]} {style}>
+<WidgetLayout name="統計" id="umami-stats" class:list={[className]} {style}>
     <div class="text-center py-2">
         <div class="text-3xl font-bold text-neutral-900 dark:text-neutral-100" id="total-pageviews">-</div>
-        <div class="text-sm text-neutral-500 dark:text-neutral-400">总浏览量</div>
+        <div class="text-sm text-neutral-500 dark:text-neutral-400">總瀏覽量</div>
     </div>
     <div class="grid grid-cols-2 divide-x divide-neutral-200 dark:divide-neutral-700 text-center pt-2">
         <div class="px-2">
             <div class="text-xl font-bold text-neutral-900 dark:text-neutral-100" id="total-visits">-</div>
-            <div class="text-sm text-neutral-500 dark:text-neutral-400">访问数</div>
+            <div class="text-sm text-neutral-500 dark:text-neutral-400">訪問數</div>
         </div>
         <div class="px-2">
             <div class="text-xl font-bold text-neutral-900 dark:text-neutral-100" id="total-visitors">-</div>
-            <div class="text-sm text-neutral-500 dark:text-neutral-400">游客数</div>
+            <div class="text-sm text-neutral-500 dark:text-neutral-400">遊客數</div>
         </div>
     </div>
 </WidgetLayout>
@@ -78,12 +78,12 @@ async function fetchUmamiStats() {
         }
 
     } catch (error) {
-        console.error('获取Umami统计数据失败:', error);
+        console.error('獲取Umami統計數據失敗:', error);
         const elements = ['total-pageviews', 'total-visits', 'total-visitors'];
         elements.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
-                element.textContent = '获取失败';
+                element.textContent = '獲取失敗';
                 element.classList.add('text-red-500');
             }
         });
