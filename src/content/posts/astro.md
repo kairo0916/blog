@@ -2,7 +2,7 @@
 title: "Astro 新手部署全攻略：避免常見設定錯誤與踩雷指南"
 published: 2026-01-04
 description: "針對新手在 Astro 部署時容易遇到的各種錯誤，提供詳細分析、實例與解決方案，讓你少踩坑，快速上手。"
-image: ""
+image: "./image/astro.png"
 draft: false
 ---
 
