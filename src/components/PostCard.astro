@@ -48,16 +48,40 @@ const { remarkPluginFrontmatter } = await entry.render();
             <Icon class="text-[var(--primary)] text-[2rem] transition inline absolute translate-y-0.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0" name="material-symbols:chevron-right-rounded"></Icon>
         </a>
 
-        <!-- metadata: 使用 PostMetadata 顯示時間、更新、並傳入 words/minutes（category/tags 已移除） -->
-        <div class="mb-4">
-            <PostMetadata 
-                published={published} 
-                updated={updated}
-                words={remarkPluginFrontmatter.words}
-                minutes={remarkPluginFrontmatter.minutes}
-                hideUpdateDate={true}
-                class="mb-0"
-            />
+        <!-- 第一行：時間 + 觀看人數（抓同裝置） + 觀看數（不抓同裝置） -->
+        <div class="mb-3 text-sm text-black/50 dark:text-white/50 flex items-center gap-3">
+            <div>{formatDateToYYYYMMDD(published)}</div>
+            <div>|</div>
+
+            <!-- 觀看人數（抓同裝置） -->
+            <div class="flex items-center gap-2">
+                <div class="text-75">觀看人數（抓同裝置）</div>
+                <div
+                    class="post-unique font-medium text-90"
+                    data-url={url}
+                    data-umami-base-url={umamiConfig?.baseUrl || ""}
+                    data-umami-share-id={umamiConfig?.shareId || ""}
+                    data-umami-timezone={umamiConfig?.timezone || ""}
+                >
+                    0
+                </div>
+            </div>
+
+            <div>|</div>
+
+            <!-- 觀看數（不抓同裝置） -->
+            <div class="flex items-center gap-2">
+                <div class="text-75">觀看數（不抓同裝置）</div>
+                <div
+                    class="post-pageviews font-medium text-90"
+                    data-url={url}
+                    data-umami-base-url={umamiConfig?.baseUrl || ""}
+                    data-umami-share-id={umamiConfig?.shareId || ""}
+                    data-umami-timezone={umamiConfig?.timezone || ""}
+                >
+                    0
+                </div>
+            </div>
         </div>
 
         <!-- description -->
@@ -65,13 +89,8 @@ const { remarkPluginFrontmatter } = await entry.render();
             { description || remarkPluginFrontmatter.excerpt }
         </div>
 
-        <!-- metadata -->
-        <PostMetadata published={published} updated={updated} hideUpdateDate={true} hidePublishedDate={true} slug={entry.slug} class="mb-2 md:mb-4"></PostMetadata>
-
-        <!-- word count, read time and page views -->
+        <!-- 最下面只保留字數與分鐘（不再重複時間） -->
         <div class="text-sm text-black/30 dark:text-white/30 flex gap-4 transition">
-            <div>{formatDateToYYYYMMDD(published)}</div>
-            <div>|</div>
             <div>{remarkPluginFrontmatter.words} 字</div>
             <div>|</div>
             <div>{remarkPluginFrontmatter.minutes} 分钟</div>
@@ -109,12 +128,11 @@ const { remarkPluginFrontmatter } = await entry.render();
 </div>
 <div class="transition border-t-[1px] border-dashed mx-6 border-black/10 dark:border-white/[0.15] last:border-t-0 hidden"></div>
 
-
-
 <style define:vars={{coverWidth}}>
 </style>
 
 <script>
+    // 數字動畫（起始、結束、持續時間 ms）
     function animateValue(obj, start, end, duration) {
         let startTimestamp = null;
         const step = (timestamp) => {
@@ -130,53 +148,94 @@ const { remarkPluginFrontmatter } = await entry.render();
         window.requestAnimationFrame(step);
     }
 
+    // 對同一 url 做一次 fetch，然後把結果填到所有同 url 的元素（包含 unique 和 pageviews）
     async function loadCardStats() {
-        const elements = document.querySelectorAll('.post-pageviews');
-        
-        elements.forEach(async (el) => {
-            
-            if (el.classList.contains('processed') && el.textContent !== '0') return;
-            
-            el.classList.add('processed');
-            const url = el.dataset.url;
-            const baseUrl = el.dataset.umamiBaseUrl;
-            const shareId = el.dataset.umamiShareId;
-            const timezone = el.dataset.umamiTimezone;
-            
-            if (!baseUrl || !shareId) return;
-            
-            try {
-                // Check if fetchUmamiStats exists
-                if (typeof window.fetchUmamiStats !== 'function') return;
+        // 蒐集所有需要更新的元素
+        const uniqueEls = Array.from(document.querySelectorAll('.post-unique'));
+        const pageviewEls = Array.from(document.querySelectorAll('.post-pageviews'));
 
+        // 合併元素，按照 key 分組（以 url + baseUrl + shareId + timezone 為 key）
+        const allEls = [...uniqueEls, ...pageviewEls];
+        const groups = new Map();
+
+        allEls.forEach(el => {
+            const url = el.dataset.url || '';
+            const baseUrl = el.dataset.umamiBaseUrl || '';
+            const shareId = el.dataset.umamiShareId || '';
+            const timezone = el.dataset.umamiTimezone || '';
+            const key = `${baseUrl}||${shareId}||${timezone}||${url}`;
+            if (!groups.has(key)) groups.set(key, { url, baseUrl, shareId, timezone, els: [] });
+            groups.get(key).els.push(el);
+        });
+
+        // 如果沒有任何元素就跳過
+        if (groups.size === 0) return;
+
+        for (const [key, group] of groups.entries()) {
+            const { url, baseUrl, shareId, timezone, els } = group;
+
+            // 標記已處理（避免重複 animate），但仍允許更新為新值
+            const processedFlag = 'processed';
+
+            // 如果 fetch 函式不存在（你在其他地方注入），就跳過
+            if (typeof window.fetchUmamiStats !== 'function') {
+                // 嘗試讀取 stored value（若有）或者保留原樣
+                els.forEach(el => {
+                    // 若元素內為 0，保留 0；否則維持原值
+                });
+                continue;
+            }
+
+            try {
+                // window.fetchUmamiStats(baseUrl, shareId, { url, timezone })
+                // 期望結果可能包含 pageviews、visitors、_fromCache 等欄位
                 const statsData = await window.fetchUmamiStats(baseUrl, shareId, {
                     url: url,
                     timezone: timezone
                 });
-                
-                const pageviews = (statsData.pageviews && statsData.pageviews.value) || statsData.pageviews || 0;
-                
-            
-                if (statsData._fromCache) {
-                    el.innerHTML = pageviews;
-                    return;
-                }
-                
-                const startVal = parseInt(el.textContent) || 0;
-                
-                if (startVal !== pageviews) {
-                    if (startVal === 0) {
-                         animateValue(el, startVal, pageviews, 1000);
-                    } else {
-                         el.innerHTML = pageviews;
+
+                // 嘗試解析可能的欄位（兼容不同版本的 API）
+                const pageviews = (statsData && (statsData.pageviews && (statsData.pageviews.value ?? statsData.pageviews)) ) 
+                                    || statsData.pageviews
+                                    || 0;
+
+                const uniqueVisitors = statsData && (statsData.visitors ?? statsData.uniques ?? statsData.unique ?? statsData.visitors_count) 
+                                        || 0;
+
+                const fromCache = statsData && statsData._fromCache;
+
+                // 更新群組內的元素
+                els.forEach(el => {
+                    const isUniqueEl = el.classList.contains('post-unique');
+                    const targetVal = isUniqueEl ? uniqueVisitors : pageviews;
+
+                    const currentText = el.textContent ? el.textContent.trim() : '';
+                    const startVal = parseInt(currentText.replace(/[^\d]/g, '')) || 0;
+
+                    // 若為 cache 的結果，直接展示（不做動畫），但仍標記 processed
+                    if (fromCache) {
+                        el.innerHTML = targetVal;
+                        el.classList.add(processedFlag);
+                        return;
                     }
-                }
+
+                    // 若數值不同且起始為 0，使用動畫；否則直接替換為最終值
+                    if (startVal !== targetVal) {
+                        if (startVal === 0) {
+                            animateValue(el, startVal, targetVal, 1000);
+                        } else {
+                            el.innerHTML = targetVal;
+                        }
+                    }
+                    el.classList.add(processedFlag);
+                });
+
             } catch (e) {
                 console.error('Failed to load stats for', url, e);
             }
-        });
+        }
     }
-    
+
     document.addEventListener('DOMContentLoaded', loadCardStats);
     document.addEventListener('swup:contentReplaced', loadCardStats);
 </script>
