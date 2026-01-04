@@ -75,6 +75,29 @@ export function setBgHueRotate(hue: number): void {
 }
 
 export function getBgHueRotate(): number {
+    const bgBox = document.getElementById("bg-box");
+    if (bgBox) {
+        const currentFilter = bgBox.style.filter || "";
+        const hueRotateMatch = currentFilter.match(/hue-rotate\((.*?)deg\)/);
+        return hueRotateMatch ? Number.parseInt(hueRotateMatch[1]) : 0;
+    }
+    return 0;
+}
+
+export function getHideBg(): boolean {
+	const stored = localStorage.getItem("hide-bg");
+	return stored === "true";
+}
+
+export function setHideBg(hide: boolean): void {
+	localStorage.setItem("hide-bg", String(hide));
+	const bgBox = document.getElementById("bg-box");
+	if (bgBox) {
+		bgBox.style.setProperty("display", hide ? "none" : "");
+	}
+}
+
+export function getBgHueRotate(): number {
 	const bgBox = document.getElementById("bg-box");
 	if (bgBox) {
 		const currentFilter = bgBox.style.filter || "";
