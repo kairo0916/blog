@@ -72,6 +72,18 @@ const { remarkPluginFrontmatter } = await entry.render();
             { description || remarkPluginFrontmatter.excerpt }
         </div>
 
+        <!-- metadata -->
+        <PostMetadata published={published} updated={updated} hideUpdateDate={true} hidePublishedDate={true} slug={entry.slug} class="mb-2 md:mb-4"></PostMetadata>
+
+        <!-- word count, read time and page views -->
+        <div class="text-sm text-black/30 dark:text-white/30 flex gap-4 transition">
+            <div>{formatDateToYYYYMMDD(published)}</div>
+            <div>|</div>
+            <div>{remarkPluginFrontmatter.words} 字</div>
+            <div>|</div>
+            <div>{remarkPluginFrontmatter.minutes} 分钟</div>
+        </div>
+
     </div>
 
     {hasCover && <a href={url} aria-label={title}
