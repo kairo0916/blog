@@ -27,7 +27,7 @@ const { class: className, style } = Astro.props;
 
 <script>
 const UMAMI_CONFIG = {
-    baseUrl: 'https://cloud.umami.is/analytics/us/api',
+    baseUrl: 'https://api.umami.is/v1',
     websiteId: '7084c8b9-50af-4d0b-9d61-28213659fbe1',
     shareToken: process.env.UMAMI_API_TOKEN,
 };
@@ -46,7 +46,7 @@ async function fetchUmamiStats() {
         const endAt = Date.now();
         const startAt = 0;
 
-        const url = `${UMAMI_CONFIG.baseUrl}/websites/${UMAMI_CONFIG.websiteId}/stats?startAt=${startAt}&endAt=${endAt}&unit=hour&timezone=Asia%2FShanghai`;
+        const url = `${UMAMI_CONFIG.baseUrl}/websites/${UMAMI_CONFIG.websiteId}/stats?startAt=${startAt}&endAt=${endAt}&unit=hour&timezone=Asia%2FTaipei`;
 
         const response = await fetch(url, {
             method: 'GET',
