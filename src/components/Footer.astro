@@ -1,6 +1,7 @@
 ---
 import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
+import vercelLogo from "../assets/images/vercel.svg";
 
 const currentYear = new Date().getFullYear();
 
@@ -133,7 +134,7 @@ try {
         <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://www.vercel.com">Vercel</a>
         構建並部署至網路
         </div>
-        <img src="../assets/images/vercel.png" alt="Deploys by Vercel">
+        <img src={vercelLogo} alt="Deploys by Vercel" class="mt-2 h-6" />
 
       </div>
     </div>
