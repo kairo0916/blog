@@ -260,3 +260,70 @@ footer {
     backdrop-filter: blur(6px);
   }
 }
+
+
+
+/* ===== 字體宣告 ===== */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap");
+
+/* ===== 全站字體設定 ===== */
+:root {
+  --font-sans: "Inter", "Noto Sans TC",
+               system-ui, -apple-system,
+               BlinkMacSystemFont,
+               "PingFang TC",
+               "Microsoft JhengHei",
+               sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 500; /* 🔥 預設就比一般網站粗一點 */
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+}
+
+/* ===== 標題：就是要爽 ===== */
+h1, h2, h3, h4 {
+  font-weight: 700;
+  letter-spacing: -0.015em; /* 微壓，質感關鍵 */
+}
+
+/* 主標題可以再更偏執一點 */
+h1 {
+  font-weight: 800;
+}
+
+/* ===== 強調文字：真的有力 ===== */
+strong, b {
+  font-weight: 700;
+}
+
+/* ===== 程式碼不參與粗體戰爭 ===== */
+code, pre {
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  font-weight: 400;
+}
+
+/* ===== Code Block 字體（Google 新世代） ===== */
+@import url("https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@400;500;600&display=swap");
+
+code,
+pre,
+kbd,
+samp {
+  font-family: "Spline Sans Mono",
+               ui-monospace,
+               SFMono-Regular,
+               Menlo,
+               Monaco,
+               Consolas,
+               monospace;
+
+  font-weight: 450;          /* 👈 比 400 再穩一點 */
+  font-size: 0.95em;
+  line-height: 1.65;
+  letter-spacing: 0.02em;    /* 微拉開，質感關鍵 */
+}
