@@ -285,7 +285,7 @@ footer {
 /* Huninn 正文 */
 @font-face {
   font-family: "Huninn";
-  src: url("/fonts/huninn/Huninn-Regular.ttf") format("truetype");
+  src: url("../fonts/huninn/Huninn-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -294,7 +294,7 @@ footer {
 /* Spline Sans Mono Regular */
 @font-face {
   font-family: "Spline Sans Mono";
-  src: url("/fonts/spline-mono/SplineSansMono-Regular.ttf") format("truetype");
+  src: url("../fonts/spline-mono/SplineSansMono-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -303,7 +303,7 @@ footer {
 /* Spline Sans Mono Medium */
 @font-face {
   font-family: "Spline Sans Mono";
-  src: url("/fonts/spline-mono/SplineSansMono-Medium.ttf") format("truetype");
+  src: url("../fonts/spline-mono/SplineSansMono-Medium.ttf") format("truetype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
