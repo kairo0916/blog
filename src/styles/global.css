@@ -7,12 +7,30 @@
 :root {
   --glass-bg: rgba(255, 255, 255, 0.90);
   --glass-border: rgba(0, 0, 0, 0.08);
+  --font-sans: "Huninn", system-ui, -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* 深色模式 */
 .dark {
   --glass-bg: rgba(20, 20, 20, 0.88);
   --glass-border: rgba(255, 255, 255, 0.10);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.75;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-mono);
+  font-weight: 500; /* Medium/SemiBold */
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-weight: 400; /* Regular */
 }
 
 /* =========================================
