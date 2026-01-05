@@ -3,7 +3,7 @@
 > [!CAUTION]
 > 這是 **Kairo 的客製化分支（Fuwari For Kairo）**，基於原專案做出實用調整與說明。若以此作為模板二次開發，請具備基本的 Astro / 前端操作能力。
 
-![preview](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+![preview](https://raw.githubusercontent.com/kairo0916/blog/refs/heads/main/src/assets/images/home.png)
 
 一個以 **Astro** 為核心的現代化靜態部落格主題，側重技術分享、長期維護與實際部署流程。  
 本分支追求穩定與易維護，不刻意大幅改造 UI 架構，而是把文件與實務教學做得更清楚，方便你拿來當作日常寫作與部署的基底。
