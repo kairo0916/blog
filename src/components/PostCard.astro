@@ -28,7 +28,7 @@ const {
   image,
   description,
   style,
-} = Astro.props;
+} = Astro.props as Props;
 
 const className = Astro.props.class as string || "";
 const hasCover = !!image;
@@ -39,10 +39,22 @@ const { remarkPluginFrontmatter } = await entry.render();
   <div class="flex gap-4 items-start">
     <!-- 左：文字區（占剩餘空間） -->
     <div class="flex-1 min-w-0">
-      <a href={url} class="group block text-3xl font-bold text-90 mb-3 hover:text-[var(--primary)] transition">
-        {title}
-        <Icon name="material-symbols:chevron-right-rounded" class="inline text-[2rem] ml-1 translate-y-0.5 opacity-0 group-hover:opacity-100 transition" />
-      </a>
+      <div class="flex items-start gap-2">
+        <a href={url} class="group block text-3xl font-bold text-90 mb-3 hover:text-[var(--primary)] transition truncate">
+          {title}
+        </a>
+
+        {/** 如果有封面：在標題旁放一個純文字 '>' 連結（無底色） */}
+        {hasCover && (
+          <a
+            href={url}
+            aria-label={`進入 ${title}`}
+            class="ml-1 self-center text-[1.6rem] leading-none text-[var(--primary)] no-underline hover:opacity-80 transition"
+          >
+            &gt;
+          </a>
+        )}
+      </div>
 
       <!-- 描述 -->
       <div class="text-75 line-clamp-2">
@@ -68,28 +80,30 @@ const { remarkPluginFrontmatter } = await entry.render();
         </div>
       </a>
     )}
-
-    <!-- 若無封面，顯示右側進入按鈕（垂直置中） -->
-    {!hasCover && (
-      <a href={url} aria-label={title} class="!flex btn-regular w-[3.25rem] h-[3.25rem] absolute right-3 top-3 bottom-3 rounded-xl bg-[var(--enter-btn-bg)] hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95">
-        <Icon name="material-symbols:chevron-right-rounded" class="text-[var(--primary)] text-4xl mx-auto" />
-      </a>
-    )}
   </div>
 
-  <!-- 下半部：metadata（時間、字數、分鐘） -->
+  <!-- 下半部：metadata（時間、字數、分鐘） + 若無封面則右側顯示方形按鈕 -->
   <div class="mt-4 flex items-center justify-between">
-    <PostMetadata
-      published={published}
-      updated={updated}
-      words={remarkPluginFrontmatter.words}
-      minutes={remarkPluginFrontmatter.minutes}
-      slug={entry.slug}
-    />
+    <div class="flex-1">
+      <PostMetadata
+        published={published}
+        updated={updated}
+        words={remarkPluginFrontmatter.words}
+        minutes={remarkPluginFrontmatter.minutes}
+        slug={entry.slug}
+      />
+    </div>
 
-    {hasCover && (
-      <a href={url} aria-label={title} class="btn-regular w-[3.25rem] h-[3.25rem] rounded-xl flex items-center justify-center bg-[var(--enter-btn-bg)] hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95 transition">
-        <Icon name="material-symbols:chevron-right-rounded" class="text-[var(--primary)] text-4xl" />
+    {/** 若沒有封面：右側顯示方形按鈕（有底色） */}
+    {!hasCover && (
+      <a
+        href={url}
+        aria-label={`進入 ${title}`}
+        class="ml-4 inline-flex items-center justify-center w-10 h-10 rounded-xl
+               bg-[var(--enter-btn-bg)] hover:bg-[var(--enter-btn-bg-hover)]
+               active:bg-[var(--enter-btn-bg-active)] active:scale-95 transition"
+      >
+        <Icon name="material-symbols:chevron-right-rounded" class="text-[var(--primary)] text-2xl" />
       </a>
     )}
   </div>
