@@ -55,9 +55,9 @@ const initialOneLiner = config.oneLiner || config.tagline || config['一句話']
       <div class="mx-4 border-t border-neutral-200/30 dark:border-neutral-700/30"></div>
 
       <div class="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400 italic px-3">
-        <!-- 先顯示 config 裡的 fallback（若有），之後 client-side script 會覆蓋為 API 結果 -->
+        <!-- 顯示容器：先用 server-side fallback（若有） -->
         <div id="poem_container" class="flex flex-col items-center gap-1">
-          <div id="poem_sentence" class="whitespace-pre-wrap leading-tight"></div>
+          <div id="poem_sentence" class="whitespace-pre-wrap leading-tight">{initialOneLiner}</div>
           <div id="poem_info" class="text-xs text-neutral-400"></div>
         </div>
       </div>
@@ -65,26 +65,20 @@ const initialOneLiner = config.oneLiner || config.tagline || config['一句話']
   </div>
 </div>
 
-<!-- 引入今日詩詞 SDK 並載入（client-side only） -->
-<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8" defer></script>
+<!-- 引入今日詩詞 SDK（不要 defer，照官方方式載入） -->
+<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+
 <script type="text/javascript">
   (function () {
-    // 先把 fallback 文本放到容器（若 config 裡有一言）
-    const initial = `<!--FALLBACK-->`.replace('<!--FALLBACK-->', ` ${initialOneLiner || ''}`.trim());
     const sentenceEl = document.getElementById('poem_sentence');
     const infoEl = document.getElementById('poem_info');
 
-    if (sentenceEl && initial) {
-      sentenceEl.textContent = initial;
-    }
-
-    // 根據字數調整字級的函式（以字數為基準）
+    // 根據字數調整字級
     function adjustFontSizeByLength(el) {
       if (!el) return;
-      const text = el.textContent ? el.textContent.trim() : '';
-      const len = Array.from(text).length; // 更穩健地計算字元數（支援多字元）
-      // 分級策略（可微調）：
-      // <=20: 18px; 21-40: 16px; 41-60: 14px; 61-100: 13px; >100: 12px
+      const text = (el.textContent || '').trim();
+      const len = Array.from(text).length;
+
       let fontSize = 18;
       if (len <= 20) fontSize = 18;
       else if (len <= 40) fontSize = 16;
@@ -93,65 +87,65 @@ const initialOneLiner = config.oneLiner || config.tagline || config['一句話']
       else fontSize = 12;
 
       el.style.fontSize = fontSize + 'px';
-      // 行高與字級做些優化
-      el.style.lineHeight = 1.2;
+      el.style.lineHeight = '1.25';
       el.style.maxWidth = '100%';
     }
 
-    // 等 SDK 載入完，呼叫 jinrishici
-    function tryLoadJinrishici() {
-      try {
-        if (typeof jinrishici === 'undefined' || !jinrishici.load) {
-          // SDK 尚未載入或不支援，保留 fallback
+    // 嘗試載入 jinrishici（有重試機制）
+    function tryLoadJinrishici(attemptsLeft = 20) {
+      if (typeof jinrishici !== 'undefined' && typeof jinrishici.load === 'function') {
+        try {
+          jinrishici.load(function (result) {
+            try {
+              if (!result || !result.data) {
+                // 若 API 回來沒資料，保持 fallback 與字級
+                adjustFontSizeByLength(sentenceEl);
+                return;
+              }
+
+              const content = (result.data.content || '').trim();
+              const origin = result.data.origin || {};
+              const dynasty = origin.dynasty || '';
+              const author = origin.author || '';
+              const title = origin.title || '';
+
+              if (sentenceEl) {
+                sentenceEl.textContent = content || sentenceEl.textContent || '';
+                adjustFontSizeByLength(sentenceEl);
+              }
+
+              if (infoEl) {
+                const parts = [];
+                if (dynasty) parts.push('【' + dynasty + '】');
+                if (author) parts.push(author);
+                if (title) parts.push('《' + title + '》');
+                infoEl.textContent = parts.join(' ');
+              }
+            } catch (err) {
+              console.error('jinrishici callback error:', err);
+              adjustFontSizeByLength(sentenceEl);
+            }
+          });
+        } catch (e) {
+          console.error('jinrishici.load error:', e);
           adjustFontSizeByLength(sentenceEl);
-          return;
         }
-
-        jinrishici.load(function (result) {
-          try {
-            if (!result || !result.data) {
-              adjustFontSizeByLength(sentenceEl);
-              return;
-            }
-
-            // 句子內容
-            const content = (result.data.content || '').trim();
-            // 來源資訊：朝代、作者、詩名（有些資料可能不存在）
-            const origin = result.data.origin || {};
-            const dynasty = origin.dynasty || '';
-            const author = origin.author || '';
-            const title = origin.title || '';
-
-            if (sentenceEl) {
-              sentenceEl.textContent = content || (initial || '');
-              adjustFontSizeByLength(sentenceEl);
-            }
-
-            if (infoEl) {
-              const pieces = [];
-              if (dynasty) pieces.push('【' + dynasty + '】');
-              if (author) pieces.push(author);
-              if (title) pieces.push('《' + title + '》');
-              infoEl.textContent = pieces.join(' ');
-            }
-          } catch (err) {
-            console.error('jinrishici callback error:', err);
-            adjustFontSizeByLength(sentenceEl);
-          }
-        });
-      } catch (e) {
-        console.error('Failed to load jinrishici:', e);
-        adjustFontSizeByLength(sentenceEl);
+      } else {
+        if (attemptsLeft > 0) {
+          setTimeout(function () { tryLoadJinrishici(attemptsLeft - 1); }, 50);
+        } else {
+          // 最後還是沒載到，保持 fallback 字級
+          adjustFontSizeByLength(sentenceEl);
+        }
       }
     }
 
-    // 如果 document 已完成載入就直接呼叫，否則等 DOMContentLoaded
+    // 開始嘗試（在 DOMReady 時）
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      // 延遲一個 tick，等 defer script 真正執行完
-      setTimeout(tryLoadJinrishici, 50);
+      setTimeout(() => tryLoadJinrishici(20), 0);
     } else {
       document.addEventListener('DOMContentLoaded', function () {
-        setTimeout(tryLoadJinrishici, 50);
+        tryLoadJinrishici(20);
       });
     }
   })();
