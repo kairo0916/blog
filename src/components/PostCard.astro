@@ -2,179 +2,180 @@
 import type { CollectionEntry } from "astro:content";
 import path from "node:path";
 import { Icon } from "astro-icon/components";
-import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
 import { getDir } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
-import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import PostMetadata from "./PostMeta.astro";
 
 interface Props {
-	class?: string;
-	entry: CollectionEntry<"posts">;
-	title: string;
-	url: string;
-	published: Date;
-	updated?: Date;
-	image: string;
-	description: string;
-	draft: boolean;
-	style: string;
- pinned?: boolean;
+  class?: string;
+  entry: CollectionEntry<"posts">;
+  title: string;
+  url: string;
+  published: Date;
+  updated?: Date;
+  image: string;
+  description: string;
+  style?: string;
+  pinned?: boolean;
 }
+
 const {
-	entry,
-	title,
-	url,
-	published,
-	updated,
-	image,
-	description,
-	style,
- pinned
+  entry,
+  title,
+  url,
+  published,
+  updated,
+  image,
+  description,
+  style,
 } = Astro.props;
+
 const className = Astro.props.class;
-
-const hasCover = image !== undefined && image !== null && image !== "";
-
-const coverWidth = "28%";
-
+const hasCover = !!image;
 const { remarkPluginFrontmatter } = await entry.render();
 ---
-<div class:list={["card-base flex flex-col-reverse md:flex-col w-full rounded-[var(--radius-large)] overflow-hidden relative", className]} style={style}>
-    <div class:list={["pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative", {"w-full md:w-[calc(100%_-_52px_-_12px)]": !hasCover, "w-full md:w-[calc(100%_-_var(--coverWidth)_-_12px)]": hasCover}]}>
+<div
+  class:list={[
+    "card-base relative w-full rounded-[var(--radius-large)] overflow-hidden p-6 md:p-7",
+    className,
+  ]}
+  style={style}
+>
+  <!-- 上半部：標題 + 圖 -->
+  <div class="flex gap-4 items-start">
+    <!-- 左：文字 -->
+    <div class="flex-1 min-w-0">
+      <a
+        href={url}
+        class="group block text-3xl font-bold text-90 mb-2 hover:text-[var(--primary)] transition"
+      >
+        {title}
+        <Icon
+          name="material-symbols:chevron-right-rounded"
+          class="inline text-[2rem] ml-1 translate-y-0.5 opacity-0 group-hover:opacity-100 transition"
+        />
+      </a>
 
-        <a href={url}
-           class="transition group w-full block font-bold mb-3 text-3xl text-90
-        hover:text-[var(--primary)] dark:hover:text-[var(--primary)]
-        active:text-[var(--title-active)] dark:active:text-[var(--title-active)]
-        before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
-        before:absolute before:top-[35px] before:left-[18px] before:hidden md:before:block
-        ">
-            {title}
-            <Icon class="inline text-[2rem] text-[var(--primary)] md:hidden translate-y-0.5 absolute" name="material-symbols:chevron-right-rounded" />
-            <Icon class="text-[var(--primary)] text-[2rem] transition hidden md:inline absolute translate-y-0.5 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0" name="material-symbols:chevron-right-rounded" />
-        </a>
-
-        <!-- metadata: 使用 PostMetadata 顯示時間、更新、並傳入 words/minutes（category/tags 已移除） -->
-        <div class="mb-4">
-            <PostMetadata 
-                published={published} 
-                updated={updated}
-                words={remarkPluginFrontmatter.words}
-                minutes={remarkPluginFrontmatter.minutes}
-                hideUpdateDate={true}
-                class="mb-0"
-            />
-        </div>
-
-        <!-- description -->
-        <div class:list={["transition text-75 mb-3.5 pr-4", {"line-clamp-2 md:line-clamp-1": !description}]}>
-            { description || remarkPluginFrontmatter.excerpt }
-        </div>
-
-        <!-- metadata -->
-        <PostMetadata published={published} updated={updated} words={remarkPluginFrontmatter.words} minutes={remarkPluginFrontmatter.minutes} slug={entry.slug} class="mb-2 md:mb-4"></PostMetadata>
-
+      <!-- 描述 -->
+      <div class="text-75 line-clamp-2">
+        {description || remarkPluginFrontmatter.excerpt}
+      </div>
     </div>
 
-    {hasCover && <a href={url} aria-label={title}
-                    class:list={["group",
-                        "max-h-none mx-0 mt-0",
-                        "w-[var(--coverWidth)] absolute top-3 bottom-3 right-3 rounded-xl overflow-hidden active:scale-95"
-                    ]} >
-        <div class="absolute pointer-events-none z-10 w-full h-full group-hover:bg-black/30 group-active:bg-black/50 transition"></div>
-        <!-- 封面图上的箭头 -->
-        <div class="absolute pointer-events-none z-20 w-full h-full flex items-center justify-center ">
-            <Icon name="material-symbols:chevron-right-rounded"
-                  class="transition opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 text-white text-5xl">
-            </Icon>
+    <!-- 右：封面圖 -->
+    {hasCover && (
+      <a
+        href={url}
+        aria-label={title}
+        class="relative w-[28%] aspect-[4/3] shrink-0 rounded-xl overflow-hidden group active:scale-95 transition"
+      >
+        <div class="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition" />
+        <div class="absolute inset-0 z-20 flex items-center justify-center">
+          <Icon
+            name="material-symbols:chevron-right-rounded"
+            class="text-white text-5xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition"
+          />
         </div>
-        <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post"
-                  class="w-full h-full">
-        </ImageWrapper>
-    </a>}
+        <ImageWrapper
+          src={image}
+          basePath={path.join("content/posts/", getDir(entry.id))}
+          alt="Cover Image"
+          class="w-full h-full object-cover"
+        />
+      </a>
+    )}
+  </div>
 
-    {!hasCover &&
-        <a href={url} aria-label={title} class="!flex btn-regular w-[3.25rem]
-         absolute right-3 top-3 bottom-3 rounded-xl bg-[var(--enter-btn-bg)]
-         hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95
-        ">
-            <Icon name="material-symbols:chevron-right-rounded"
-                  class="transition text-[var(--primary)] text-4xl mx-auto">
-            </Icon>
-        </a>
-    }
+  <!-- 下半部：metadata + 進入箭頭 -->
+  <div class="mt-4 flex items-center justify-between">
+    <PostMetadata
+      published={published}
+      updated={updated}
+      words={remarkPluginFrontmatter.words}
+      minutes={remarkPluginFrontmatter.minutes}
+      slug={entry.slug}
+    />
+
+    {!hasCover && (
+      <a
+        href={url}
+        aria-label={title}
+        class="btn-regular w-[3.25rem] h-[3.25rem] rounded-xl flex items-center justify-center
+               bg-[var(--enter-btn-bg)]
+               hover:bg-[var(--enter-btn-bg-hover)]
+               active:bg-[var(--enter-btn-bg-active)]
+               active:scale-95 transition"
+      >
+        <Icon
+          name="material-symbols:chevron-right-rounded"
+          class="text-[var(--primary)] text-4xl"
+        />
+      </a>
+    )}
+  </div>
 </div>
-<div class="transition border-t-[1px] border-dashed mx-6 border-black/10 dark:border-white/[0.15] last:border-t-0 md:hidden"></div>
 
-<style define:vars={{coverWidth}}>
-</style>
+<div class="border-t border-dashed mx-6 border-black/10 dark:border-white/[0.15] md:hidden"></div>
 
 <script>
-    function animateValue(obj, start, end, duration) {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            obj.innerHTML = Math.floor(progress * (end - start) + start);
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                obj.innerHTML = end;
-            }
-        };
+  function animateValue(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      obj.innerHTML = Math.floor(progress * (end - start) + start);
+      if (progress < 1) {
         window.requestAnimationFrame(step);
-    }
+      } else {
+        obj.innerHTML = end;
+      }
+    };
+    window.requestAnimationFrame(step);
+  }
 
-    async function loadCardStats() {
-        const elements = document.querySelectorAll('.post-pageviews');
-        
-        elements.forEach(async (el) => {
-        
-            if (el.classList.contains('processed') && el.textContent !== '0') return;
-            
-            el.classList.add('processed');
-            const url = el.dataset.url;
-            const baseUrl = el.dataset.umamiBaseUrl;
-            const shareId = el.dataset.umamiShareId;
-            const timezone = el.dataset.umamiTimezone;
-            
-            if (!baseUrl || !shareId) return;
-            
-            try {
-                // Check if fetchUmamiStats exists
-                if (typeof window.fetchUmamiStats !== 'function') return;
+  async function loadCardStats() {
+    const elements = document.querySelectorAll(".post-pageviews");
 
-                const statsData = await window.fetchUmamiStats(baseUrl, shareId, {
-                    url: url,
-                    timezone: timezone
-                });
-                
-                const pageviews = (statsData.pageviews && statsData.pageviews.value) || statsData.pageviews || 0;
-                
-        
-                if (statsData._fromCache) {
-                    el.innerHTML = pageviews;
-                    return;
-                }
-                
-                const startVal = parseInt(el.textContent) || 0;
-                
-                if (startVal !== pageviews) {
-                
-                    if (startVal === 0) {
-                         animateValue(el, startVal, pageviews, 1000);
-                    } else {
-                         el.innerHTML = pageviews;
-                    }
-                }
-            } catch (e) {
-                console.error('Failed to load stats for', url, e);
-            }
+    elements.forEach(async (el) => {
+      if (el.classList.contains("processed") && el.textContent !== "0") return;
+      el.classList.add("processed");
+
+      const url = el.dataset.url;
+      const baseUrl = el.dataset.umamiBaseUrl;
+      const shareId = el.dataset.umamiShareId;
+      const timezone = el.dataset.umamiTimezone;
+
+      if (!baseUrl || !shareId) return;
+      if (typeof window.fetchUmamiStats !== "function") return;
+
+      try {
+        const statsData = await window.fetchUmamiStats(baseUrl, shareId, {
+          url,
+          timezone,
         });
-    }
-    
-    document.addEventListener('DOMContentLoaded', loadCardStats);
-    document.addEventListener('swup:contentReplaced', loadCardStats);
+
+        const pageviews =
+          (statsData.pageviews && statsData.pageviews.value) ||
+          statsData.pageviews ||
+          0;
+
+        if (statsData._fromCache) {
+          el.innerHTML = pageviews;
+          return;
+        }
+
+        const startVal = parseInt(el.textContent) || 0;
+        if (startVal !== pageviews) {
+          startVal === 0
+            ? animateValue(el, startVal, pageviews, 1000)
+            : (el.innerHTML = pageviews);
+        }
+      } catch (e) {
+        console.error("Failed to load stats for", url, e);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", loadCardStats);
+  document.addEventListener("swup:contentReplaced", loadCardStats);
 </script>
