@@ -26,6 +26,7 @@
     strong {
         @apply transition;
     }
+}
 
 @layer components {
     /* Rainbow Mode Animation */
