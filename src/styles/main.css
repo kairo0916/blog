@@ -1,6 +1,33 @@
 @tailwind components;
 
 @layer components {
+    .card-base {
+        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    a,
+    span,
+    li,
+    ul,
+    ol,
+    blockquote,
+    code,
+    pre,
+    table,
+    th,
+    td,
+    strong {
+        @apply transition;
+    }
+
+@layer components {
     /* Rainbow Mode Animation */
     @keyframes rainbow-rotate {
         0% { filter: hue-rotate(0deg); }
