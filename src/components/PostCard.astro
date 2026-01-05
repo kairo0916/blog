@@ -57,7 +57,16 @@ const { remarkPluginFrontmatter } = await entry.render();
         </a>
 
         <!-- metadata: 使用 PostMetadata 顯示時間、更新、並傳入 words/minutes（category/tags 已移除） -->
-        
+        <div class="mb-4">
+            <PostMetadata 
+                published={published} 
+                updated={updated}
+                words={remarkPluginFrontmatter.words}
+                minutes={remarkPluginFrontmatter.minutes}
+                hideUpdateDate={true}
+                class="mb-0"
+            />
+        </div>
 
         <!-- description -->
         <div class:list={["transition text-75 mb-3.5 pr-4", {"line-clamp-2 md:line-clamp-1": !description}]}>
