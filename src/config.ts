@@ -106,10 +106,10 @@ export const licenseConfig: LicenseConfig = {
 	url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
 };
 
-export const umamiConfig: UmamiConfig = {
+export const umamiConfig = {
 	enable: true,
 	baseUrl: "https://cloud.umami.is/share/wyzGhFMajaO6Z8vA",
-	websiteId: "wyzGhFMajaO6Z8vA",
+	shardId: "wyzGhFMajaO6Z8vA",
 	shardToken: process.env.UMAMI_TOKEN,
 	timezone: "Asia/Taipei",
 };
