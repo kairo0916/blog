@@ -1,7 +1,7 @@
-/* ===== 字體宣告 ===== */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap");
 
+@import 'misans.css';
 @tailwind components;
 
 @layer components {
@@ -218,18 +218,4 @@
 
 .shiny-text.disabled {
   animation: none;
-}
-
-/* ===== 全站字體設定 ===== */
-:root {
-  --font-sans: 'Huninn', system-ui, -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  --font-mono: 'Spline Sans Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-body, h1, h2, h3, h4, h5, h6, p, a, span, li, ul, ol, blockquote {
-  font-family: var(--font-sans) !important;
-}
-
-code, pre, kbd, samp {
-  font-family: var(--font-mono) !important;
 }
