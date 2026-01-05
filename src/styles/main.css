@@ -167,6 +167,10 @@
     }
 }
 
+@theme {
+    --font-sans: 'Huninn', 'sans-serif';
+}
+
 .custom-md img, #post-cover img {
     @apply cursor-zoom-in
 }
