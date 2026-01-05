@@ -17,7 +17,7 @@
 - 深色 / 淺色主題切換  
 - 支援 Markdown（含擴充語法）與 Pagefind 全文搜尋  
 - 自動文章目錄（TOC）、閱讀時間估算  
-- 標籤與分類系統、RSS 支援  
+- RSS 支援  
 - 可調整主題色與簡單配置，方便個人化
 
 ---
@@ -69,7 +69,6 @@ pnpm preview
 - `pnpm build`：建立靜態檔案  
 - `pnpm preview`：本地預覽 build 結果  
 - `pnpm new-post <slug>`：建立新文章（範例腳本）  
-- `pnpm clean`：移除未使用資源（視專案內腳本而定）
 
 ---
 
@@ -83,8 +82,6 @@ title: "第一篇文章"
 published: 2025-01-01
 description: "簡短描述（SEO）"
 image: ./cover.jpg
-tags: [教學, Astro]
-category: 技術
 draft: false
 lang: zh-TW
 ---
@@ -159,3 +156,5 @@ export const siteConfig = {
 https://github.com/saicaca/fuwari
 
 感謝原作者提供可擴充、好用的模板。
+
+部分代碼來源自各路大神之開源代碼 感謝原作者的開源。
