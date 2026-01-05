@@ -106,7 +106,7 @@ export const licenseConfig: LicenseConfig = {
 	url: "https://creativecommons.org/licenses/by-nc-sa/4.0/",
 };
 
-export const umamiConfig = {
+export const umamiConfig: UmamiConfig = {
 	enable: true,
 	baseUrl: "https://cloud.umami.is/share/wyzGhFMajaO6Z8vA",
 	shardId: "wyzGhFMajaO6Z8vA",
