@@ -6,8 +6,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-      sans: ['Huninn', ...defaultTheme.fontFamily.sans],
-      mono: ['Spline Sans Mono', ...defaultTheme.fontFamily.mono],
+      sans: ['Huninn', 'Spline Sans Mono', ...defaultTheme.fontFamily.sans],
       },
     },
   },
