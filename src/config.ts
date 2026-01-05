@@ -66,11 +66,11 @@ export const navBarConfig: NavBarConfig = {
 		},
 		{
 			name: "統計",
-			url: "https://umami.kairo.qzz.io/share/QEfgg7EJvn4DXMXk",
+			url: "https://umami.kairo.qzz.io/share/zAo5jPOKRiNQGgU0",
 			external: true,
 		},
 		{
-			name: "流量统计（EdgeOne）",
+			name: "流量統計（EdgeOne）",
 			url: "https://eo.kairo.qzz.io",
 			external: true,
 		},
