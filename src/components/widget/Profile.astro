@@ -50,103 +50,154 @@ const initialOneLiner = config.oneLiner || config.tagline || config['一句話']
       )}
     </div>
 
-    <!-- 內部淺淺分隔線（不把卡片分開） + 一言（API 載入）-->
+    <!-- 內部淺淺分隔線（不把卡片分開） + 一言（官方最簡版 + 偵錯資訊）-->
     <div class="pt-2">
       <div class="mx-4 border-t border-neutral-200/30 dark:border-neutral-700/30"></div>
 
       <div class="mt-2 text-center text-sm text-neutral-500 dark:text-neutral-400 italic px-3">
-        <!-- 顯示容器：先用 server-side fallback（若有） -->
         <div id="poem_container" class="flex flex-col items-center gap-1">
+          <!-- server-side fallback 先顯示（若有） -->
           <div id="poem_sentence" class="whitespace-pre-wrap leading-tight">{initialOneLiner}</div>
-          <div id="poem_info" class="text-xs text-neutral-400"></div>
+          <div id="poem_info" class="text-xs text-neutral-400 mt-1"></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 引入今日詩詞 SDK（不要 defer，照官方方式載入） -->
+<!-- 下面使用官方範例的載入方式（不要 defer），並加入偵錯/timeout -->
 <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+<script>
+  // 調整字級（根據字數）
+  function adjustFontSizeByLength(el) {
+    if (!el) return;
+    const text = (el.textContent || '').trim();
+    const len = Array.from(text).length;
+    let fontSize = 18;
+    if (len <= 20) fontSize = 18;
+    else if (len <= 40) fontSize = 16;
+    else if (len <= 60) fontSize = 14;
+    else if (len <= 100) fontSize = 13;
+    else fontSize = 12;
+    el.style.fontSize = fontSize + 'px';
+    el.style.lineHeight = '1.25';
+    el.style.maxWidth = '100%';
+  }
 
-<script type="text/javascript">
   (function () {
     const sentenceEl = document.getElementById('poem_sentence');
     const infoEl = document.getElementById('poem_info');
 
-    // 根據字數調整字級
-    function adjustFontSizeByLength(el) {
-      if (!el) return;
-      const text = (el.textContent || '').trim();
-      const len = Array.from(text).length;
+    // 3s 超時處理：如果回傳沒來就顯示提示（方便偵錯）
+    let callbackFired = false;
+    const timeoutId = setTimeout(function () {
+      if (!callbackFired) {
+        console.warn('jinrishici: callback not fired within timeout');
+        if (infoEl) infoEl.textContent = '（今日詩詞載入逾時）';
+        adjustFontSizeByLength(sentenceEl);
+      }
+    }, 3000);
 
-      let fontSize = 18;
-      if (len <= 20) fontSize = 18;
-      else if (len <= 40) fontSize = 16;
-      else if (len <= 60) fontSize = 14;
-      else if (len <= 100) fontSize = 13;
-      else fontSize = 12;
+    try {
+      if (typeof jinrishici === 'undefined' || typeof jinrishici.load !== 'function') {
+        // 如果 SDK 尚未被解析（通常情況下載入後會存在），直接嘗試等待一小段時間再檢查
+        console.warn('jinrishici SDK not found immediately; will attempt when ready.');
+      }
 
-      el.style.fontSize = fontSize + 'px';
-      el.style.lineHeight = '1.25';
-      el.style.maxWidth = '100%';
-    }
-
-    // 嘗試載入 jinrishici（有重試機制）
-    function tryLoadJinrishici(attemptsLeft = 20) {
+      // 直接呼叫官方 load（要靠 SDK 本身處理 CORS / fetch）
       if (typeof jinrishici !== 'undefined' && typeof jinrishici.load === 'function') {
-        try {
-          jinrishici.load(function (result) {
-            try {
-              if (!result || !result.data) {
-                // 若 API 回來沒資料，保持 fallback 與字級
-                adjustFontSizeByLength(sentenceEl);
-                return;
-              }
+        jinrishici.load(function (result) {
+          callbackFired = true;
+          clearTimeout(timeoutId);
+          try {
+            console.log('jinrishici result:', result);
+            if (!result || !result.data) {
+              if (infoEl) infoEl.textContent = '（今日詩詞回傳空資料）';
+              adjustFontSizeByLength(sentenceEl);
+              return;
+            }
+            const content = (result.data.content || '').trim();
+            const origin = result.data.origin || {};
+            const dynasty = origin.dynasty || '';
+            const author = origin.author || '';
+            const title = origin.title || '';
 
-              const content = (result.data.content || '').trim();
-              const origin = result.data.origin || {};
-              const dynasty = origin.dynasty || '';
-              const author = origin.author || '';
-              const title = origin.title || '';
-
-              if (sentenceEl) {
-                sentenceEl.textContent = content || sentenceEl.textContent || '';
-                adjustFontSizeByLength(sentenceEl);
-              }
-
-              if (infoEl) {
-                const parts = [];
-                if (dynasty) parts.push('【' + dynasty + '】');
-                if (author) parts.push(author);
-                if (title) parts.push('《' + title + '》');
-                infoEl.textContent = parts.join(' ');
-              }
-            } catch (err) {
-              console.error('jinrishici callback error:', err);
+            if (sentenceEl) {
+              sentenceEl.textContent = content || sentenceEl.textContent || '';
               adjustFontSizeByLength(sentenceEl);
             }
-          });
-        } catch (e) {
-          console.error('jinrishici.load error:', e);
-          adjustFontSizeByLength(sentenceEl);
-        }
+            if (infoEl) {
+              const parts = [];
+              if (dynasty) parts.push('【' + dynasty + '】');
+              if (author) parts.push(author);
+              if (title) parts.push('《' + title + '》');
+              infoEl.textContent = parts.join(' ');
+            }
+          } catch (e) {
+            console.error('jinrishici callback error:', e);
+            if (infoEl) infoEl.textContent = '（解析今日詩詞發生錯誤）';
+            adjustFontSizeByLength(sentenceEl);
+          }
+        });
       } else {
-        if (attemptsLeft > 0) {
-          setTimeout(function () { tryLoadJinrishici(attemptsLeft - 1); }, 50);
-        } else {
-          // 最後還是沒載到，保持 fallback 字級
-          adjustFontSizeByLength(sentenceEl);
-        }
-      }
-    }
+        // SDK 可能還在載入中：嘗試在短時間內重試幾次
+        let tries = 0;
+        const maxTries = 40;
+        const interval = setInterval(function () {
+          tries++;
+          if (typeof jinrishici !== 'undefined' && typeof jinrishici.load === 'function') {
+            clearInterval(interval);
+            try {
+              jinrishici.load(function (result) {
+                callbackFired = true;
+                clearTimeout(timeoutId);
+                try {
+                  console.log('jinrishici result (delayed):', result);
+                  if (!result || !result.data) {
+                    if (infoEl) infoEl.textContent = '（今日詩詞回傳空資料）';
+                    adjustFontSizeByLength(sentenceEl);
+                    return;
+                  }
+                  const content = (result.data.content || '').trim();
+                  const origin = result.data.origin || {};
+                  const dynasty = origin.dynasty || '';
+                  const author = origin.author || '';
+                  const title = origin.title || '';
 
-    // 開始嘗試（在 DOMReady 時）
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      setTimeout(() => tryLoadJinrishici(20), 0);
-    } else {
-      document.addEventListener('DOMContentLoaded', function () {
-        tryLoadJinrishici(20);
-      });
+                  if (sentenceEl) {
+                    sentenceEl.textContent = content || sentenceEl.textContent || '';
+                    adjustFontSizeByLength(sentenceEl);
+                  }
+                  if (infoEl) {
+                    const parts = [];
+                    if (dynasty) parts.push('【' + dynasty + '】');
+                    if (author) parts.push(author);
+                    if (title) parts.push('《' + title + '》');
+                    infoEl.textContent = parts.join(' ');
+                  }
+                } catch (e) {
+                  console.error('jinrishici callback error (delayed):', e);
+                  if (infoEl) infoEl.textContent = '（解析今日詩詞發生錯誤）';
+                  adjustFontSizeByLength(sentenceEl);
+                }
+              });
+            } catch (e) {
+              console.error('jinrishici.load error (delayed):', e);
+            }
+          } else if (tries >= maxTries) {
+            clearInterval(interval);
+            clearTimeout(timeoutId);
+            console.warn('jinrishici SDK did not appear after retries');
+            if (infoEl) infoEl.textContent = '（今日詩詞 SDK 無法載入）';
+            adjustFontSizeByLength(sentenceEl);
+          }
+        }, 50);
+      }
+    } catch (err) {
+      console.error('jinrishici init error:', err);
+      if (infoEl) infoEl.textContent = '（載入今日詩詞時發生錯誤）';
+      adjustFontSizeByLength(sentenceEl);
+      clearTimeout(timeoutId);
     }
   })();
 </script>
