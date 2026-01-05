@@ -35,16 +35,17 @@ const hasCover = !!image;
 const { remarkPluginFrontmatter } = await entry.render();
 ---
 <div class:list={["card-base relative w-full rounded-[var(--radius-large)] overflow-hidden p-6 md:p-7", className]} style={style}>
-  <!-- 上半部：標題 + 圖（圖片靠底部、拉長高度） -->
+  <!-- 上半部：標題 + 圖（圖改為裁切顯示、較短高度） -->
   <div class="flex gap-4 items-start">
     <!-- 左：文字區（占剩餘空間） -->
     <div class="flex-1 min-w-0">
-      <div class="flex items-start gap-2">
+      <!-- 改成 items-center 讓 title 與 '>' 垂直置中 -->
+      <div class="flex items-center gap-2">
         <a href={url} class="group block text-3xl font-bold text-90 mb-3 hover:text-[var(--primary)] transition truncate">
           {title}
         </a>
 
-        {/** 如果有封面：在標題旁放一個純文字 '>' 連結（無底色） */}
+        {/** 如果有封面：在標題旁放一個純文字 '>' 連結（無底色、垂直置中） */}
         {hasCover && (
           <a
             href={url}
@@ -62,20 +63,21 @@ const { remarkPluginFrontmatter } = await entry.render();
       </div>
     </div>
 
-    <!-- 右：封面圖（高度拉長、靠底部） -->
+    <!-- 右：封面圖（裁切顯示，不會造成大空白） -->
     {hasCover && (
       <a href={url} aria-label={title} class="relative w-[28%] shrink-0 self-end rounded-xl overflow-hidden group active:scale-95 transition">
         <div class="absolute inset-0 z-10 bg-black/0 group-hover:bg-black/30 transition" />
-        <div class="absolute inset-0 z-20 flex items-center justify-center">
+        <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
           <Icon name="material-symbols:chevron-right-rounded" class="text-white text-5xl opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition" />
         </div>
-        <!-- 改用較高的長寬比（往下拉長的感覺）-->
-        <div class="w-full h-[220px] md:h-[260px] lg:h-[300px]">
+
+        <!-- 固定高度並用 object-cover -> 會裁切而不是縮放整張圖造成空白 -->
+        <div class="w-full h-[140px] md:h-[180px] lg:h-[220px]">
           <ImageWrapper
             src={image}
             basePath={path.join("content/posts/", getDir(entry.id))}
             alt="Cover Image"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover object-center"
           />
         </div>
       </a>
