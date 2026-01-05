@@ -260,3 +260,94 @@ footer {
     backdrop-filter: blur(6px);
   }
 }
+
+
+
+
+/* ================= 字體宣告 ================= */
+@font-face {
+  font-family: "Huninn";
+  src: url("/assets/fonts/huninn/Huninn-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Spline Sans Mono";
+  src: url("/assets/fonts/spline-mono/SplineSansMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Spline Sans Mono";
+  src: url("/assets/fonts/spline-mono/SplineSansMono-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ================= 全站字體設定 ================= */
+:root {
+  --font-sans: "Huninn",
+               system-ui, -apple-system,
+               BlinkMacSystemFont,
+               "PingFang TC",
+               "Microsoft JhengHei",
+               sans-serif;
+
+  --font-mono: "Spline Sans Mono",
+               ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 500; /* 讓 Regular 看起來偏粗 */
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  text-rendering: optimizeLegibility;
+}
+
+/* ================= 標題 ================= */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-mono);
+  font-weight: 600; /* SemiBold 感覺 */
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+h1 {
+  font-weight: 700; /* 更粗的主標題 */
+  font-size: 2.25rem;
+}
+
+/* ================= 強調文字 ================= */
+strong, b {
+  font-weight: 700;
+}
+
+/* ================= Code Block ================= */
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-weight: 400;   /* Regular 為主 */
+  font-size: 0.95em;
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+  word-break: break-word;
+}
+
+pre code {
+  font-weight: 400;    /* 長程式碼用 Regular */
+}
+
+code.inline {
+  font-weight: 500;    /* inline code 稍粗一點 */
+}
