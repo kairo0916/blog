@@ -26,7 +26,6 @@ try {
 
       let taipei = null;
       if (isoDate) {
-        // 使用 24 小時制，不顯示上午/下午
         const raw = new Date(isoDate).toLocaleString("zh-TW", {
           timeZone: "Asia/Taipei",
           year: "numeric",
@@ -37,7 +36,6 @@ try {
           second: "2-digit",
           hour12: false
         });
-        // 格式化為：YYYY-MM-DD HH:MM:SS
         taipei = raw.replace(/\//g, "-").replace(/\u200E/g, "").replace(/\u202f/g, " ").trim();
       }
 
@@ -60,18 +58,24 @@ try {
 <!-- footer 分隔線（略小一點間距） -->
 <div class="transition border-t border-black/10 dark:border-white/15 my-6 border-dashed mx-32"></div>
 
-<!-- 整個 footer 外層容器（相對定位） -->
+<!-- 外層 relative（遮罩與內容同層） -->
 <div class="relative mx-6 md:mx-12 lg:mx-0">
-  <!-- 背後遮罩：使用主題色（半透明），pointer-events-none 保證不擋連結 -->
-  <div class="absolute inset-0 rounded-2xl pointer-events-none -z-10
-              bg-[var(--primary)]/8 dark:bg-[var(--primary)]/12
-              blur-sm opacity-100"></div>
 
-  <!-- 整個 footer 加深灰色遮罩（半透明）、所有文字粗體、行距收緊（內容置於 z-10） -->
+  <!-- 主題色遮罩（在內容之下，但因為內容是半透明或有 backdrop-blur，遮罩會透出） -->
+  <div
+    class="absolute inset-0 rounded-2xl pointer-events-none z-0
+           bg-[var(--primary)]/12 dark:bg-[var(--primary)]/16
+           transition"
+    aria-hidden="true"
+  ></div>
+
+  <!-- 內容層（z-10），使用半透明背景 + backdrop-blur 來讓遮罩可見但仍保證可讀性 -->
   <div
     class="relative z-10 transition rounded-2xl mb-12 flex flex-col items-center justify-center px-6 py-4
-           bg-gray-800/82 dark:bg-gray-900/82 text-gray-100
-           border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/10
+           bg-white/6 dark:bg-black/30
+           backdrop-blur-sm
+           text-gray-900 dark:text-gray-100
+           border-dashed border-[rgba(255,255,255,0.04)] dark:border-white/10
            font-bold"
     role="contentinfo"
     aria-label="Footer"
@@ -79,9 +83,9 @@ try {
     <div class="w-full max-w-[var(--page-width)] flex flex-col items-center text-sm">
       <div class="flex flex-col items-center text-sm leading-tight space-y-0.5">
 
-        <div class="mt-0">&copy; 2025 - <span id="copyright-year">{currentYear}</span> {profileConfig.name}。保留所有權利。</div>
+        <div class="mt-0 text-sm">&copy; 2025 - <span id="copyright-year">{currentYear}</span> {profileConfig.name}。保留所有權利。</div>
 
-        <div class="mt-0">
+        <div class="mt-0 text-sm">
           採用
           <a
             class="link font-bold underline text-[var(--primary)]"
@@ -93,18 +97,18 @@ try {
           </a>
         </div>
 
-        <div class="mt-0 flex items-center gap-2">
+        <div class="mt-0 flex items-center gap-2 text-sm">
           <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href={url("rss.xml")}>RSS</a>
           <span class="opacity-40">/</span>
           <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href={url("sitemap-index.xml")}>網站地圖</a>
         </div>
 
-        <div class="mt-0">
+        <div class="mt-0 text-sm">
           本網站已
           <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href="https://github.com/kairo0916/blog">開源</a>
         </div>
 
-        <div class="mt-0">
+        <div class="mt-0 text-sm">
           由
           <a class="link font-bold text-[var(--primary)]" target="_blank" rel="noopener" href="https://astro.build">Astro</a>
           和
@@ -112,8 +116,8 @@ try {
           強力驅動
         </div>
 
-        <!-- 把 (ID @ DATE) 放到「由 ... 強力驅動」下面，簡短顯示（同樣為粗體） -->
-        <div class="mt-1">
+        <!-- commit 簡短顯示 -->
+        <div class="mt-1 text-sm">
           {latestCommit
             ? (
               <a class="no-underline text-sm font-bold" target="_blank" rel="noopener" href={latestCommit.html_url}>
