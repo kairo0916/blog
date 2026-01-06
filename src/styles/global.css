@@ -1,8 +1,6 @@
 :root {
   --glass-bg: rgba(255, 255, 255, 0.90);
   --glass-border: rgba(0, 0, 0, 0.08);
-  --font-sans: "Huninn", system-ui, -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  --font-mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 .dark {
@@ -271,31 +269,3 @@ footer {
 .dark .ai-summary-content {
   color: rgb(220 220 220);
 }
-
-
-
-/*
-@font-face {
-  font-family: "Huninn";
-  src: url("../fonts/huninn/Huninn-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Spline Sans Mono";
-  src: url("../fonts/spline-mono/SplineSansMono-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Spline Sans Mono";
-  src: url("../fonts/spline-mono/SplineSansMono-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-*/
