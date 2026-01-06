@@ -59,6 +59,10 @@
     }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer components {
     /* Rainbow Mode Animation */
     @keyframes rainbow-rotate {
@@ -197,10 +201,6 @@
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
     }
-}
-
-@theme {
-    --font-sans: 'Inter', 'sans-serif';
 }
 
 .custom-md img, #post-cover img {
