@@ -102,6 +102,8 @@ const jsonLd = {
                 {!entry.data.image && <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div>}
             </div>
 
+            <AISummary content={rawContent} />
+
             <!-- always show cover as long as it has one -->
 
             {entry.data.image &&
