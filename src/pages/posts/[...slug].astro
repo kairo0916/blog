@@ -24,8 +24,9 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
-
 const { remarkPluginFrontmatter } = await entry.render();
+
+const rawContent = entry.body;
 
 const jsonLd = {
 	"@context": "https://schema.org",
