@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
-import Cohere from "cohere-ai";
+import { CohereClient } from "cohere-ai";
 
-const cohere = new Cohere({
+const cohere = new CohereClient({
   token: import.meta.env.COHERE_API_TOKEN,
 });
 
