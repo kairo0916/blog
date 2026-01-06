@@ -1,46 +1,61 @@
 ---
-const { content } = Astro.props;
+const { content, slug } = Astro.props;
 ---
 
 <div class="ai-summary-card">
-  <div class="ai-summary-title">
-    <span class="dot"></span>
-    AI 摘要
-  </div>
-  <div id="ai-summary-content" class="ai-summary-content">
-    正在生成摘要…
-  </div>
+  <div class="ai-title">🤖 AI 摘要</div>
+  <pre id="ai-text">正在生成摘要…</pre>
 </div>
 
-<script define:client>
-  const el = document.getElementById("ai-summary-content");
+<script is:inline>
+  const slug = "{slug}";
+  const cacheKey = `ai-summary:${slug}`;
+  const el = document.getElementById("ai-text");
 
-  function typeText(text, speed = 28) {
-    el.textContent = "";
-    let i = 0;
-    const timer = setInterval(() => {
-      el.textContent += text[i];
-      i++;
-      if (i >= text.length) clearInterval(timer);
-    }, speed);
-  }
-
-  fetch("/api/ai-summary", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: `{{content.replace(/`/g, "\\`")}}`,
-    }),
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data.summary) {
-        typeText(data.summary);
-      } else {
-        el.textContent = "摘要生成失敗。";
-      }
+  // ✅ 1. 先讀 localStorage
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    el.textContent = cached;
+  } else {
+    fetch("/api/ai-summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: `{content.replace(/`/g, "\\`")}`,
+        slug
+      }),
     })
-    .catch(() => {
-      el.textContent = "摘要生成失敗。";
-    });
+      .then(r => r.json())
+      .then(data => {
+        if (data.summary) {
+          el.textContent = data.summary;
+          localStorage.setItem(cacheKey, data.summary);
+        } else {
+          el.textContent = "摘要生成失敗";
+        }
+      })
+      .catch(() => {
+        el.textContent = "摘要暫時無法顯示";
+      });
+  }
 </script>
+
+<style>
+.ai-summary-card {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--card-bg);
+  border: 1px dashed var(--line-divider);
+}
+.ai-title {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+pre {
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+</style>
