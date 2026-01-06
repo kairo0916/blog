@@ -17,12 +17,12 @@ const POSTS_PER_PAGE = 10;
 						type="text"
 						id="search-input"
 						placeholder="輸入關鍵詞搜尋..."
-						class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+						class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all duration-200"
                         />
 					<button
                         id="search-button"
 						type="submit"
-						class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors"
+						class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[var(--primary)] transition-colors"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -164,7 +164,7 @@ const POSTS_PER_PAGE = 10;
                                 <a href="${postUrl}" aria-label="${postData.title}" class="block h-full w-full group/image">
                                  
                                     <div class="image-loading absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
-                                        <div class="loading-spinner w-8 h-8 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin"></div>
+                                        <div class="loading-spinner w-8 h-8 border-2 border-gray-300 dark:border-gray-600 rounded-full animate-spin" style="border-top-color: var(--primary);"></div>
                                     </div>
                                     
                                     <img 
@@ -179,7 +179,7 @@ const POSTS_PER_PAGE = 10;
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-300"></div>
                                     <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
                                         <div class="bg-white/90 dark:bg-gray-800/90 rounded-full p-2 backdrop-blur-sm">
-                                            <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)]" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                                             </svg>
                                         </div>
@@ -192,10 +192,10 @@ const POSTS_PER_PAGE = 10;
                             <h2 class="mb-3">
                                 <a 
                                     href="${postUrl}"
-                                    class="group/title block font-bold text-xl text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 line-clamp-2"
+                                    class="group/title block font-bold text-xl text-gray-900 dark:text-gray-100 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors duration-200 line-clamp-2"
                                 >
                                     ${postData.title}
-                                    <svg class="inline-block w-5 h-5 ml-1 opacity-0 group-hover/title:opacity-100 transform translate-x-0 group-hover/title:translate-x-1 transition-all duration-200 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <svg class="inline-block w-5 h-5 ml-1 opacity-0 group-hover/title:opacity-100 transform translate-x-0 group-hover/title:translate-x-1 transition-all duration-200 text-[var(--primary)]" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                                     </svg>
                                 </a>
@@ -276,7 +276,7 @@ const POSTS_PER_PAGE = 10;
                 paginationHtml += `
                     <button onclick="goToPage(${i})" class="px-3 py-2 rounded-lg transition-colors ${
                         isActive 
-                            ? 'bg-blue-500 text-white' 
+                            ? 'bg-[var(--primary)] text-white' 
                             : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     }">
                         ${i}
@@ -371,6 +371,11 @@ const POSTS_PER_PAGE = 10;
     </script>
 
     <style>
+        /* theme fallback & utilities */
+        :root {
+            --primary: var(--primary, #3b82f6);
+        }
+
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -416,5 +421,9 @@ const POSTS_PER_PAGE = 10;
             background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
             background-size: 200px 100%;
         }
+
+        /* helper classes for interactive elements */
+        .text-primary-on-hover:hover { color: var(--primary) !important; }
+        .btn-primary { background-color: var(--primary); color: white; }
     </style>
 </MainGridLayout>
