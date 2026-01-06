@@ -1,50 +1,55 @@
 import type { APIRoute } from "astro";
+import Cohere from "cohere-ai";
+
+const cohere = new Cohere({
+  token: import.meta.env.COHERE_API_TOKEN,
+});
+
+// ✅ 簡單記憶體快取（Vercel / Node 可用）
+const cache = new Map<string, string>();
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { content } = await request.json();
+    const { content, slug } = await request.json();
 
-    if (!content) {
+    if (!content || !slug) {
+      return new Response("Bad Request", { status: 400 });
+    }
+
+    // ✅ 命中快取：直接回傳
+    if (cache.has(slug)) {
       return new Response(
-        JSON.stringify({ error: "No content provided" }),
-        { status: 400 }
+        JSON.stringify({ summary: cache.get(slug), cached: true }),
+        { status: 200 }
       );
     }
 
     const prompt = `
-請閱讀以下文章內容，提取其核心重點並生成一段精簡摘要。
+請閱讀以下文章內容，提取重點並生成精簡摘要。
+僅提供摘要內容，不提供建議、評論或延伸說明，字數控制在 80 字以內。
 
-規則：
-- 僅輸出摘要內容
-- 不提供建議、評論或延伸說明
-- 不使用第二人稱
-- 不加入任何開頭或結語
-- 字數控制在 60～120 字之間
-- 語氣保持中立、客觀、資訊導向
-
-文章內容如下：
+文章內容：
 ${content}
-    `.trim();
+`;
 
-    const res = await fetch("https://api.cohere.ai/v1/generate", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.COHERE_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "command-a-03-2025",
-        prompt,
-        max_tokens: 200,
-        temperature: 0.3,
-      }),
+    const result = await cohere.generate({
+      model: "command-a-03-2025",
+      prompt,
+      max_tokens: 120,
+      temperature: 0.3,
     });
 
-    const data = await res.json();
-    const summary = data.generations?.[0]?.text?.trim();
+    const summary = result.generations[0]?.text?.trim();
+
+    if (!summary) {
+      throw new Error("Empty summary");
+    }
+
+    // ✅ 寫入快取
+    cache.set(slug, summary);
 
     return new Response(
-      JSON.stringify({ summary }),
+      JSON.stringify({ summary, cached: false }),
       { status: 200 }
     );
   } catch (err) {
