@@ -22,8 +22,15 @@
   font-display: swap;
 }
 
-@tailwind components;
+@font-face {
+  font-family: "GoogleSansCode-Medium";
+  src: url("/assets/fonts/google-code/GoogleSansCode-Medium.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
+@tailwind components;
 @layer components {
     .card-base {
         @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition;
