@@ -1,0 +1,46 @@
+---
+const { content } = Astro.props;
+---
+
+<div class="ai-summary-card">
+  <div class="ai-summary-title">
+    <span class="dot"></span>
+    AI 摘要
+  </div>
+  <div id="ai-summary-content" class="ai-summary-content">
+    正在生成摘要…
+  </div>
+</div>
+
+<script define:client>
+  const el = document.getElementById("ai-summary-content");
+
+  function typeText(text, speed = 28) {
+    el.textContent = "";
+    let i = 0;
+    const timer = setInterval(() => {
+      el.textContent += text[i];
+      i++;
+      if (i >= text.length) clearInterval(timer);
+    }, speed);
+  }
+
+  fetch("/api/ai-summary", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content: `{{content.replace(/`/g, "\\`")}}`,
+    }),
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.summary) {
+        typeText(data.summary);
+      } else {
+        el.textContent = "摘要生成失敗。";
+      }
+    })
+    .catch(() => {
+      el.textContent = "摘要生成失敗。";
+    });
+</script>
