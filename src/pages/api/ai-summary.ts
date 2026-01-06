@@ -5,7 +5,6 @@ const cohere = new Cohere({
   token: import.meta.env.COHERE_API_TOKEN,
 });
 
-// ✅ 簡單記憶體快取（Vercel / Node 可用）
 const cache = new Map<string, string>();
 
 export const POST: APIRoute = async ({ request }) => {
@@ -16,7 +15,6 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response("Bad Request", { status: 400 });
     }
 
-    // ✅ 命中快取：直接回傳
     if (cache.has(slug)) {
       return new Response(
         JSON.stringify({ summary: cache.get(slug), cached: true }),
@@ -45,7 +43,6 @@ ${content}
       throw new Error("Empty summary");
     }
 
-    // ✅ 寫入快取
     cache.set(slug, summary);
 
     return new Response(
