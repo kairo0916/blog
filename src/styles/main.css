@@ -1,4 +1,27 @@
-@import 'misans.css';
+@font-face {
+  font-family: "Huninn";
+  src: url("../assets/fonts/huninn/Huninn-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Spline Sans Mono";
+  src: url("../assets/fonts/spline-mono/SplineSansMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Spline Sans Mono";
+  src: url("../assets/fonts/spline-mono/SplineSansMono-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind components;
 
 @layer components {
