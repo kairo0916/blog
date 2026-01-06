@@ -26,8 +26,7 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-        output: "hybrid",
-        adapter: vercel(),
+    output: "hybrid",
 	site: "https://kairo.qzz.io",
 	base: "/",
 	trailingSlash: "always",
