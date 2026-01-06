@@ -2,7 +2,6 @@
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
-import AISummary from "@/components/AISummary.astro";
 
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
@@ -101,8 +100,6 @@ const jsonLd = {
                 ></PostMetadata>
                 {!entry.data.image && <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div>}
             </div>
-
-            <AISummary content={rawContent} slug={entry.slug} />
 
             <!-- always show cover as long as it has one -->
 
