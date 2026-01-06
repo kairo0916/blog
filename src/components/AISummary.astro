@@ -21,7 +21,7 @@ const { content, slug } = Astro.props;
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: `{content.replace(/`/g, "\\`")}`,
+        content: content.replace(/`/g, "\\`"),
         slug
       }),
     })
