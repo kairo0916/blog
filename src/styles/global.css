@@ -19,9 +19,14 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500; /* Medium/SemiBold */
 }
 
-code, pre {
+pre {
   font-family: var(--font-mono);
   font-weight: 400; /* Regular */
+}
+
+code {
+  font-family: var(--font-code);
+  font-weight: 400; /* Medium */
 }
 
 .card-base,
@@ -222,50 +227,4 @@ footer {
   footer {
     backdrop-filter: blur(6px);
   }
-}
-
-
-
-.ai-summary-card {
-  margin-top: 1.5rem;
-  margin-bottom: 2rem;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgb(0 0 0 / 10%);
-  background: rgb(0 0 0 / 4%);
-}
-
-.dark .ai-summary-card {
-  border-color: rgb(255 255 255 / 10%);
-  background: rgb(255 255 255 / 5%);
-}
-
-.ai-summary-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgb(120 120 120);
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.ai-summary-title .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--primary, #6366f1);
-}
-
-.ai-summary-content {
-  font-size: 0.9rem;
-  line-height: 1.7;
-  color: rgb(55 55 55);
-  white-space: pre-wrap;
-}
-
-.dark .ai-summary-content {
-  color: rgb(220 220 220);
 }
