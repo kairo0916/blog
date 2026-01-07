@@ -41,10 +41,6 @@ let hideBg = getHideBg();
 		setTheme(newTheme);
 	}
 
-	function toggleRainbow() {
-		isRainbowMode = !isRainbowMode;
-		setRainbowMode(isRainbowMode);
-
 	function toggleHideBg() {
 	hideBg = !hideBg;
 	setHideBg(hideBg);
