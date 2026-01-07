@@ -530,7 +530,7 @@ import {
 	// SizeObserverPlugin,
 	// ClickScrollPlugin
 } from 'overlayscrollbars';
-import {getHue, getStoredTheme, setHue, setTheme, getBgBlur, setBgBlur, getHideBg, setHideBg} from "../utils/setting-utils";
+import {getHue, getStoredTheme, setHue, setTheme, getBgBlur, setBgBlur} from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import {
 	BANNER_HEIGHT,
@@ -617,7 +617,6 @@ function loadHue() {
 
 function loadBgBlur() {
 	setBgBlur(getBgBlur())
-    setHideBg(getHideBg())
 }
 
 function initCustomScrollbar() {
