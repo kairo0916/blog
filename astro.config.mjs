@@ -23,6 +23,8 @@ import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
+import react from '@astrojs/react'
+
 
 // https://astro.build/config
 export default defineConfig({
@@ -30,6 +32,7 @@ export default defineConfig({
 	base: "/",
 	trailingSlash: "always",
 	integrations: [
+                react(),
 		tailwind({
 			nesting: true,
 		}),
