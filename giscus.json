@@ -1,4 +1,4 @@
 {
-  "origins": ["https://kairo.qzz.io"],
+  "origins": ["https://kairo.qzz.io", "https://blog.kairo.qzz.io", "https://www.kairo.qzz.io"],
   "defaultCommentOrder": "newest"
 }
