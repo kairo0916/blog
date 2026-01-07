@@ -43,61 +43,109 @@ let bgBlur = getBgBlur();
     }
 </script>
 
-<div id="display-setting" class="float-panel float-panel-closed absolute transition-all w-80 right-4 px-4 py-4">
-    <div class="flex flex-row gap-2 mb-3 items-center justify-between">
-        <div class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
-            before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
-            before:absolute before:-left-3 before:top-[0.33rem]"
-        >
-            主題模式
-        </div>
-        <div class="flex gap-1">
-            <button aria-label="Light Mode"
-                class="w-10 h-7 rounded-md transition flex items-center justify-center active:scale-90
-                {theme === LIGHT_MODE ? 'bg-[var(--primary)] text-white' : 'bg-[var(--btn-regular-bg)] text-[var(--btn-content)] hover:bg-[var(--btn-regular-bg-hover)]'}"
-                on:click={() => switchTheme(LIGHT_MODE)}
-            >
-                <Icon icon="material-symbols:wb-sunny-rounded" class="text-[1.1rem]"></Icon>
-            </button>
-            <button aria-label="Dark Mode"
-                class="w-10 h-7 rounded-md transition flex items-center justify-center active:scale-90
-                {theme === DARK_MODE ? 'bg-[var(--primary)] text-white' : 'bg-[var(--btn-regular-bg)] text-[var(--btn-content)] hover:bg-[var(--btn-regular-bg-hover)]'}"
-                on:click={() => switchTheme(DARK_MODE)}
-            >
-                <Icon icon="material-symbols:dark-mode-rounded" class="text-[1.1rem]"></Icon>
-            </button>
-            <button aria-label="Auto Mode"
-                class="w-10 h-7 rounded-md transition flex items-center justify-center active:scale-90
-                {theme === AUTO_MODE ? 'bg-[var(--primary)] text-white' : 'bg-[var(--btn-regular-bg)] text-[var(--btn-content)] hover:bg-[var(--btn-regular-bg-hover)]'}"
-                on:click={() => switchTheme(AUTO_MODE)}
-            >
-                <Icon icon="material-symbols:hdr-auto-rounded" class="text-[1.1rem]"></Icon>
-            </button>
-        </div>
+<div
+  id="display-setting"
+  class="float-panel float-panel-closed absolute transition-all w-80 right-4 px-4 py-4"
+>
+  <div class="flex flex-row gap-2 mb-3 items-center justify-between">
+    <div
+      class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
+      before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+      before:absolute before:-left-3 before:top-[0.33rem]"
+    >
+      主題模式
+    </div>
 
-    <div class="flex flex-row gap-2 mb-3 items-center justify-between">
-        <div class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
-            before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
-            before:absolute before:-left-3 before:top-[0.33rem]"
-        >
-            主題色彩
-            <button aria-label="Reset to Default" class="btn-regular w-7 h-7 rounded-md  active:scale-90"
-                    class:opacity-0={hue === defaultHue} class:pointer-events-none={hue === defaultHue} on:click={resetHue}>
-                <div class="text-[var(--btn-content)]">
-                    <Icon icon="fa6-solid:arrow-rotate-left" class="text-[0.875rem]"></Icon>
-                </div>
-            </button>
-        </div>
-        <div class="flex gap-1">
-            <input aria-label="Hue Value" id="hueValue" type="number" min="0" max="360" value={Math.round(hue)} on:input={(e) => hue = e.currentTarget.valueAsNumber} disabled={isRainbowMode}
-                   class="transition bg-[var(--btn-regular-bg)] w-12 h-7 rounded-md text-center font-bold text-sm text-[var(--btn-content)] outline-none"
-            />
-        </div>
+    <div class="flex gap-1">
+      <button
+        aria-label="Light Mode"
+        class="w-10 h-7 rounded-md transition flex items-center justify-center active:scale-90
+        {theme === LIGHT_MODE
+          ? 'bg-[var(--primary)] text-white'
+          : 'bg-[var(--btn-regular-bg)] text-[var(--btn-content)] hover:bg-[var(--btn-regular-bg-hover)]'}"
+        on:click={() => switchTheme(LIGHT_MODE)}
+      >
+        <Icon icon="material-symbols:wb-sunny-rounded" class="text-[1.1rem]" />
+      </button>
+
+      <button
+        aria-label="Dark Mode"
+        class="w-10 h-7 rounded-md transition flex items-center justify-center active:scale-90
+        {theme === DARK_MODE
+          ? 'bg-[var(--primary)] text-white'
+          : 'bg-[var(--btn-regular-bg)] text-[var(--btn-content)] hover:bg-[var(--btn-regular-bg-hover)]'}"
+        on:click={() => switchTheme(DARK_MODE)}
+      >
+        <Icon icon="material-symbols:dark-mode-rounded" class="text-[1.1rem]" />
+      </button>
+
+      <button
+        aria-label="Auto Mode"
+        class="w-10 h-7 rounded-md transition flex items-center justify-center active:scale-90
+        {theme === AUTO_MODE
+          ? 'bg-[var(--primary)] text-white'
+          : 'bg-[var(--btn-regular-bg)] text-[var(--btn-content)] hover:bg-[var(--btn-regular-bg-hover)]'}"
+        on:click={() => switchTheme(AUTO_MODE)}
+      >
+        <Icon icon="material-symbols:hdr-auto-rounded" class="text-[1.1rem]" />
+      </button>
     </div>
-    <div class="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded select-none mb-3">
-        <input aria-label="主題色彩" type="range" min="0" max="360" bind:value={hue} disabled={isRainbowMode}
-               class="slider" id="colorSlider" step="1" style="width: 100%">
+  </div>
+
+  <div class="flex flex-row gap-2 mb-3 items-center justify-between">
+    <div
+      class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
+      before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+      before:absolute before:-left-3 before:top-[0.33rem]"
+    >
+      主題色彩
+
+      <button
+        aria-label="Reset to Default"
+        class="btn-regular w-7 h-7 rounded-md active:scale-90"
+        class:opacity-0={hue === defaultHue}
+        class:pointer-events-none={hue === defaultHue}
+        on:click={resetHue}
+      >
+        <div class="text-[var(--btn-content)]">
+          <Icon icon="fa6-solid:arrow-rotate-left" class="text-[0.875rem]" />
+        </div>
+      </button>
     </div>
+
+    <div class="flex gap-1">
+      <input
+        aria-label="Hue Value"
+        id="hueValue"
+        type="number"
+        min="0"
+        max="360"
+        value={Math.round(hue)}
+        disabled={isRainbowMode}
+        on:input={(e) => (hue = e.currentTarget.valueAsNumber)}
+        class="transition bg-[var(--btn-regular-bg)] w-12 h-7 rounded-md
+        text-center font-bold text-sm text-[var(--btn-content)] outline-none"
+      />
+    </div>
+  </div>
+
+  <div
+    class="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)]
+    rounded select-none mb-3"
+  >
+    <input
+      aria-label="主題色彩"
+      type="range"
+      min="0"
+      max="360"
+      step="1"
+      bind:value={hue}
+      disabled={isRainbowMode}
+      id="colorSlider"
+      class="slider"
+      style="width: 100%"
+    />
+  </div>
 </div>
 
 <style lang="stylus">
