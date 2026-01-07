@@ -3,12 +3,10 @@ import Giscus from '@giscus/react'
 
 const id = 'inject-comments'
 
-// 获取 localStorage 中 theme 的值
 function getSavedTheme() {
   return window.localStorage.getItem('theme')
 }
 
-// 获取系统主题
 function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
@@ -20,7 +18,7 @@ const Comments = () => {
   React.useEffect(() => {
     const theme = getSavedTheme() || getSystemTheme()
     setTheme(theme)
-    // 监听主题变化
+  
     const observer = new MutationObserver(() => {
       setTheme(getSavedTheme())
     })
@@ -29,8 +27,7 @@ const Comments = () => {
       attributeFilter: ['data-theme'],
     })
 
-    // 取消监听
-    return () => {
+      return () => {
       observer.disconnect()
     }
   }, [])
@@ -44,17 +41,19 @@ const Comments = () => {
       {mounted ? (
         <Giscus
           id={id}
-          repo="username/repo"
-          repoId="R_kgDOKeudTw"
-          category="Announcements"
-          categoryId="DIC_kwDOKeudT84Cch4W"
-          mapping="title"
-          reactionsEnabled="1"
-          emitMetadata="0"
-          inputPosition="top"
-          lang="zh-CN"
-          loading="lazy"
-          theme={theme}
+                data-repo="kairo0916/blog"
+                data-repo-id="R_kgDOQtO5Rw"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOQtO5R84C0KvZ"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-TW"
+                data-loading="lazy"
+                crossorigin="anonymous"
         />
       ) : null}
     </div>
