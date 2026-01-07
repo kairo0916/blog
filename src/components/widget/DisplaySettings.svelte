@@ -100,6 +100,7 @@ let hideBg = getHideBg();
         <input aria-label="主題色彩" type="range" min="0" max="360" bind:value={hue} disabled={isRainbowMode}
                class="slider" id="colorSlider" step="1" style="width: 100%">
     </div>
+</div>
 
 <style lang="stylus">
     #display-setting
