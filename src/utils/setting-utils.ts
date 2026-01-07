@@ -25,6 +25,26 @@ export function setHue(hue: number, save = true): void {
 	document.documentElement.style.setProperty("--hue", String(hue));
 }
 
+export function getBgBlur(): number {
+	const stored = localStorage.getItem("bg-blur");
+	return stored ? Number.parseInt(stored) : 4; // Default blur is 4
+}
+
+export function setBgBlur(blur: number): void {
+	localStorage.setItem("bg-blur", String(blur));
+	const bgBox = document.getElementById("bg-box");
+	if (bgBox) {
+		// Retrieve existing hue-rotate value if any, or 0
+		const currentFilter = bgBox.style.filter || "";
+		const hueRotateMatch = currentFilter.match(/hue-rotate\((.*?)deg\)/);
+		const hueRotate = hueRotateMatch ? hueRotateMatch[1] : "0";
+		bgBox.style.setProperty(
+			"filter",
+			`blur(${blur}px) hue-rotate(${hueRotate}deg)`,
+		);
+	}
+}
+
 export function setRainbowSpeed(speed: number): void {
 	localStorage.setItem("rainbow-speed", String(speed));
 }
