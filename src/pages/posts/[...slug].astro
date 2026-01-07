@@ -2,7 +2,7 @@
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
-import Comment from "~/page/posts/";
+import Comment from "@components/Comment.astro";
 
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
@@ -198,6 +198,8 @@ const jsonLd = {
                 crossorigin="anonymous"
              async>
         </script>
+
+    <Comment />
 
     <br>
 
