@@ -1,5 +1,5 @@
 ---
-title: [置頂] 加入聊天群
+title: ［置頂］加入聊天群
 published: 9999-12-31
 description: "ᕙ⁠(⁠＠⁠°⁠▽⁠°⁠＠⁠)⁠ᕗ"
 image: ""
