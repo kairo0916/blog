@@ -17,7 +17,7 @@ export const siteConfig: SiteConfig = {
 	themeColor: {
 		hue: 55,
 		fixed: false,
-    forceDarkMode: false,
+    forceDarkMode: true,
 	},
 	banner: {
 		enable: false,
