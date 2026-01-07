@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
+    "@astrojs/react": "^4.4.2",
     "@astrojs/rss": "^4.0.14",
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/svelte": "7.2.3",
@@ -46,6 +47,8 @@
     "overlayscrollbars": "^2.13.0",
     "pagefind": "^1.4.0",
     "photoswipe": "^5.4.4",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "reading-time": "^1.5.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-components": "^0.3.0",
