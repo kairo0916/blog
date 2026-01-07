@@ -1,6 +1,6 @@
 ---
 title: 加入聊天群
-published: 2026-01-01
+published: 9999-12-31
 description: "ᕙ⁠(⁠＠⁠°⁠▽⁠°⁠＠⁠)⁠ᕗ"
 image: ""
 draft: false
