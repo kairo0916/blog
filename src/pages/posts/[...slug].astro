@@ -2,6 +2,7 @@
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
+import Comment from '@components/Comment.astro';
 
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPosts } from "@utils/content-utils";
@@ -181,22 +182,7 @@ const jsonLd = {
     }
   </script>
             
-            <script src="https://giscus.app/client.js"
-        data-repo="kairo0916/blog"
-        data-repo-id="R_kgDOQtO5Rw"
-        data-category="Announcements"
-        data-category-id="DIC_kwDOQtO5R84C0KvZ"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="top"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-TW"
-        data-loading="lazy"
-        crossorigin="anonymous"
-        async>
-    </script>
+            <Comment />
 
     <br>
 
