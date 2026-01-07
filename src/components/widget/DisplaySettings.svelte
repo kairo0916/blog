@@ -2,11 +2,9 @@
 import { AUTO_MODE, DARK_MODE, LIGHT_MODE } from "@constants/constants";
 import Icon from "@iconify/svelte";
 import {
-	getBgBlur,
 	getDefaultHue,
 	getHue,
 	getStoredTheme,
-	setBgBlur,
 	setBgHueRotate,
 	setHideBg,
 	setHue,
