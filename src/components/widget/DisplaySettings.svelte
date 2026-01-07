@@ -16,7 +16,6 @@ let theme = getStoredTheme();
 let lastUpdate = 0;
 let rainbowHue = 0;
 let bgBlur = getBgBlur();
-let hideBg = getHideBg();
 	let animationId: number;
 
 	const defaultHue = getDefaultHue();
@@ -75,7 +74,6 @@ let hideBg = getHideBg();
                 <Icon icon="material-symbols:hdr-auto-rounded" class="text-[1.1rem]"></Icon>
             </button>
         </div>
-    </div>
 
     <div class="flex flex-row gap-2 mb-3 items-center justify-between">
         <div class="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3
