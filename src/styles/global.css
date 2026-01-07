@@ -161,47 +161,7 @@ html {
     );
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-
-  background-image:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.55),
-      rgba(255,255,255,0.75)
-    ),
-    url("https://eopfapi.acofork.com/pic?img=ua");
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  filter:
-    brightness(1.15)
-    contrast(1.05)
-    saturate(1.05);
-
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-.dark body::before {
-  background-image:
-    linear-gradient(
-      180deg,
-      rgba(0,0,0,0.45),
-      rgba(0,0,0,0.65)
-    ),
-    url("https://eopfapi.acofork.com/pic?img=ua");
-
-  filter:
-    brightness(1.05)
-    contrast(1.1)
-    saturate(1.1);
-}
+/* NOTE: background-image related rules (body::before / .dark body::before) were removed */
 
 .glass,
 .card-base,
