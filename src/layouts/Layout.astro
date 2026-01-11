@@ -124,7 +124,6 @@ if (siteConfig.font) {
 		<meta charset="UTF-8" />
 		<meta name="description" content={description || pageTitle}>
 		<meta name="author" content={profileConfig.name}>
-        <meta name="google-adsense-account" content="ca-pub-7923791859265543">
 
 		<meta property="og:site_name" content={siteConfig.title}>
 		<meta property="og:url" content={Astro.url}>
@@ -150,6 +149,7 @@ if (siteConfig.font) {
 				  media={favicon.theme && `(prefers-color-scheme: ${favicon.theme})`}
 			/>
 		))}
+        <meta name="google-adsense-account" content="ca-pub-7923791859265543">
 
         <script is:inline>
 (() => {
@@ -160,7 +160,7 @@ if (siteConfig.font) {
    //  { key: "cloudflare", url: "https://cf.kairo.qzz.io" },
   ];
 
-  const TIMEOUT = 3000;
+  const TIMEOUT = 1000;
   const FLAG = "__best_route_selected";
 
   // 防止重導地獄
@@ -219,10 +219,6 @@ if (siteConfig.font) {
     location.replace(target);
   });
 })();
-
-// Google Adsense
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7923791859265543"
-     crossorigin="anonymous"></script>
 
 </script>
         <!-- Umami 分析（官方）-->
