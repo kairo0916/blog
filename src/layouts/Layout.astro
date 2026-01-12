@@ -127,8 +127,8 @@ if (siteConfig.font) {
 
 		<meta property="og:site_name" content={siteConfig.title}>
 		<meta property="og:url" content={Astro.url}>
-		<meta property="og:title" content="Kairo Blog">
-		<meta property="og:description" content={description}>
+		<meta property="og:title" content={siteConfig.title}>
+		<meta property="og:description" content={siteConfig.description}>
         <meta property="og:image" content="Link preview image URL">
 		{setOGTypeArticle ? (
         <meta property="og:type" content="article" />
@@ -138,8 +138,8 @@ if (siteConfig.font) {
 
 		<meta name="twitter:card" content="summary_large_image">
 		<meta property="twitter:url" content={Astro.url}>
-		<meta name="twitter:title" content="Kairo Blog">
-		<meta name="twitter:description" content={description}>
+		<meta name="twitter:title" content={siteConfig.title}>
+		<meta name="twitter:description" content={siteConfig.description}>
         <meta property="twitter:image" content="Twitter link preview image URL">
 
 		<meta name="viewport" content="width=device-width" />
