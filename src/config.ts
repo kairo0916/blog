@@ -16,7 +16,7 @@ export const siteConfig: SiteConfig = {
 	lang: "zh_TW",
 	themeColor: {
 		hue: 55,
-		fixed: false,
+		fixed: true,
     forceDarkMode: true,
 	},
 	banner: {
