@@ -152,7 +152,7 @@ html {
     radial-gradient(
       1200px 600px at 10% -10%,
       oklch(96% 0.03 var(--hue)) 0%,
-      transparent 40%
+      transparent 20%
     ),
     linear-gradient(
       180deg,
