@@ -42,7 +42,7 @@
     code {
         @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
 
-        font-family: 'SplineSansMono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-family: 'GoogleSansCode', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         &:before {
             content:none;
         }
