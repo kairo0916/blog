@@ -2,7 +2,7 @@
 title: 介紹 Astro Fuwari 主題
 published: 2025-12-23
 description: "完整介紹 Fuwari：功能特色、安裝方式、設定結構與部署建議，適合用於技術與個人部落格。"
-image: ""
+image: "./imags/fuwari.png"
 tags: ["Astro", "Fuwari", "Theme"]
 draft: false
 ---
