@@ -2,7 +2,7 @@
 title: Web 應用安全：XSS、CSRF 與注入攻擊防護
 published: 2026-01-04
 description: "系統性說明 Web 應用三大常見攻擊（XSS、CSRF、注入攻擊）的原理、判別、以及開發與運維層面的實務防護措施與檢測流程。"
-image: ""
+image: "./image/xss.png"
 draft: false
 ---
 
