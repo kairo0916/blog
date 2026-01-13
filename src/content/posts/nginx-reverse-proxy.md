@@ -2,8 +2,7 @@
 title: Nginx 反向代理的優缺點
 published: 2025-11-23
 description: "帶你一起挖掘 Nginx 反向代理的優缺點。"
-image: ""
-tags: ["Reverse", "Porxy", "Nginx", "Engine X"]
+image: "./image/nginx.png"
 draft: false
 ---
 
