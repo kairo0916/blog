@@ -2,7 +2,7 @@
 title: Lavalink 介紹與架設教學：完整技術指南
 published: 2025-11-23
 description: "讓大家了解 Lavalink 是什麼以及教大家如何簡單部署"
-image: "./images/lavalink.jpeg"
+image: "./image/lavalink.jpeg"
 draft: false
 ---
 
