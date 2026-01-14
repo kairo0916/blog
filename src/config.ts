@@ -65,6 +65,11 @@ export const navBarConfig: NavBarConfig = {
 			external: false,
 		},
 		{
+			name: "狀態",
+			url: "https://status.kairo.qzz.io",
+			external: true,
+		},
+		{
 			name: "統計",
 			url: "https://umami.kairo.qzz.io/share/zAo5jPOKRiNQGgU0",
 			external: true,
